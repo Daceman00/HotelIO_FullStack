@@ -1,6 +1,3 @@
-import React from "react";
-import Button from "../Reusable/Button";
-
 function Dashboard() {
   return (
     <div className=" flex-1 p-6  ">

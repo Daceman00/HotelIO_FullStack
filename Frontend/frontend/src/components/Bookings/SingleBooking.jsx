@@ -1,5 +1,3 @@
-import React from "react";
-
 function SingleBooking(booking) {
   return (
     <div className=" text-white_primary p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-xl">

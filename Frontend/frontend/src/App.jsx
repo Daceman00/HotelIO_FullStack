@@ -1,12 +1,12 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Header from "../components/Reusable/Header";
 import { useState } from "react";
-import Sidebar from "../components/Reusable/Sidebar";
-import DashboardPage from "../pages/DashboardPage";
-import RoomsPage from "../pages/RoomsPage";
-import RoomDetails from "../components/Rooms/RoomDetails";
-import BookingsPage from "../pages/BookingsPage";
-import Footer from "../components/Reusable/Footer";
+import Footer from "./components/Reusable/Footer";
+import Header from "./components/Reusable/Header";
+import Sidebar from "./components/Reusable/Sidebar";
+import DashboardPage from "./pages/DashboardPage";
+import RoomsPage from "./pages/RoomsPage";
+import RoomDetails from "./components/Rooms/RoomDetails";
+import BookingsPage from "./pages/BookingsPage";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);

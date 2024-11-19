@@ -1,5 +1,4 @@
 import React from "react";
-import Button from "../Reusable/Button";
 
 function RoomDetails() {
   const room = {
