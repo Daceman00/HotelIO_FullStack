@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 const validator = require("validator")
+const bcrypt = require("bcryptjs")
 
 const userSchema = mongoose.Schema({
     name: {
@@ -40,8 +41,36 @@ const userSchema = mongoose.Schema({
         type: Boolean,
         default: true,
         select: false
-    }
+    },
+    passwordChangedAt: Date,
 })
+
+// Password encryption
+userSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) return next();
+
+    this.password = await bcrypt.hash(this.password, 12);
+
+    // Delete passwordConfirm field
+    this.passwordConfirm = undefined;
+    next()
+})
+
+// Compare password i passwordConfirm
+userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
+    return await bcrypt.compare(candidatePassword, userPassword)
+}
+
+// Check if user changed password after the last login
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+    if (this.passwordChangedAt) {
+        const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+
+        return JWTTimestamp < changedTimestamp;
+    }
+
+    return false; // false means NOT changed
+}
 
 const User = mongoose.model('User', userSchema)
 
