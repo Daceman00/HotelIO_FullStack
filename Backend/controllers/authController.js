@@ -22,7 +22,7 @@ const createSendToken = (user, statusCode, res) => {
 
     // Remove password from output
     user.password = undefined;
-
+    console.log("Generated Token:", token);
     res.status(statusCode).json({
         status: 'success',
         token,
@@ -60,6 +60,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         token = req.headers.authorization.split(' ')[1];
+        console.log("Token received:", token);
     }
 
     if (!token) {
@@ -68,6 +69,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
     // Verification token
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    console.log("Decoded JWT payload:", decoded);
 
     // Check if user still exists
     const currentUser = await User.findById(decoded.id);
@@ -85,12 +87,15 @@ exports.protect = catchAsync(async (req, res, next) => {
 
     // Grant access to protected routes
     req.user = currentUser;
+    console.log("Current user", req.user)
     next()
 })
 
 exports.restrictTo = (...roles) => {
     return (req, res, next) => {
         // roles ['admin', 'user']
+        console.log(req.user.role)
+        console.log(roles)
         if (!roles.includes(req.user.role)) {
             return next(new AppError('You do not have permission to perform this action', 403))
         }
