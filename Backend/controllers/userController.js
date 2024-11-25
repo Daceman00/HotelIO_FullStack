@@ -43,5 +43,17 @@ exports.updateMyAccount = catchAsync(async (req, res, next) => {
     })
 })
 
+exports.deleteMyAccount = catchAsync(async (req, res, next) => {
+    await User.findByIdAndUpdate(req.user.id, { active: false });
+
+    res.status(204).json({
+        status: 'success',
+        data: null
+    })
+})
+
 exports.getUser = factory.getOne(User)
 exports.getAllUsers = factory.getAll(User)
+exports.updateUser = factory.updateOne(User)
+exports.createUser = factory.createOne(User)
+exports.deleteUser = factory.deleteOne(User)

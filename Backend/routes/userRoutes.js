@@ -11,9 +11,17 @@ router.use(authController.protect)
 
 router.get("/getMyAccount", userController.getMyAccount, userController.getUser);
 router.patch("/updateMyAccount", userController.updateMyAccount);
+router.delete("/deleteMyAccount", userController.deleteMyAccount);
 
 router.use(authController.restrictTo('admin'))
 
-router.get("/getAllUsers", userController.getAllUsers);
+router.route('/')
+    .get(userController.getAllUsers)
+    .post(userController.createUser);
+
+router.route('/:id')
+    .get(userController.getUser)
+    .patch(userController.updateUser)
+    .delete(userController.deleteUser)
 
 module.exports = router;
