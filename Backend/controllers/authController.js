@@ -99,3 +99,41 @@ exports.restrictTo = (...roles) => {
         next()
     }
 }
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+    // Get user based on email
+    const user = await User.findOne({ email: req.body.email });
+    // Check is that user exists
+    if (!user) return next(new AppError('There is no user with that email address', 404));
+
+    // Generate random reset token
+    const resetToken = user.createPasswordResetToken();
+    await user.save({ validateBeforeSave: false })
+
+    // Send email with token
+    const resetURL = `${req.protocol}://${req.get(
+        'host'
+    )}/api/v1/users/resetPassword/${resetToken}`;
+
+    const message = `Forgot your password? Reset it here: ${resetURL}`
+
+    try {
+        await sendEmail({
+            email: user.email,
+            subject: 'Your password reset token is valid for 10 minutes',
+            message: message
+        })
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Token sent to email'
+        })
+
+    } catch (err) {
+        user.passwordResetToken = undefined;
+        user.passwordResetExpires = undefined;
+        await user.save({ validateBeforeSave: false })
+
+        return next(new AppError('There was an error sending email. Try again!', 500))
+    }
+})
