@@ -14,6 +14,7 @@ router.use(authController.protect)
 router.get("/getMyAccount", userController.getMyAccount, userController.getUser);
 router.patch("/updateMyAccount", userController.updateMyAccount);
 router.delete("/deleteMyAccount", userController.deleteMyAccount);
+router.patch("/updateMyPassword", authController.updatePassword)
 
 
 

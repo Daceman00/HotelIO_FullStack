@@ -42,13 +42,13 @@ const userSchema = mongoose.Schema({
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
+    passwordChangedAt: Date,
 
     active: {
         type: Boolean,
         default: true,
         select: false
     },
-    passwordChangedAt: Date,
 })
 
 // Password encryption
@@ -62,6 +62,13 @@ userSchema.pre('save', async function (next) {
     next()
 })
 
+// Show only active users in query results
+userSchema.pre('find', function (next) {
+    this.find({ active: { $ne: false } });
+    next();
+})
+
+// Update passwordChangedAt when password is changed
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password') || this.isNew) return next();
 

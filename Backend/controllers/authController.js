@@ -4,7 +4,6 @@ const AppError = require('../utils/appError')
 const jwt = require('jsonwebtoken')
 const sendEmail = require('./../utils/email');
 const crypto = require('crypto')
-
 const { promisify } = require('util');
 
 const signToken = id => {
@@ -162,4 +161,21 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     await user.save();
 
     createSendToken(user, 200, res)
+})
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+    const user = await User.findById(req.user.id).select('+password')
+
+    if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
+        return next(new AppError("Your current password is incorrect", 401))
+    }
+
+    // If it is true , update the password
+    user.password = req.body.password
+    user.passwordConfirm = req.body.passwordConfirm
+    await user.save()
+
+    //Log in user
+    createSendToken(user, 200, res)
+
 })
