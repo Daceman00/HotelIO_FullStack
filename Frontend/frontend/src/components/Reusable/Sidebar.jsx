@@ -8,12 +8,15 @@ import {
   faFolderOpen,
   faClipboard,
 } from "@fortawesome/free-solid-svg-icons";
+import useUIStore from "../../stores/UiStore";
 
-function Sidebar({ isOpen }) {
+function Sidebar() {
+  const { sidebarVisible } = useUIStore();
+
   return (
     <div
       className={` h-screen transition-all duration-300 ${
-        isOpen ? "w-64" : "hidden"
+        sidebarVisible ? "w-64" : "hidden"
       } min-h-full`}
     >
       <div className="p-4 animate-fadeInLeft">

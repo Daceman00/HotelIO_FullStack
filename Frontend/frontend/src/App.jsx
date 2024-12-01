@@ -9,18 +9,12 @@ import RoomDetails from "./components/Rooms/RoomDetails";
 import BookingsPage from "./pages/BookingsPage";
 
 function App() {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
-
   return (
     <BrowserRouter>
       <div className="flex h-screen">
-        <Sidebar isOpen={isOpen} />
+        <Sidebar />
         <div className="flex flex-col flex-1 ml-1 overflow-y-auto">
-          <Header toggleSidebar={toggleSidebar} isOpen={isOpen} />
+          <Header />
           <Routes>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />

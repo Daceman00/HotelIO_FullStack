@@ -1,13 +1,17 @@
 import React from "react";
+import useUIStore from "../../stores/UiStore";
 
-function Header({ toggleSidebar, isOpen }) {
+function Header() {
+  const { sidebarVisible } = useUIStore();
+  const toggleSidebar = useUIStore((state) => state.setToggleSidebar);
+
   return (
     <header className="shadow-lg p-4 flex justify-between items-center transition-all duration-300 ease-in-out">
       <button
         onClick={toggleSidebar}
         className=" p-2 focus:outline-none transition-transform transform hover:scale-110"
       >
-        {isOpen ? (
+        {sidebarVisible ? (
           <div className="space-y-1">
             <span className="block w-8 h-1 bg-black transform rotate-45 translate-y-2"></span>
             <span className="block w-8 h-1 bg-black opacity-0"></span>
