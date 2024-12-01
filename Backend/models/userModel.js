@@ -1,6 +1,7 @@
 const mongoose = require("mongoose")
 const validator = require("validator")
 const bcrypt = require("bcryptjs")
+const crypto = require('crypto');
 
 const userSchema = mongoose.Schema({
     name: {
@@ -37,12 +38,17 @@ const userSchema = mongoose.Schema({
             message: 'Password are not the same!'
         }
     },
+
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date,
+    passwordChangedAt: Date,
+
     active: {
         type: Boolean,
         default: true,
         select: false
     },
-    passwordChangedAt: Date,
 })
 
 // Password encryption
@@ -53,6 +59,20 @@ userSchema.pre('save', async function (next) {
 
     // Delete passwordConfirm field
     this.passwordConfirm = undefined;
+    next()
+})
+
+// Show only active users in query results
+userSchema.pre('find', function (next) {
+    this.find({ active: { $ne: false } });
+    next();
+})
+
+// Update passwordChangedAt when password is changed
+userSchema.pre('save', async function (next) {
+    if (!this.isModified('password') || this.isNew) return next();
+
+    this.passwordChangedAt = Date.now() - 1000;
     next()
 })
 
@@ -70,6 +90,21 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     }
 
     return false; // false means NOT changed
+}
+
+// Creating password reset token
+userSchema.methods.createPasswordResetToken = function () {
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    this.passwordResetToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+
+
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    return resetToken
 }
 
 const User = mongoose.model('User', userSchema)
