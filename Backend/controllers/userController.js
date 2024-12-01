@@ -43,10 +43,7 @@ exports.updateMyAccount = catchAsync(async (req, res, next) => {
     })
 })
 
-<<<<<<< HEAD
-exports.getUser = factory.getOne(User)
-exports.getAllUsers = factory.getAll(User)
-=======
+
 exports.deleteMyAccount = catchAsync(async (req, res, next) => {
     await User.findByIdAndUpdate(req.user.id, { active: false });
 
@@ -61,4 +58,3 @@ exports.getAllUsers = factory.getAll(User)
 exports.updateUser = factory.updateOne(User)
 exports.createUser = factory.createOne(User)
 exports.deleteUser = factory.deleteOne(User)
->>>>>>> 64340c3a73d22328ffde70ece088e5ec0219626f
