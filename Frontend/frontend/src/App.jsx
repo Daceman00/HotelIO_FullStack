@@ -7,6 +7,7 @@ import DashboardPage from "./pages/DashboardPage";
 import RoomsPage from "./pages/RoomsPage";
 import RoomDetails from "./components/Rooms/RoomDetails";
 import BookingsPage from "./pages/BookingsPage";
+import Signup from "./components/Auth/Signup";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             {/*
             <Route path="/reports" element={<div>Reports Page</div>} />
             <Route path="/settings" element={<div>Settings Page</div>} /> */}
+            <Route path="/signup" element={<Signup />} />
           </Routes>
           <Footer />
         </div>

@@ -1,5 +1,6 @@
 import React from "react";
 import useUIStore from "../../stores/UiStore";
+import { Link } from "react-router-dom";
 
 function Header() {
   const { sidebarVisible } = useUIStore();
@@ -35,9 +36,11 @@ function Header() {
         <button className=" font-semibold px-4 py-2 rounded-full transition-transform transform hover:scale-110 hover:shadow-md">
           Log In
         </button>
-        <button className=" font-semibold px-4 py-2 rounded-full transition-transform transform hover:scale-110 hover:shadow-md">
-          Sign Up
-        </button>
+        <Link to="/signup">
+          <button className=" font-semibold px-4 py-2 rounded-full transition-transform transform hover:scale-110 hover:shadow-md">
+            Sign Up
+          </button>
+        </Link>
       </div>
     </header>
   );
