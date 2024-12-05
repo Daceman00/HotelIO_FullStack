@@ -1,9 +1,18 @@
 import React from "react";
 import useFormStore from "../../stores/FormStore";
+import { useSignup } from "./useSignup";
 
 function Signup() {
   const { formData } = useFormStore();
   const updateForm = useFormStore((state) => state.updateForm);
+  const resetForm = useFormStore((state) => state.resetForm);
+  const { signup, isLoading } = useSignup();
+
+  const handleSumbit = (e) => {
+    e.preventDefault();
+
+    signup(formData, { onSettled: () => resetForm() });
+  };
 
   return (
     <section className="flex flex-col items-center pt-6">
@@ -12,20 +21,20 @@ function Signup() {
           <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
             Create an account
           </h1>
-          <form className="space-y-4 md:space-y-6">
+          <form className="space-y-4 md:space-y-6" onSubmit={handleSumbit}>
             <div>
               <label
                 htmlFor="name"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
-                Your full name
+                Your name
               </label>
               <input
                 type="text"
                 name="name"
                 id="name"
                 className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Your name..."
+                placeholder="Your name"
                 required
                 value={formData.name}
                 onChange={(e) => updateForm("name", e.target.value)}
@@ -43,7 +52,7 @@ function Signup() {
                 name="username"
                 id="username"
                 className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="emelia_erickson24"
+                placeholder="Your email"
                 required
                 value={formData.email}
                 onChange={(e) => updateForm("email", e.target.value)}
@@ -72,7 +81,7 @@ function Signup() {
                 htmlFor="password"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
-                Password
+                Confirm Password
               </label>
               <input
                 type="password"
@@ -88,8 +97,9 @@ function Signup() {
             <button
               type="submit"
               className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              disabled={isLoading}
             >
-              Create an account
+              {isLoading ? "Creating account..." : "Create an account"}
             </button>
             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
               Already have an account?{" "}
