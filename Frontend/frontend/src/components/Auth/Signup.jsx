@@ -36,6 +36,7 @@ function Signup() {
                 className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Your name"
                 required
+                disabled={isLoading}
                 value={formData.name}
                 onChange={(e) => updateForm("name", e.target.value)}
               />
@@ -54,6 +55,7 @@ function Signup() {
                 className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Your email"
                 required
+                disabled={isLoading}
                 value={formData.email}
                 onChange={(e) => updateForm("email", e.target.value)}
               />
@@ -72,6 +74,7 @@ function Signup() {
                 placeholder="••••••••"
                 className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required
+                disabled={isLoading}
                 value={formData.password}
                 onChange={(e) => updateForm("password", e.target.value)}
               />
@@ -90,6 +93,7 @@ function Signup() {
                 placeholder="••••••••"
                 className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required
+                disabled={isLoading}
                 value={formData.passwordConfirm}
                 onChange={(e) => updateForm("passwordConfirm", e.target.value)}
               />
