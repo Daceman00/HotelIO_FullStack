@@ -21,9 +21,17 @@ export async function login(userData) {
 }
 
 export async function getUser() {
+    let token = localStorage.getItem('token')
+    console.log(token)
     try {
-        const { data } = await axios.get(`http://localhost:3000/api/v1/users/login`)
+        const { data } = await axios.get(`http://localhost:3000/api/v1/users/getMyAccount`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        return data
     } catch (error) {
-
+        console.error(error);
+        throw new Error("Login not successful");
     }
 }

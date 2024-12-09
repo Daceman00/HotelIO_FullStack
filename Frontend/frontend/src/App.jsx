@@ -11,6 +11,7 @@ import Signup from "./components/Auth/Signup";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Login from "./components/Auth/Login";
+import ProtectedRoute from "./components/Reusable/ProtectedRoute";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,8 +31,14 @@ function App() {
           <div className="flex flex-col flex-1 ml-1 overflow-y-auto">
             <Header />
             <Routes>
-              <Route path="/" element={<DashboardPage />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <DashboardPage />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/rooms" element={<RoomsPage />} />
               <Route path="/rooms/:id" element={<RoomDetails />} />
               <Route path="/bookings" element={<BookingsPage />} />
