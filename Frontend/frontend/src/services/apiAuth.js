@@ -19,3 +19,11 @@ export async function login(userData) {
         throw new Error("Login not succesful")
     }
 }
+
+export async function getUser() {
+    try {
+        const { data } = await axios.get(`http://localhost:3000/api/v1/users/login`)
+    } catch (error) {
+
+    }
+}

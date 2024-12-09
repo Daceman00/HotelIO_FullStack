@@ -33,9 +33,11 @@ function Header() {
 
       {/* Add a user profile icon or any other interactive element */}
       <div className="flex items-center space-x-4">
-        <button className=" font-semibold px-4 py-2 rounded-full transition-transform transform hover:scale-110 hover:shadow-md">
-          Log In
-        </button>
+        <Link to="/login">
+          <button className=" font-semibold px-4 py-2 rounded-full transition-transform transform hover:scale-110 hover:shadow-md">
+            Log In
+          </button>
+        </Link>
         <Link to="/signup">
           <button className=" font-semibold px-4 py-2 rounded-full transition-transform transform hover:scale-110 hover:shadow-md">
             Sign Up

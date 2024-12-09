@@ -17,7 +17,7 @@ export function useSignup() {
         },
         onError: (error) => {
             console.error(error);
-            toast.error("Something went wrong")
+            toast.error("User already exist!")
         }
     })
     return { signup, isLoading };
