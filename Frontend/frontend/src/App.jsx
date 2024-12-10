@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Footer from "./components/Reusable/Footer";
 import Header from "./components/Reusable/Header";
@@ -47,6 +47,7 @@ function App() {
             <Route path="/settings" element={<div>Settings Page</div>} /> */}
               <Route path="/signup" element={<Signup />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/" element={<Navigate to="/dashboard" />} />
             </Routes>
             <Footer />
           </div>

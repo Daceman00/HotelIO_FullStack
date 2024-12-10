@@ -35,3 +35,13 @@ export async function getUser() {
         throw new Error("Login not successful");
     }
 }
+
+export async function logout() {
+    localStorage.removeItem('token')
+    try {
+        await axios.get(`http://localhost:3000/api/v1/users/logout`)
+    } catch (error) {
+        console.error(error);
+        throw new Error("Logout not successful");
+    }
+}

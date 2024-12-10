@@ -1,10 +1,13 @@
 import React from "react";
 import useUIStore from "../../stores/UiStore";
 import { Link } from "react-router-dom";
+import { useIsLoggedIn } from "../Auth/useAuth";
+import UserAvatar from "./UserAvatar";
 
 function Header() {
   const { sidebarVisible } = useUIStore();
   const toggleSidebar = useUIStore((state) => state.setToggleSidebar);
+  const { user, isLoading } = useIsLoggedIn();
 
   return (
     <header className="shadow-lg p-4 flex justify-between items-center transition-all duration-300 ease-in-out">
@@ -32,18 +35,22 @@ function Header() {
       </h1>
 
       {/* Add a user profile icon or any other interactive element */}
-      <div className="flex items-center space-x-4">
-        <Link to="/login">
-          <button className=" font-semibold px-4 py-2 rounded-full transition-transform transform hover:scale-110 hover:shadow-md">
-            Log In
-          </button>
-        </Link>
-        <Link to="/signup">
-          <button className=" font-semibold px-4 py-2 rounded-full transition-transform transform hover:scale-110 hover:shadow-md">
-            Sign Up
-          </button>
-        </Link>
-      </div>
+      {user ? (
+        <UserAvatar />
+      ) : (
+        <div className="flex items-center space-x-4">
+          <Link to="/login">
+            <button className=" font-semibold px-4 py-2 rounded-full transition-transform transform hover:scale-110 hover:shadow-md">
+              Log In
+            </button>
+          </Link>
+          <Link to="/signup">
+            <button className=" font-semibold px-4 py-2 rounded-full transition-transform transform hover:scale-110 hover:shadow-md">
+              Sign Up
+            </button>
+          </Link>
+        </div>
+      )}
     </header>
   );
 }
