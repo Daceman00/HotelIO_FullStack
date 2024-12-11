@@ -41,9 +41,30 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/rooms" element={<RoomsPage />} />
-              <Route path="/rooms/:id" element={<RoomDetails />} />
-              <Route path="/bookings" element={<BookingsPage />} />
+              <Route
+                path="/rooms"
+                element={
+                  <ProtectedRoute>
+                    <RoomsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/rooms/:id"
+                element={
+                  <ProtectedRoute>
+                    <RoomDetails />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/bookings"
+                element={
+                  <ProtectedRoute>
+                    <BookingsPage />
+                  </ProtectedRoute>
+                }
+              />
               {/*
             <Route path="/reports" element={<div>Reports Page</div>} />
             <Route path="/settings" element={<div>Settings Page</div>} /> */}

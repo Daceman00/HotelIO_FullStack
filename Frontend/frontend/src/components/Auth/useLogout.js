@@ -13,7 +13,8 @@ export function useLogout() {
 
         onSuccess: () => {
             localStorage.removeItem('token')
-            queryClient.invalidateQueries(['user'])
+            queryClient.setQueryData(['user'], null);
+            queryClient.removeQueries()
             toast.success("You are logged out!")
             navigate("/login", { replace: true })
         },

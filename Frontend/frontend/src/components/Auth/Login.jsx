@@ -1,12 +1,15 @@
 import React from "react";
 import useFormStore from "../../stores/FormStore";
 import { useLogin } from "./useLogin";
+import { useForgotPassword } from "./useForgotPassword";
 
 function Login() {
   const { formData } = useFormStore();
   const updateForm = useFormStore((state) => state.updateForm);
   const resetForm = useFormStore((state) => state.resetForm);
   const { login, isLoading } = useLogin();
+  const { forgotPassword, isLoading: isForgotPasswordLoading } =
+    useForgotPassword();
 
   const handleSumbit = (e) => {
     e.preventDefault();
@@ -14,6 +17,12 @@ function Login() {
     login(formData, {
       onSettled: () => resetForm(),
     });
+  };
+
+  const handleForgotPassword = (e) => {
+    e.preventDefault();
+
+    forgotPassword(formData.email);
   };
 
   return (
@@ -71,9 +80,12 @@ function Login() {
               {isLoading ? "Singing in..." : "Sign in"}
             </button>
             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-              <a className="font-medium text-blue-600 hover:underline dark:text-blue-500">
+              <button
+                onClick={handleForgotPassword}
+                className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+              >
                 Forgot password?
-              </a>
+              </button>
             </p>
           </form>
         </div>

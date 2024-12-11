@@ -2,6 +2,7 @@ import React from "react";
 import useFormStore from "../../stores/FormStore";
 import { useSignup } from "./useSignup";
 import Loading from "../Reusable/Loading";
+import { Link } from "react-router-dom";
 
 function Signup() {
   const { formData } = useFormStore();
@@ -113,9 +114,11 @@ function Signup() {
               </button>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Already have an account?{" "}
-                <a className="font-medium text-blue-600 hover:underline dark:text-blue-500">
-                  Sign in here
-                </a>
+                <Link to="/login">
+                  <a className="font-medium text-blue-600 hover:underline dark:text-blue-500">
+                    Sign in here
+                  </a>
+                </Link>
               </p>
             </form>
           </div>

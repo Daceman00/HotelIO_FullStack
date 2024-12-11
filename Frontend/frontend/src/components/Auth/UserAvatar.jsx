@@ -1,27 +1,17 @@
 import React from "react";
 import useUIStore from "../../stores/UiStore";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 function UserAvatar() {
   const setToggleUserCard = useUIStore((state) => state.setToggleUserCard);
   return (
-    <div
+    <button
       onClick={setToggleUserCard}
-      className="h-15 w-15 overflow-hidden rounded-full"
+      className="font-semibold px-4 py-2 rounded-full transition-transform transform hover:scale-110 hover:shadow-md"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        className="h-20 w-20 p-5 text-white bg-gray-500 stroke-current"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="1.5"
-          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-        ></path>
-      </svg>
-    </div>
+      <FontAwesomeIcon icon={faUser} />
+    </button>
   );
 }
 
