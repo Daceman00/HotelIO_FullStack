@@ -20,16 +20,15 @@ export async function login(userData) {
     }
 }
 
-export async function getUser() {
-    let token = localStorage.getItem('token')
-    console.log(token)
+export async function getUser(token) {
+    if (!token) return null;
     try {
         const { data } = await axios.get(`http://localhost:3000/api/v1/users/getMyAccount`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         })
-        return data
+        return data.data
     } catch (error) {
         console.error(error);
         throw new Error("Login not successful");
@@ -37,7 +36,6 @@ export async function getUser() {
 }
 
 export async function logout() {
-    localStorage.removeItem('token')
     try {
         await axios.get(`http://localhost:3000/api/v1/users/logout`)
     } catch (error) {

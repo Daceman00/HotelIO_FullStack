@@ -10,6 +10,7 @@ import BookingsPage from "./pages/BookingsPage";
 import Signup from "./components/Auth/Signup";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Login from "./components/Auth/Login";
 import ProtectedRoute from "./components/Reusable/ProtectedRoute";
 
@@ -24,7 +25,8 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient} contextSharing={true}>
+      <ReactQueryDevtools initialIsOpen={false} />
       <BrowserRouter>
         <div className="flex h-screen">
           <Sidebar />

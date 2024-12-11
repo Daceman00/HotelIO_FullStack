@@ -1,13 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import useUIStore from "../../stores/UiStore";
 import { Link } from "react-router-dom";
 import { useIsLoggedIn } from "../Auth/useAuth";
-import UserAvatar from "./UserAvatar";
+import UserAvatar from "../Auth/UserAvatar";
+import UserCard from "../Auth/UserCard";
+import { LoaderIcon } from "react-hot-toast";
 
 function Header() {
   const { sidebarVisible } = useUIStore();
   const toggleSidebar = useUIStore((state) => state.setToggleSidebar);
   const { user, isLoading } = useIsLoggedIn();
+
+  if (isLoading) return <LoaderIcon />;
 
   return (
     <header className="shadow-lg p-4 flex justify-between items-center transition-all duration-300 ease-in-out">
@@ -36,7 +40,10 @@ function Header() {
 
       {/* Add a user profile icon or any other interactive element */}
       {user ? (
-        <UserAvatar />
+        <div>
+          <UserAvatar />
+          <UserCard />
+        </div>
       ) : (
         <div className="flex items-center space-x-4">
           <Link to="/login">

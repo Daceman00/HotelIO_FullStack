@@ -6,9 +6,13 @@ export function useIsLoggedIn() {
 
     const { data: user, isLoading, isError } = useQuery({
         queryKey: ['user'],
-        queryFn: getUser,
-        enabled: !!token
+        queryFn: () => getUser(token),
+        enabled: !!token,
+        onError: () => {
+            localStorage.removeItem('token')
+        }
     })
+
 
     return { user, isLoading, isError }
 }
