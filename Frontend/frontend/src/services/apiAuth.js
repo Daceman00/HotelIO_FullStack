@@ -52,3 +52,12 @@ export async function forgotPassword(userEmail) {
         throw new Error(error);
     }
 }
+
+export async function resetPassword(token, passwordData) {
+    try {
+        await axios.patch(`http://localhost:3000/api/v1/users/resetPassword/${token}`, passwordData)
+    } catch (error) {
+        console.error(error);
+        throw new Error(error);
+    }
+}

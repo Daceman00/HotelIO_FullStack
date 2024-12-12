@@ -45,6 +45,25 @@ const useFormStore = create((set) => ({
                 email: ''
             }
         })
+    },
+
+    resetPasswordData: {
+        password: '',
+        passwordConfirm: ''
+    },
+
+    updateResetPasswordData: (filed, value) => {
+        set((state) => ({
+            ...state.resetPasswordData,
+            [filed]: value
+        }))
+    },
+
+    resetResetPasswordData: () => {
+        set({
+            password: '',
+            passwordConfirm: ''
+        })
     }
 
 }))
