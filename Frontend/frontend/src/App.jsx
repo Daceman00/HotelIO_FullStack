@@ -13,6 +13,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Login from "./components/Auth/Login";
 import ProtectedRoute from "./components/Reusable/ProtectedRoute";
+import ForgotPassword from "./components/Auth/ForgotPassword";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,7 +29,7 @@ function App() {
     <QueryClientProvider client={queryClient} contextSharing={true}>
       <ReactQueryDevtools initialIsOpen={false} />
       <BrowserRouter>
-        <div className="flex h-screen">
+        <div className="flex min-h-screen">
           <Sidebar />
           <div className="flex flex-col flex-1 ml-1 overflow-y-auto">
             <Header />
@@ -70,6 +71,7 @@ function App() {
             <Route path="/settings" element={<div>Settings Page</div>} /> */}
               <Route path="/signup" element={<Signup />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/forgotPassword" element={<ForgotPassword />} />
               <Route path="/" element={<Navigate to="/dashboard" />} />
             </Routes>
             <Footer />

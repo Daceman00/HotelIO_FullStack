@@ -17,7 +17,7 @@ function Signup() {
   };
 
   return (
-    <section className="flex flex-col items-center pt-6">
+    <section className="flex flex-col items-center pt-6 pt-6 pb-6">
       {isLoading ? (
         <Loading />
       ) : (

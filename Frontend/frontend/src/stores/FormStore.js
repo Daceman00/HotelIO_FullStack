@@ -25,7 +25,28 @@ const useFormStore = create((set) => ({
                 passwordConfirm: '',
             }
         })
+    },
+
+    forgotPasswordData: {
+        email: ''
+    },
+
+    updateForgotPasswordData: (field, value) =>
+        set((state) => ({
+            forgotPasswordData: {
+                ...state.forgotPasswordData,
+                [field]: value
+            }
+        })),
+
+    resetForgotPasswordData: () => {
+        set({
+            forgotPasswordData: {
+                email: ''
+            }
+        })
     }
+
 }))
 
 export default useFormStore

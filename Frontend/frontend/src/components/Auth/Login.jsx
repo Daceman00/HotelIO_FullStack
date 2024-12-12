@@ -1,15 +1,13 @@
 import React from "react";
 import useFormStore from "../../stores/FormStore";
 import { useLogin } from "./useLogin";
-import { useForgotPassword } from "./useForgotPassword";
+import { Link } from "react-router-dom";
 
 function Login() {
   const { formData } = useFormStore();
   const updateForm = useFormStore((state) => state.updateForm);
   const resetForm = useFormStore((state) => state.resetForm);
   const { login, isLoading } = useLogin();
-  const { forgotPassword, isLoading: isForgotPasswordLoading } =
-    useForgotPassword();
 
   const handleSumbit = (e) => {
     e.preventDefault();
@@ -19,14 +17,8 @@ function Login() {
     });
   };
 
-  const handleForgotPassword = (e) => {
-    e.preventDefault();
-
-    forgotPassword(formData.email);
-  };
-
   return (
-    <section className="flex flex-col items-center pt-6">
+    <section className="flex flex-col items-center pt-6 pb-6">
       <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
         <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
           <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
@@ -80,12 +72,11 @@ function Login() {
               {isLoading ? "Singing in..." : "Sign in"}
             </button>
             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-              <button
-                onClick={handleForgotPassword}
-                className="font-medium text-blue-600 hover:underline dark:text-blue-500"
-              >
-                Forgot password?
-              </button>
+              <Link to="/forgotPassword">
+                <button className="font-medium text-blue-600 hover:underline dark:text-blue-500">
+                  Forgot password?
+                </button>
+              </Link>
             </p>
           </form>
         </div>
