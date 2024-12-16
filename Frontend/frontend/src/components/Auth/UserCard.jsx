@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import useUIStore from "../../stores/UiStore";
 import { useIsLoggedIn } from "./useAuth";
 import { LoaderIcon } from "react-hot-toast";
@@ -7,8 +7,8 @@ import { Link } from "react-router-dom";
 
 function UserCard() {
   const { userCardVisible } = useUIStore();
-  const { user, isLoading, refetch } = useIsLoggedIn();
-  const { logout } = useLogout(refetch);
+  const { user, isLoading } = useIsLoggedIn();
+  const { logout } = useLogout();
 
   if (isLoading) return <LoaderIcon />;
 

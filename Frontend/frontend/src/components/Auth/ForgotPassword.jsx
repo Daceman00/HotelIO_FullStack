@@ -1,6 +1,4 @@
 import React from "react";
-import { useForgotPassword } from "./useForgotPassword";
-import useUIStore from "../../stores/UiStore";
 import useFormStore from "../../stores/FormStore";
 
 function ForgotPassword() {

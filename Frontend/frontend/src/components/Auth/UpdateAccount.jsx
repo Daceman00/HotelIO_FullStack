@@ -1,7 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Loading from "../Reusable/Loading";
+import { useIsLoggedIn } from "./useAuth";
+import useFormStore from "../../stores/FormStore";
 
 function UpdateAccount() {
+  const { user, isLoading } = useIsLoggedIn();
+  const { updateAccountFormData } = useFormStore();
+  const updateAccountForm = useFormStore((state) => state.updateAccountForm);
+  console.log(user);
+  console.log(updateAccountFormData);
+
   return (
     <section className="flex flex-col items-center pt-6 pb-6">
       {false ? (
@@ -15,7 +23,7 @@ function UpdateAccount() {
             <form className="space-y-4 md:space-y-6">
               <div className="flex items-center justify-center w-full">
                 <label
-                  for="dropzone-file"
+                  htmlFor="dropzone-file"
                   className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 "
                 >
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
@@ -58,6 +66,7 @@ function UpdateAccount() {
                   id="name"
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Your name"
+                  value={updateAccountFormData.name}
                 />
               </div>
               <div>
@@ -73,6 +82,13 @@ function UpdateAccount() {
                   id="email"
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Your email"
+                  value={updateAccountFormData.email}
+                  onChange={(e) =>
+                    updateAccountForm((prev) => ({
+                      ...prev,
+                      email: e.target.value,
+                    }))
+                  }
                 />
               </div>
 
@@ -80,8 +96,7 @@ function UpdateAccount() {
                 type="submit"
                 className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                Submit
-                {/* {isLoading ? "Updating..." : "Update Account"} */}
+                {isLoading ? "Updating..." : "Update Account"}
               </button>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Want to change your password?{" "}

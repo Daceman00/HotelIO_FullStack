@@ -5,7 +5,8 @@ const useUIStore = create((set) => ({
     setToggleSidebar: () => set((state) => ({ sidebarVisible: !state.sidebarVisible })),
 
     userCardVisible: false,
-    setToggleUserCard: () => set((state) => ({ userCardVisible: !state.userCardVisible }))
+    setToggleUserCard: () => set((state) => ({ userCardVisible: !state.userCardVisible })),
+    setResetUserCard: () => set(() => ({ userCardVisible: false }))
 
 }))
 

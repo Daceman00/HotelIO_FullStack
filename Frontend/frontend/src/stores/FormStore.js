@@ -66,7 +66,21 @@ const useFormStore = create((set) => ({
             password: '',
             passwordConfirm: ''
         })
-    }
+    },
+
+    updateAccountFormData: {
+        photo: '',
+        name: '',
+        email: ''
+    },
+
+    updateAccountForm: (field, value) =>
+        set((state) => ({
+            updateAccountFormData: {
+                ...state.updateAccountFormData,
+                [field]: value
+            }
+        })),
 
 }))
 
