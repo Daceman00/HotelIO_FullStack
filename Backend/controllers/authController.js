@@ -113,9 +113,18 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     await user.save({ validateBeforeSave: false })
 
     // Send email with token
-    const resetURL = `http://localhost:5173/resetPassword${resetToken}`;
+    const resetURL = `http://localhost:5173/resetPassword/${resetToken}`;
 
-    const message = `Forgot your password? Reset it here: ${resetURL}`
+    const message = `
+    <html>
+    <body style="font-family: Arial, sans-serif; color: #333;">
+        <h2 style="color: #4CAF50;">Password Reset Request</h2>
+        <p>You requested a password reset. Click the link below to reset your password:</p>
+        <a href="${resetURL}" style="color: #007BFF;">Reset Password</a>
+        <p>If you did not request a password reset, please ignore this email.</p>
+    </body>
+    </html>
+`;
 
     try {
         await sendEmail({

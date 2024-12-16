@@ -22,7 +22,7 @@ export function useLogin() {
         },
         onError: (error) => {
             console.error(error);
-            toast.error("This account doesn't exist")
+            toast.error("Incorrect email or password")
         }
     })
 

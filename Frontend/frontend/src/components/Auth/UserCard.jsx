@@ -3,6 +3,7 @@ import useUIStore from "../../stores/UiStore";
 import { useIsLoggedIn } from "./useAuth";
 import { LoaderIcon } from "react-hot-toast";
 import { useLogout } from "./useLogout";
+import { Link } from "react-router-dom";
 
 function UserCard() {
   const { userCardVisible } = useUIStore();
@@ -22,9 +23,11 @@ function UserCard() {
               </button>
             </li>
             <li>
-              <button className="block w-full px-4 py-2 text-left hover:bg-gray-100">
-                Account
-              </button>
+              <Link to="/updateAccount">
+                <button className="block w-full px-4 py-2 text-left hover:bg-gray-100">
+                  Account
+                </button>
+              </Link>
             </li>
             <li>
               <button

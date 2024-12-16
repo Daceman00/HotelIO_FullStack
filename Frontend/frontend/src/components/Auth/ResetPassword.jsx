@@ -1,6 +1,7 @@
 import React from "react";
 import useFormStore from "../../stores/FormStore";
 import { useResetPassword } from "./useResetPassword";
+import { useParams } from "react-router-dom";
 
 function ResetPassword() {
   const { resetPassword, isLoading, error } = useResetPassword();
@@ -11,17 +12,22 @@ function ResetPassword() {
   const resetResetPasswordData = useFormStore(
     (state) => state.resetResetPasswordData
   );
+  const { token } = useParams();
 
   const handleResetPassword = (e) => {
     e.preventDefault();
+    console.log(token);
 
-    resetPassword(resetPasswordData, {
-      onSettled: () => resetResetPasswordData(),
-    });
+    resetPassword(
+      { token, passwordData: resetPasswordData },
+      {
+        onSettled: () => resetResetPasswordData(),
+      }
+    );
   };
 
   return (
-    <section className="flex flex-col items-center pt-6 pb-6">
+    <section className="flex flex-col items-center pt-6 pb-[15rem]">
       <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
         <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
           <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
@@ -60,7 +66,7 @@ function ResetPassword() {
                 Confirm your new password
               </label>
               <input
-                type="passwordConfirm"
+                type="password"
                 name="passwordConfirm"
                 id="passwordConfirm"
                 placeholder="••••••••"
