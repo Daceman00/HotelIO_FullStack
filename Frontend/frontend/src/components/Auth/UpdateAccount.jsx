@@ -6,9 +6,18 @@ import useFormStore from "../../stores/FormStore";
 function UpdateAccount() {
   const { user, isLoading } = useIsLoggedIn();
   const { updateAccountFormData } = useFormStore();
-  const updateAccountForm = useFormStore((state) => state.updateAccountForm);
-  console.log(user);
-  console.log(updateAccountFormData);
+  const setUpdateAccountFormData = useFormStore(
+    (state) => state.setUpdateAccountFormData
+  );
+
+  if (isLoading) return <Loading />;
+
+  useEffect(() => {
+    if (user) {
+      setUpdateAccountFormData("name", user?.data.name);
+      setUpdateAccountFormData("email", user?.data.email);
+    }
+  }, [user, setUpdateAccountFormData]);
 
   return (
     <section className="flex flex-col items-center pt-6 pb-6">
@@ -50,7 +59,14 @@ function UpdateAccount() {
                       SVG, PNG, JPG or GIF (MAX. 800x400px)
                     </p>
                   </div>
-                  <input id="dropzone-file" type="file" className="hidden" />
+                  <input
+                    onChange={(e) =>
+                      setUpdateAccountFormData("photo", e.target.files[0])
+                    }
+                    id="dropzone-file"
+                    type="file"
+                    className="hidden"
+                  />
                 </label>
               </div>
               <div>
@@ -65,8 +81,11 @@ function UpdateAccount() {
                   name="name"
                   id="name"
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Your name"
+                  placeholder={updateAccountFormData.name}
                   value={updateAccountFormData.name}
+                  onChange={(e) =>
+                    setUpdateAccountFormData("name", e.target.value)
+                  }
                 />
               </div>
               <div>
@@ -84,10 +103,7 @@ function UpdateAccount() {
                   placeholder="Your email"
                   value={updateAccountFormData.email}
                   onChange={(e) =>
-                    updateAccountForm((prev) => ({
-                      ...prev,
-                      email: e.target.value,
-                    }))
+                    setUpdateAccountFormData("email", e.target.value)
                   }
                 />
               </div>

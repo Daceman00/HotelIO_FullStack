@@ -74,13 +74,14 @@ const useFormStore = create((set) => ({
         email: ''
     },
 
-    updateAccountForm: (field, value) =>
+    setUpdateAccountFormData: (field, value) => {
         set((state) => ({
             updateAccountFormData: {
                 ...state.updateAccountFormData,
-                [field]: value
-            }
-        })),
+                [field]: value,
+            },
+        }));
+    }
 
 }))
 

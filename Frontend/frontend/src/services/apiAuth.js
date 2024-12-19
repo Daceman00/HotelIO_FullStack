@@ -61,3 +61,5 @@ export async function resetPassword(token, passwordData) {
         throw new Error(error.response.data.message);
     }
 }
+
+export async function updateAccount
