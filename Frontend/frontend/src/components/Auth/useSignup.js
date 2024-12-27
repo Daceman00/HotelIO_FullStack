@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 export function useSignup() {
     const navigate = useNavigate()
 
-    const { mutate: signup, isLoading } = useMutation({
+    const { mutate: signup, isPending } = useMutation({
         mutationFn: signupApi,
         onSuccess: (user) => {
             const token = user.token
@@ -25,5 +25,5 @@ export function useSignup() {
             toast.error("User already exist!")
         }
     })
-    return { signup, isLoading };
+    return { signup, isPending };
 }

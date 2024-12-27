@@ -8,7 +8,7 @@ function Signup() {
   const { formData } = useFormStore();
   const updateForm = useFormStore((state) => state.updateForm);
   const resetForm = useFormStore((state) => state.resetForm);
-  const { signup, isLoading } = useSignup();
+  const { signup, isPending } = useSignup();
 
   const handleSumbit = (e) => {
     e.preventDefault();
@@ -18,7 +18,7 @@ function Signup() {
 
   return (
     <section className="flex flex-col items-center pt-6  pb-6">
-      {isLoading ? (
+      {isPending ? (
         <Loading />
       ) : (
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
@@ -41,7 +41,7 @@ function Signup() {
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Your name"
                   required
-                  disabled={isLoading}
+                  disabled={isPending}
                   value={formData.name}
                   onChange={(e) => updateForm("name", e.target.value)}
                 />
@@ -60,7 +60,7 @@ function Signup() {
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Your email"
                   required
-                  disabled={isLoading}
+                  disabled={isPending}
                   value={formData.email}
                   onChange={(e) => updateForm("email", e.target.value)}
                 />
@@ -79,7 +79,7 @@ function Signup() {
                   placeholder="••••••••"
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   required
-                  disabled={isLoading}
+                  disabled={isPending}
                   value={formData.password}
                   onChange={(e) => updateForm("password", e.target.value)}
                 />
@@ -98,7 +98,7 @@ function Signup() {
                   placeholder="••••••••"
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   required
-                  disabled={isLoading}
+                  disabled={isPending}
                   value={formData.passwordConfirm}
                   onChange={(e) =>
                     updateForm("passwordConfirm", e.target.value)
@@ -108,9 +108,9 @@ function Signup() {
               <button
                 type="submit"
                 className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                disabled={isLoading}
+                disabled={isPending}
               >
-                {isLoading ? "Creating account..." : "Create an account"}
+                {isPending ? "Creating account..." : "Create an account"}
               </button>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Already have an account?{" "}

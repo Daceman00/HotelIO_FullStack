@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import useUIStore from "../../stores/UiStore";
 import { useIsLoggedIn } from "./useAuth";
 import { LoaderIcon } from "react-hot-toast";
@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 function UserCard() {
   const { userCardVisible } = useUIStore();
   const { user, isLoading } = useIsLoggedIn();
-  const { logout } = useLogout();
+  const { logout, isPending } = useLogout();
 
   if (isLoading) return <LoaderIcon />;
 
@@ -33,8 +33,9 @@ function UserCard() {
               <button
                 onClick={logout}
                 className="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100"
+                disabled={isPending}
               >
-                Sign Out
+                {isPending ? "Signing out..." : "Sign Out"}
               </button>
             </li>
           </ul>

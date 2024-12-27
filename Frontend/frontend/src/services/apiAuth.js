@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios from "./../helpers/axios"
 
 export async function signup(userData) {
     try {
@@ -62,4 +62,23 @@ export async function resetPassword(token, passwordData) {
     }
 }
 
-export async function updateAccount
+export async function updateAccountPhoto(userPhoto) {
+    try {
+        const { data } = await axios.patch(`/users/updateMyAccount/`, userPhoto)
+        return data
+    } catch (error) {
+        console.error(error.response);
+        throw new Error(error.response.data.message);
+    }
+}
+
+export async function updatePassword(passwordData) {
+    try {
+        const { data } = await axios.patch(`users/updateMyPassword/`, passwordData)
+        return data
+    } catch (error) {
+        console.error(error.response);
+        throw new Error(error.response.data.message);
+    }
+
+}

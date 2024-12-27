@@ -1,28 +1,25 @@
 import React from "react";
+import { useUpdatePassword } from "./useUpdatePassword";
 import useFormStore from "../../stores/FormStore";
-import { useResetPassword } from "./useResetPassword";
-import { useParams } from "react-router-dom";
+import Loading from "../Reusable/Loading";
 
-function ResetPassword() {
-  const { resetPassword, isPending, error } = useResetPassword();
-  const { resetPasswordData } = useFormStore();
-  const updateResetPasswordData = useFormStore(
-    (state) => state.updateResetPasswordData
+function UpdatePassword() {
+  const { updatePassword, isPending, error } = useUpdatePassword();
+  const { updatePasswordData } = useFormStore();
+  const setUpdatePasswordData = useFormStore(
+    (state) => state.setUpdatePasswordData
   );
-  const resetResetPasswordData = useFormStore(
-    (state) => state.resetResetPasswordData
+  const resetUpdatePasswordData = useFormStore(
+    (state) => state.resetUpdatePasswordData
   );
-  const { token } = useParams();
 
-  const handleResetPassword = (e) => {
+  if (isPending) return <Loading />;
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    resetPassword(
-      { token, passwordData: resetPasswordData },
-      {
-        onSettled: () => resetResetPasswordData(),
-      }
-    );
+    updatePassword(updatePasswordData, {
+      onSettled: () => resetUpdatePasswordData(),
+    });
   };
 
   return (
@@ -30,18 +27,15 @@ function ResetPassword() {
       <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
         <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
           <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-            Enter your new password
+            Update your password
           </h1>
-          <form
-            className="space-y-4 md:space-y-6"
-            onSubmit={handleResetPassword}
-          >
+          <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
             <div>
               <label
                 htmlFor="password"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
-                New password
+                Current password
               </label>
               <input
                 type="password"
@@ -51,9 +45,30 @@ function ResetPassword() {
                 className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required
                 disabled={isPending}
-                value={resetPasswordData.password}
+                value={updatePasswordData.passwordCurrent}
                 onChange={(e) =>
-                  updateResetPasswordData("password", e.target.value)
+                  setUpdatePasswordData("passwordCurrent", e.target.value)
+                }
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="password"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                New password
+              </label>
+              <input
+                type="password"
+                name="passwordNew"
+                id="passwordNew"
+                placeholder="••••••••"
+                className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required
+                disabled={isPending}
+                value={updatePasswordData.password}
+                onChange={(e) =>
+                  setUpdatePasswordData("password", e.target.value)
                 }
               />
             </div>
@@ -72,9 +87,9 @@ function ResetPassword() {
                 className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required
                 disabled={isPending}
-                value={resetPasswordData.passwordConfirm}
+                value={updatePasswordData.passwordConfirm}
                 onChange={(e) =>
-                  updateResetPasswordData("passwordConfirm", e.target.value)
+                  setUpdatePasswordData("passwordConfirm", e.target.value)
                 }
               />
             </div>
@@ -84,7 +99,7 @@ function ResetPassword() {
               className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               disabled={isPending}
             >
-              Submit
+              {isPending ? "Submiting..." : "Submit"}
             </button>
           </form>
         </div>
@@ -93,4 +108,4 @@ function ResetPassword() {
   );
 }
 
-export default ResetPassword;
+export default UpdatePassword;

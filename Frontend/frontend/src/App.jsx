@@ -16,6 +16,7 @@ import ProtectedRoute from "./components/Reusable/ProtectedRoute";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
 import UpdateAccount from "./components/Auth/UpdateAccount";
+import UpdatePassword from "./components/Auth/UpdatePassword";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -73,6 +74,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <UpdateAccount />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/updatePassword"
+                element={
+                  <ProtectedRoute>
+                    <UpdatePassword />
                   </ProtectedRoute>
                 }
               />

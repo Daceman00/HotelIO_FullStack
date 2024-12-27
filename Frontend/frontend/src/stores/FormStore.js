@@ -63,8 +63,11 @@ const useFormStore = create((set) => ({
 
     resetResetPasswordData: () => {
         set({
-            password: '',
-            passwordConfirm: ''
+            resetPasswordData: {
+                password: '',
+                passwordConfirm: ''
+            }
+
         })
     },
 
@@ -81,6 +84,35 @@ const useFormStore = create((set) => ({
                 [field]: value,
             },
         }));
+    },
+
+    photo: null,
+    updatePhotoData: (photoData) => set({ photo: photoData }),
+
+    updatePasswordData: {
+        passwordCurrent: '',
+        password: '',
+        passwordConfirm: ''
+    },
+
+    setUpdatePasswordData: (field, value) => {
+        set((state) => ({
+            updatePasswordData: {
+                ...state.updatePasswordData,
+                [field]: value
+            }
+        }))
+    },
+
+    resetUpdatePasswordData: () => {
+        set({
+            updatePasswordData: {
+                passwordCurrent: '',
+                password: '',
+                passwordConfirm: ''
+            }
+
+        })
     }
 
 }))

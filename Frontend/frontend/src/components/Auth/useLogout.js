@@ -8,7 +8,7 @@ export function useLogout() {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
 
-    const { mutate: logout, isLoading, error } = useMutation({
+    const { mutate: logout, isPending, error } = useMutation({
         mutationFn: logoutApi,
 
         onSuccess: () => {
@@ -23,6 +23,6 @@ export function useLogout() {
         }
 
     })
-    return { logout, isLoading, error }
+    return { logout, isPending, error }
 }
 

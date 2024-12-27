@@ -3,9 +3,8 @@ import { resetPassword as resetPasswordApi } from "../../services/apiAuth"
 import toast from "react-hot-toast";
 
 export function useResetPassword() {
-    const { mutate: resetPassword, isLoading, error } = useMutation({
+    const { mutate: resetPassword, isPending, error } = useMutation({
         mutationFn: ({ token, passwordData }) => {
-            console.log("Data received in mutationFn:", { token, passwordData });
             return resetPasswordApi(token, passwordData)
         },
         onSuccess: () => {
@@ -21,5 +20,5 @@ export function useResetPassword() {
         }
     })
 
-    return { resetPassword, isLoading, error }
+    return { resetPassword, isPending, error }
 }
