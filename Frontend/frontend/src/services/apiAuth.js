@@ -14,6 +14,7 @@ export async function login(userData) {
     try {
         const { data } = await axios.post(`http://localhost:3000/api/v1/users/login`, userData)
         return data;
+
     } catch (error) {
         console.error(error)
         throw new Error("Login not succesful")
@@ -81,4 +82,13 @@ export async function updatePassword(passwordData) {
         throw new Error(error.response.data.message);
     }
 
+}
+
+export async function deleteAccount() {
+    try {
+        await axios.delete(`/users/deleteMyAccount`)
+    } catch (error) {
+        console.error(error.response);
+        throw new Error(error.response.data.message);
+    }
 }

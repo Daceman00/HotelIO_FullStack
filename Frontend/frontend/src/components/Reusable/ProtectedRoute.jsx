@@ -4,9 +4,9 @@ import { Navigate } from "react-router-dom";
 import Loading from "./Loading";
 
 function ProtectedRoute({ children }) {
-  const { user, isLoading, isError } = useIsLoggedIn();
+  const { user, isPending, isError } = useIsLoggedIn();
 
-  if (isLoading) {
+  if (isPending) {
     return <Loading />;
   }
 

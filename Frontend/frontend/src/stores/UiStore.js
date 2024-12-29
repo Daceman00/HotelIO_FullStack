@@ -6,7 +6,11 @@ const useUIStore = create((set) => ({
 
     userCardVisible: false,
     setToggleUserCard: () => set((state) => ({ userCardVisible: !state.userCardVisible })),
-    setResetUserCard: () => set(() => ({ userCardVisible: false }))
+    setResetUserCard: () => set(() => ({ userCardVisible: false })),
+
+    isModalOpen: false,
+    onModalOpen: () => set({ isModalOpen: true }),
+    onModalClose: () => set({ isModalOpen: false }),
 
 }))
 

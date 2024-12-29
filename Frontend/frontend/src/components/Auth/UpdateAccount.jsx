@@ -4,6 +4,9 @@ import { useIsLoggedIn } from "./useAuth";
 import useFormStore from "../../stores/FormStore";
 import { useUpdateAccountPhoto } from "./useUpdateAccountPhoto";
 import { Link } from "react-router-dom";
+import Modal from "../Reusable/Modal";
+import useUIStore from "../../stores/UiStore";
+import { useDeleteAccount } from "./useDeleteAccount";
 
 function UpdateAccount() {
   const { user, isPending } = useIsLoggedIn();
@@ -18,6 +21,16 @@ function UpdateAccount() {
     isPending: isPendingPhoto,
     error: errorPhoto,
   } = useUpdateAccountPhoto();
+
+  const {
+    deleteAccount,
+    isPending: isPendingDelete,
+    error: errorDelete,
+  } = useDeleteAccount();
+
+  const { isModalOpen } = useUIStore();
+  const onModalOpen = useUIStore((state) => state.onModalOpen);
+  const onModalClose = useUIStore((state) => state.onModalClose);
 
   if (isPending) return <Loading />;
 
@@ -56,6 +69,11 @@ function UpdateAccount() {
   const handleSubmit = (e) => {
     e.preventDefault();
     updateAccountPhoto(photoData);
+  };
+
+  const handleConfirmModal = () => {
+    deleteAccount();
+    onModalClose();
   };
 
   return (
@@ -167,9 +185,28 @@ function UpdateAccount() {
                 </Link>
               </p>
             </form>
+            <button
+              type="button"
+              disabled={isPendingDelete}
+              onClick={onModalOpen}
+              className="w-5rem text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mt-4 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+            >
+              Delete My Account
+            </button>
           </div>
         </div>
       )}
+      {isModalOpen ? (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={onModalClose}
+          title={"Are you sure you want permanently delete your account?"}
+          description={
+            "If you delete your account, you will lose all your data!"
+          }
+          onConfirm={handleConfirmModal}
+        />
+      ) : null}
     </section>
   );
 }

@@ -1,12 +1,13 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { signup as signupApi } from "../../services/apiAuth";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 export function useSignup() {
     const navigate = useNavigate()
+    const queryClient = useQueryClient()
 
-    const { mutate: signup, isPending } = useMutation({
+    const { mutate: signup, isPending, error } = useMutation({
         mutationFn: signupApi,
         onSuccess: (user) => {
             const token = user.token
@@ -16,7 +17,9 @@ export function useSignup() {
             } else {
                 toast.error("Token missing in response")
             }
-
+            queryClient.invalidateQueries({
+                queryKey: ["users"],
+            })
             navigate('/dashboard')
 
         },
@@ -25,5 +28,5 @@ export function useSignup() {
             toast.error("User already exist!")
         }
     })
-    return { signup, isPending };
+    return { signup, isPending, error };
 }

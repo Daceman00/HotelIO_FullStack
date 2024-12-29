@@ -30,7 +30,4 @@ router.route('/:id')
     .patch(userController.updateUser)
     .delete(userController.deleteUser)
 
-router.use(authController.restrictTo('admin'))
-router.get("/getAllUsers", userController.getAllUsers);
-
 module.exports = router;

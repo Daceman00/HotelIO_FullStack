@@ -17,6 +17,8 @@ import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
 import UpdateAccount from "./components/Auth/UpdateAccount";
 import UpdatePassword from "./components/Auth/UpdatePassword";
+import RestrictedRoute from "./components/Reusable/RestrictedRoute";
+import Users from "./components/Auth/AdminAuth/Users";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -82,6 +84,16 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <UpdatePassword />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/users"
+                element={
+                  <ProtectedRoute>
+                    <RestrictedRoute allowedRoles={["admin"]}>
+                      <Users />
+                    </RestrictedRoute>
                   </ProtectedRoute>
                 }
               />
