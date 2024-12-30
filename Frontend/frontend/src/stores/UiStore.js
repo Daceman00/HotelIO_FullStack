@@ -12,6 +12,9 @@ const useUIStore = create((set) => ({
     onModalOpen: () => set({ isModalOpen: true }),
     onModalClose: () => set({ isModalOpen: false }),
 
+    searchQuery: '',
+    setSearchQuery: (query) => set({ searchQuery: query }),
+
 }))
 
 export default useUIStore
