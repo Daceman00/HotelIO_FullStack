@@ -15,7 +15,7 @@ export function useLogout() {
             // Return context to manage skipping the toast
             return { skipToast: variables?.skipToast };
         },
-        onSuccess: (_, variables, context) => {
+        onSuccess: (_, context) => {
             localStorage.removeItem('token')
             localStorage.removeItem("isAdmin");
             queryClient.setQueryData(['user'], null);

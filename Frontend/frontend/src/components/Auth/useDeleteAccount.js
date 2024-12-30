@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { deleteAccount as deleteAccountApi } from "../../services/apiAuth";
 import { useLogout } from "./useLogout";
+import toast from "react-hot-toast";
 
 
 export function useDeleteAccount() {
@@ -10,7 +11,7 @@ export function useDeleteAccount() {
         mutationFn: deleteAccountApi,
         onSuccess: () => {
             logout({ skipToast: true })
-            toast.succes("Account deleted successfully")
+            toast.success("Account deleted successfully")
         }
     })
     return { deleteAccount, isPending, error };
