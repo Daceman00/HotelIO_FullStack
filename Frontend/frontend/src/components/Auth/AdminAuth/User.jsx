@@ -3,6 +3,7 @@ import { useDeleteUser } from "./useDeleteUser";
 
 function User({ user }) {
   const { deleteUser, error, isPending } = useDeleteUser();
+
   return (
     <tbody>
       {/* User Row */}

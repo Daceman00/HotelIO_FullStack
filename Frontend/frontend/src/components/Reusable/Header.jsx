@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import useUIStore from "../../stores/UiStore";
 import { Link } from "react-router-dom";
 import { useIsLoggedIn } from "../Auth/useAuth";

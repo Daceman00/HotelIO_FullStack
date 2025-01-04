@@ -14,6 +14,10 @@ const useUIStore = create((set) => ({
 
     searchQuery: '',
     setSearchQuery: (query) => set({ searchQuery: query }),
+    setResetSearchQuery: () => set(() => ({ searchQuery: '' })),
+
+    isLoader: false,
+    setIsLoader: (loader) => set({ isLoader: loader }),
 
 }))
 

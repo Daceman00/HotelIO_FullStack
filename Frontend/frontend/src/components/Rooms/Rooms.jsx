@@ -14,9 +14,6 @@ function Rooms() {
     { number: 106, type: "Single", status: "Occupied" },
   ];
 
-  const { user, isLoading } = useIsLoggedIn();
-  if (isLoading) return <Loading />;
-
   return (
     <div className="flex-1 p-6 ">
       <h1 className=" text-3xl font-bold mb-6"></h1>
@@ -24,7 +21,6 @@ function Rooms() {
         {rooms.map((room) => (
           <SingleRoom room={room} key={room.number} />
         ))}
-        <img src={user?.data.photo} alt="user-photo"></img>
       </div>
     </div>
   );

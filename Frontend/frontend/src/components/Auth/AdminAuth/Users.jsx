@@ -8,12 +8,13 @@ import useUIStore from "../../../stores/UiStore";
 function Users() {
   const { users, isPending, error } = useUsers();
   const { searchQuery } = useUIStore();
+  const { isLoader } = useUIStore();
   const setSearchQuery = useUIStore((state) => state.setSearchQuery);
 
   if (isPending) return <Loading />;
 
   if (!users || error) return <p>No users found</p>;
-  console.log(users?.data);
+
   const searchedUsers = users?.data.filter((user) =>
     searchQuery.length >= 3
       ? user.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -51,7 +52,13 @@ function Users() {
             </th>
           </tr>
         </thead>
-        {searchQuery.length >= 3 ? (
+        {isLoader ? (
+          <tr>
+            <td colSpan="5" className="px-6 py-4 text-center">
+              <Loading />
+            </td>
+          </tr>
+        ) : searchQuery.length >= 3 ? (
           searchedUsers.length > 0 ? (
             searchedUsers.map((user) => <User key={user._id} user={user} />)
           ) : (
