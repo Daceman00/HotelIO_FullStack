@@ -25,25 +25,26 @@ const multerFilter = (req, file, cb) => {
 
 const upload = multer({
     storage: multerStorage,
-    fileFilter: multerFilter
+    fileFilter: multerFilter,
 });
 
-exports.uploadUserPhoto = upload.single('photo');
+// Middleware to handle profile photo upload
+exports.uploadProfilePhoto = upload.single('profilePhoto');
 
-exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
-    if (!req.file) return next();
+// Middleware to resize profile photo
+exports.resizeProfilePhoto = catchAsync(async (req, res, next) => {
+    if (!req.file) return next(); // If no file is uploaded, proceed to the next middleware
 
-    req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
-
+    // Generate filename and resize photo
+    req.body.profilePhoto = `user-${req.user.id}-${Date.now()}.jpeg`;
     await sharp(req.file.buffer)
-        .resize(500, 500)
+        .resize(500, 500) // Resize to a square image
         .toFormat('jpeg')
         .jpeg({ quality: 90 })
-        .toFile(`../public/img/users/${req.file.filename}`);
+        .toFile(`public/img/users/${req.body.profilePhoto}`);
 
     next();
 });
-
 exports.getMyAccount = (req, res, next) => {
     req.params.id = req.user.id
     next()

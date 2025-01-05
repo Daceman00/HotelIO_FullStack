@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const AppError = require('./../utils/appError');
 
 const roomSchema = mongoose.Schema({
     roomNumber: {
@@ -29,7 +30,12 @@ const roomSchema = mongoose.Schema({
         required: [true, "Description is required"]
     },
 
+    imageCover: {
+        type: String,
+        required: [true, 'A tour must have a cover image']
+    },
     images: [String],
+
 
     features: {
         type: [String],
@@ -43,8 +49,36 @@ const roomSchema = mongoose.Schema({
 
     createdAt: {
         type: Date,
-        default: Date.now
+        default: Date.now(),
+        select: false
     }
+})
+
+// Room number sanitize
+roomSchema.pre('save', function (next) {
+    this.roomNumber = this.roomNumber.trim().toUpperCase();
+    next()
+})
+
+// Price and type validation
+roomSchema.pre('save', function (next) {
+    if (this.price <= 0) {
+        return next(new AppError("The price has to be greater than 0", 400));
+    }
+    if (this.roomType === "single" && this.maxGuests > 1) {
+        return next(new AppError("The max guests for a single room is 1", 400))
+    }
+    if (this.roomType === "double" && this.maxGuests > 2) {
+        return next(new AppError("The max guests for a double room is 2", 400))
+    }
+
+    next()
+})
+
+// Exclude rooms under maintenance
+roomSchema.pre(/^find/, function (next) {
+    this.find({ status: { $ne: 'maintenance' } })
+    next()
 })
 
 const Room = mongoose.model("Room", roomSchema);
