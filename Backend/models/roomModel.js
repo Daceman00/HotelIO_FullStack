@@ -32,7 +32,7 @@ const roomSchema = mongoose.Schema({
 
     imageCover: {
         type: String,
-        required: [true, 'A tour must have a cover image']
+
     },
     images: [String],
 
@@ -76,11 +76,13 @@ roomSchema.pre('save', function (next) {
 })
 
 // Exclude rooms under maintenance
-roomSchema.pre(/^find/, function (next) {
-    this.find({ status: { $ne: 'maintenance' } })
-    next()
-})
-
+/* roomSchema.pre(/^find/, function (next) {
+    if (!this.options.includeMaintenance) {
+        this.find({ status: { $ne: 'maintenance' } });
+    }
+    next();
+});
+ */
 const Room = mongoose.model("Room", roomSchema);
 
 module.exports = Room;
