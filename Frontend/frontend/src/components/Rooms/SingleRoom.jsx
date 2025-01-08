@@ -3,9 +3,11 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
+import { IMAGE_URL } from "../../helpers/imageURL";
+import { useNavigate } from "react-router-dom";
 
 function SingleRoom({ room }) {
-  const BASE_URL = "http://localhost:3000/rooms";
+  const navigate = useNavigate();
   return (
     <div className="animate-fadeInDown border border-gray-100 dark:!border-gray-600 rounded-md overflow-hidden transition-transform transform hover:scale-110 hover:shadow-md">
       <div className="relative">
@@ -20,7 +22,7 @@ function SingleRoom({ room }) {
           {room.images.map((image, idx) => (
             <SwiperSlide key={idx}>
               <img
-                src={`${BASE_URL}/${image}`}
+                src={`${IMAGE_URL}/${image}`}
                 alt={`${room.type} Room ${idx + 1}`}
                 className="w-full object-cover max-h-80"
               />
@@ -53,7 +55,10 @@ function SingleRoom({ room }) {
           <span className="text-gray-500">{"☆".repeat(5 - room.rating)}</span>
         </div> */}
         <div className="px-4 py-3 text-center">
-          <button className="bg-emerald-600 text-white font-semibold px-4 py-2 rounded-md transition-transform transform hover:scale-105 hover:bg-emerald-700">
+          <button
+            onClick={() => navigate(`/rooms/room`)}
+            className="bg-emerald-600 text-white font-semibold px-4 py-2 rounded-md transition-transform transform hover:scale-105 hover:bg-emerald-700"
+          >
             View Details
           </button>
         </div>
