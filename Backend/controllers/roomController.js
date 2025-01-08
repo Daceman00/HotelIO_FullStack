@@ -59,8 +59,21 @@ exports.resizeRoomImages = catchAsync(async (req, res, next) => {
     next();
 });
 
+exports.getRoomWithReviews = catchAsync(async (req, res, next) => {
+    const popOptions = {
+        path: 'reviews',  // Virtual field to populate
+        select: 'review rating user createdAt'  // Specify fields to include from reviews
+    };
+
+    // Call the `getOne` function with the Room model and populate options
+    return factory.getOne(Room, popOptions)(req, res, next)
+
+});
+
+
+
 exports.getAllRooms = factory.getAll(Room)
-exports.getRoom = factory.getOne(Room)
+exports.getRoom = factory.getOne(Room,)
 exports.createRoom = factory.createOne(Room)
 exports.updateRoom = factory.updateOne(Room)
 exports.deleteRoom = factory.deleteOne(Room)

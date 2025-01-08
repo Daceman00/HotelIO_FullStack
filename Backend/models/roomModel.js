@@ -36,7 +36,6 @@ const roomSchema = mongoose.Schema({
     },
     images: [String],
 
-
     features: {
         type: [String],
         default: []
@@ -47,12 +46,25 @@ const roomSchema = mongoose.Schema({
         required: [true, "Max guests is required"],
     },
 
+    averageRating: {
+        type: Number,
+        min: [1, "Average rating must be at least 1"],
+        max: [5, "Average rating cannot exceed 5"],
+        default: 0
+    },
+
     createdAt: {
         type: Date,
         default: Date.now(),
         select: false
     }
 })
+
+roomSchema.virtual('reviews', {
+    ref: 'Review',
+    foreignField: 'room',
+    localField: '_id'
+});
 
 // Room number sanitize
 roomSchema.pre('save', function (next) {

@@ -38,9 +38,9 @@ const RoomDetails = () => {
       "Mini Bar",
     ],
     images: [
-      "https://via.placeholder.com/800x600?text=Room+Image+1",
-      "https://via.placeholder.com/800x600?text=Room+Image+2",
-      "https://via.placeholder.com/800x600?text=Room+Image+3",
+      "room-677be0093292947d0303b060-1736274629868-1.jpeg",
+      "room-677be0093292947d0303b060-1736274629869-4.jpeg",
+      "room-677af311f808aec841f47bda-1736116817170-2.jpeg",
     ],
   };
 
@@ -73,7 +73,7 @@ const RoomDetails = () => {
           {room.images.map((image, idx) => (
             <SwiperSlide key={idx}>
               <img
-                src={image}
+                src={`${IMAGE_URL}/${image}`}
                 alt={`Room Image ${idx + 1}`}
                 className="w-full h-full object-cover rounded-md"
               />
@@ -90,7 +90,7 @@ const RoomDetails = () => {
         <p className="text-gray-600 mt-2">{room.description}</p>
       </div>
 
-      {/* Amenities */}
+      {/* Features */}
       <div className="mb-6">
         <h2 className="text-2xl font-semibold text-gray-800">Amenities</h2>
         <ul className="mt-2 grid grid-cols-2 gap-4 text-gray-600">

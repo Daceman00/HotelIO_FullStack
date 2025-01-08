@@ -12,7 +12,7 @@ router.route('/')
     .post(roomController.createRoom)
 
 router.route('/:id')
-    .get(roomController.getRoom)
+    .get(roomController.getRoomWithReviews)
     .patch(roomController.updateRoom)
     .delete(roomController.deleteRoom)
 
