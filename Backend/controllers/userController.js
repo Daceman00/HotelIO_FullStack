@@ -87,6 +87,15 @@ exports.deleteMyAccount = catchAsync(async (req, res, next) => {
     })
 })
 
+exports.getUserWithReviews = catchAsync(async (req, res, next) => {
+    const popOptions = {
+        path: 'reviews',  // Virtual field to populate
+        select: 'review rating room createdAt'  // Specify fields to include from reviews
+    };
+
+    return factory.getOne(User, popOptions)(req, res, next)
+})
+
 exports.getUser = factory.getOne(User)
 exports.getAllUsers = factory.getAll(User)
 exports.updateUser = factory.updateOne(User)

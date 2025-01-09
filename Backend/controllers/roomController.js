@@ -1,9 +1,11 @@
 const Room = require('./../models/roomModel')
+const Review = require('../models/reviewModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
 const multer = require('multer');
 const sharp = require('sharp');
+const { default: mongoose } = require('mongoose');
 
 // Multer configuration
 const multerStorage = multer.memoryStorage();
@@ -65,10 +67,41 @@ exports.getRoomWithReviews = catchAsync(async (req, res, next) => {
         select: 'review rating user createdAt'  // Specify fields to include from reviews
     };
 
-    // Call the `getOne` function with the Room model and populate options
     return factory.getOne(Room, popOptions)(req, res, next)
 
 });
+
+
+exports.calculateAverageRating = async (roomId) => {
+    // Ensure roomId is valid
+    if (!mongoose.Types.ObjectId.isValid(roomId)) {
+        throw new Error("Invalid Room ID");
+    }
+
+    const stats = await Review.aggregate([
+        { $match: { room: mongoose.Types.ObjectId(roomId) } },
+        {
+            $group: {
+                _id: '$room',
+                averageRating: { $avg: '$rating' },
+                numRatings: { $sum: 1 }
+            }
+        }
+    ]);
+
+    if (stats.length > 0) {
+        await Room.findByIdAndUpdate(roomId, {
+            averageRating: stats[0].averageRating,
+            numRatings: stats[0].numRatings
+        });
+    } else {
+        await Room.findByIdAndUpdate(roomId, {
+            averageRating: 0,
+            numRatings: 0
+        });
+    }
+};
+
 
 
 

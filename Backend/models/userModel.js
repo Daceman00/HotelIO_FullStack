@@ -48,7 +48,16 @@ const userSchema = mongoose.Schema({
         type: Boolean,
         default: true,
     },
+}, {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
 })
+
+userSchema.virtual('reviews', {
+    ref: 'Review',
+    foreignField: 'user',
+    localField: '_id'
+});
 
 // Password encryption
 userSchema.pre('save', async function (next) {

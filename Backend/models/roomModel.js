@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const AppError = require('./../utils/appError');
+const Review = require('./reviewModel');
 
 const roomSchema = mongoose.Schema({
     roomNumber: {
@@ -53,18 +54,28 @@ const roomSchema = mongoose.Schema({
         default: 0
     },
 
+    numRatings: {
+        type: Number,
+        default: 0,
+    },
+
     createdAt: {
         type: Date,
         default: Date.now(),
         select: false
     }
-})
+},
+    {
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true }
+    })
 
 roomSchema.virtual('reviews', {
     ref: 'Review',
     foreignField: 'room',
     localField: '_id'
 });
+
 
 // Room number sanitize
 roomSchema.pre('save', function (next) {

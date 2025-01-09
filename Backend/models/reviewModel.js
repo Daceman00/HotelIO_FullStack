@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const AppError = require('../utils/appError');
+const roomController = require('./../controllers/roomController')
 
 const reviewSchema = new mongoose.Schema({
     review: {
@@ -31,16 +32,15 @@ const reviewSchema = new mongoose.Schema({
         toObject: { virtuals: true }
     });
 
+reviewSchema.post('save', async function () {
+    await roomController.calculateAverageRating(this.room)
+});
+
+reviewSchema.post('remove', async function () {
+    await roomController.calculateAverageRating(this.room)
+});
 
 reviewSchema.index({ room: 1, user: 1 }, { unique: true });
-
-reviewSchema.pre(/^find/, function (next) {
-    this.populate({
-        path: 'user',
-        select: 'name photo'
-    })
-
-})
 
 const Review = mongoose.model("Review", reviewSchema);
 
