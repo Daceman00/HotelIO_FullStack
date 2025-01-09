@@ -79,7 +79,7 @@ exports.calculateAverageRating = async (roomId) => {
     }
 
     const stats = await Review.aggregate([
-        { $match: { room: mongoose.Types.ObjectId(roomId) } },
+        { $match: { room: new mongoose.Types.ObjectId(roomId) } },
         {
             $group: {
                 _id: '$room',

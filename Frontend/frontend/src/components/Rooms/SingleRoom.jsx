@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 function SingleRoom({ room }) {
   const navigate = useNavigate();
+
   return (
     <div className="animate-fadeInDown border border-gray-100 dark:!border-gray-600 rounded-md overflow-hidden transition-transform transform hover:scale-110 hover:shadow-md">
       <div className="relative">
@@ -50,10 +51,12 @@ function SingleRoom({ room }) {
           <span className="mr-1">$</span>
           <span>{room.price ? room.price.toFixed(2) : "N/A"} ¬ Night</span>
         </div>
-        {/* <div className="text-yellow-400 font-semibold">
-          {"★".repeat(room.rating)}{" "}
-          <span className="text-gray-500">{"☆".repeat(5 - room.rating)}</span>
-        </div> */}
+        <div className="text-yellow-400 font-semibold">
+          {"★".repeat(room.averageRating)}{" "}
+          <span className="text-gray-500">
+            {"☆".repeat(5 - room.averageRating)}
+          </span>
+        </div>
         <div className="px-4 py-3 text-center">
           <button
             onClick={() => navigate(`/rooms/room`)}
