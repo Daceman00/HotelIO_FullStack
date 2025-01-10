@@ -10,7 +10,7 @@ export function useUpdateAccountPhoto() {
             toast.success("Account successfully updated!")
         },
         onError: (error) => {
-            toast.error(error)
+            toast.error(error.message || "Failed to update account photo")
         }
     })
 

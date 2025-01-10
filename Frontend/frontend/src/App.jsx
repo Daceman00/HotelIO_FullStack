@@ -56,7 +56,7 @@ function App() {
                 }
               />
               <Route
-                path="/rooms/:id"
+                path="/rooms/:roomId"
                 element={
                   <ProtectedRoute>
                     <RoomDetails />
@@ -97,7 +97,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/rooms/room" element={<RoomDetails />} />
 
               {/*
             <Route path="/reports" element={<div>Reports Page</div>} />

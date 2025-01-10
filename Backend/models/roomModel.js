@@ -1,12 +1,11 @@
 const mongoose = require("mongoose");
 const AppError = require('./../utils/appError');
-const Review = require('./reviewModel');
 
 const roomSchema = mongoose.Schema({
     roomNumber: {
         type: String,
         required: [true, "Room number is required"],
-        unique: true
+        unique: true,
     },
 
     roomType: {
@@ -18,6 +17,7 @@ const roomSchema = mongoose.Schema({
     price: {
         type: Number,
         required: [true, "Price is required"],
+        min: [1, "Price must be at least 1"]
     },
 
     status: {
@@ -28,7 +28,8 @@ const roomSchema = mongoose.Schema({
 
     description: {
         type: String,
-        required: [true, "Description is required"]
+        required: [true, "Description is required"],
+        minlength: [10, "Description must be at least 10 characters long"]
     },
 
     imageCover: {
@@ -39,19 +40,32 @@ const roomSchema = mongoose.Schema({
 
     features: {
         type: [String],
-        default: []
+        default: [],
+        validate: {
+            validator: function (v) {
+                return Array.isArray(v) && v.length > 0;
+            },
+            message: "A room should have at least one feature"
+        }
     },
 
     maxGuests: {
         type: Number,
         required: [true, "Max guests is required"],
+        min: [1, "Min guests must be at least 1"]
     },
 
     averageRating: {
         type: Number,
         min: [1, "Average rating must be at least 1"],
         max: [5, "Average rating cannot exceed 5"],
-        default: 0
+        default: undefined,
+        validate: {
+            validator: function (v) {
+                return v === undefined || v === 0 || (v >= 1 && v <= 5);
+            },
+            message: "Average rating must be 0 or between 1 and 5"
+        }
     },
 
     numRatings: {
@@ -63,6 +77,10 @@ const roomSchema = mongoose.Schema({
         type: Date,
         default: Date.now(),
         select: false
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now()
     }
 },
     {
@@ -80,8 +98,15 @@ roomSchema.virtual('reviews', {
 // Room number sanitize
 roomSchema.pre('save', function (next) {
     this.roomNumber = this.roomNumber.trim().toUpperCase();
+    this.roomType = this.roomType.trim().toLowerCase().replace(/^\w/, c => c.toUpperCase());
     next()
 })
+
+// Middleware to sanitize roomType before validation
+roomSchema.pre('validate', function (next) {
+    this.roomType = this.roomType.trim().toLowerCase();
+    next();
+});
 
 // Price and type validation
 roomSchema.pre('save', function (next) {
@@ -97,6 +122,15 @@ roomSchema.pre('save', function (next) {
 
     next()
 })
+
+// Middleware to update the updatedAt field
+roomSchema.pre('save', function (next) {
+    if (!this.isNew) {
+        this.updatedAt = Date.now();
+    }
+    next();
+});
+
 
 // Exclude rooms under maintenance
 /* roomSchema.pre(/^find/, function (next) {

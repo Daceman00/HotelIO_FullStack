@@ -5,12 +5,17 @@ const roomController = require('./../controllers/roomController')
 const reviewSchema = new mongoose.Schema({
     review: {
         type: String,
-        required: [true, 'Review can not be empty!']
+        required: [true, 'Review can not be empty!'],
+        maxlength: [500, 'Review must be less than or equal to 500 characters']
     },
     rating: {
         type: Number,
         min: 1,
-        max: 5
+        max: 5,
+        validate: {
+            validator: Number.isInteger,
+            message: 'Rating must be an integer'
+        }
     },
     createdAt: {
         type: Date,
