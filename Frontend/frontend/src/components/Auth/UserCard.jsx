@@ -17,10 +17,10 @@ function UserCard() {
   return (
     <>
       {userCardVisible && (
-        <div className="absolute right-0 z-10 mt-2 w-48 text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+        <div className="absolute right-0 z-10 mt-2 w-48 text-gray-900 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white">
           <button
             type="button"
-            className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white"
+            className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 transition-colors duration-200 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:text-white"
           >
             <svg
               className="w-3 h-3 me-2.5"
@@ -36,7 +36,7 @@ function UserCard() {
           <Link to="/updateAccount">
             <button
               type="button"
-              className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white"
+              className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:text-white"
             >
               <svg
                 className="w-3 h-3 me-2.5"
@@ -61,7 +61,7 @@ function UserCard() {
               <Link to="/users">
                 <button
                   type="button"
-                  className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white"
+                  className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:text-white"
                 >
                   <svg
                     className="w-3 h-3 me-2.5"
@@ -79,7 +79,7 @@ function UserCard() {
               <Link>
                 <button
                   type="button"
-                  className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white"
+                  className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:text-white"
                 >
                   <svg
                     className="w-3 h-3 me-2.5"
@@ -96,7 +96,7 @@ function UserCard() {
               <Link>
                 <button
                   type="button"
-                  className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white"
+                  className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:text-white"
                 >
                   <svg
                     className="w-3 h-3 me-2.5"
@@ -114,7 +114,7 @@ function UserCard() {
           <button
             type="button"
             onClick={logout}
-            className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium hover:bg-gray-100 hover:text-red-700 focus:z-10 focus:ring-2 focus:ring-red-700 focus:text-red-700 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white"
+            className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium hover:bg-gray-100 transition-colors duration-200 hover:text-red-700 dark:hover:bg-gray-700 dark:hover:text-white"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

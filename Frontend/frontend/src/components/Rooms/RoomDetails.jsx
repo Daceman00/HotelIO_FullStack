@@ -13,8 +13,6 @@ const RoomDetails = () => {
 
   if (isPending) return <Loading />;
 
-  console.log(room?.data);
-
   return (
     <div className="container mx-auto px-4 py-6">
       {/* Room Title and Info */}
@@ -90,7 +88,9 @@ const RoomDetails = () => {
                 className="p-4 border rounded-md bg-gray-50 dark:bg-gray-700"
               >
                 <p className="text-gray-800 font-medium">{review.user.name}</p>
-                <p className="text-sm text-gray-500">{review.createdAt}</p>
+                <p className="text-sm text-gray-500">
+                  {new Date(review.createdAt).toLocaleDateString()}
+                </p>
                 <p className="text-gray-600 mt-2">{review.review}</p>
                 <div className="flex items-center mt-2">
                   <span className="text-yellow-500">

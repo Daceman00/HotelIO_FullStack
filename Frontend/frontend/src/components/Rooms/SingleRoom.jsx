@@ -2,22 +2,44 @@ import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
-import { Pagination } from "swiper/modules";
+import { Pagination, Autoplay } from "swiper/modules"; // Add Autoplay module
 import { IMAGE_URL } from "../../helpers/imageURL";
 import { useNavigate } from "react-router-dom";
 
 function SingleRoom({ room }) {
   const navigate = useNavigate();
 
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case "available":
+        return "bg-emerald-600";
+      case "occupied":
+        return "bg-red-600";
+      case "maintenance":
+        return "bg-yellow-600";
+      default:
+        return "bg-gray-600";
+    }
+  };
+
+  const isMaintenance = room.status.toLowerCase() === "maintenance";
+
   return (
-    <div className="animate-fadeInDown border border-gray-100 dark:!border-gray-600 rounded-lg overflow-hidden transition-transform transform hover:scale-105 hover:shadow-lg">
+    <div
+      className={`animate-fadeInDown border border-gray-100 dark:!border-gray-600 rounded-lg overflow-hidden transition-transform transform ${
+        isMaintenance
+          ? "bg-gray-300 dark:bg-gray-700 pointer-events-none"
+          : "hover:scale-105 hover:shadow-lg"
+      }`}
+    >
       <div className="relative">
         <Swiper
-          modules={[Pagination]}
+          modules={[Pagination, Autoplay]} // Add Autoplay module
           pagination={{ clickable: true }}
           loop={room.images.length > 1} // Enable loop only for multiple slides
           slidesPerView={Math.min(room.images.length, 1)} // Adjust for single image
           slidesPerGroup={Math.min(room.images.length, 1)} // Adjust for single image
+          autoplay={{ delay: 3000 }} // Enable autoplay with a delay of 3 seconds
           className="w-full max-h-96"
         >
           {room.images.map((image, idx) => (
@@ -30,7 +52,11 @@ function SingleRoom({ room }) {
             </SwiperSlide>
           ))}
         </Swiper>
-        <div className="absolute top-3 right-3 bg-emerald-600 text-white text-sm uppercase px-3 py-1 rounded-md z-10">
+        <div
+          className={`absolute top-3 right-3 ${getStatusColor(
+            room.status
+          )} text-white text-sm uppercase px-3 py-1 rounded-md z-10`}
+        >
           {room.status}
         </div>
       </div>

@@ -2,18 +2,22 @@ import React from "react";
 import useFormStore from "../../stores/FormStore";
 import { useSignup } from "./useSignup";
 import Loading from "../Reusable/Loading";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Signup() {
   const { formData } = useFormStore();
   const updateForm = useFormStore((state) => state.updateForm);
   const resetForm = useFormStore((state) => state.resetForm);
   const { signup, isPending } = useSignup();
+  const navigate = useNavigate();
 
   const handleSumbit = (e) => {
     e.preventDefault();
 
-    signup(formData, { onSettled: () => resetForm() });
+    signup(formData, {
+      onSuccess: () => navigate("/dashboard"),
+      onSettled: () => resetForm(),
+    });
   };
 
   return (
