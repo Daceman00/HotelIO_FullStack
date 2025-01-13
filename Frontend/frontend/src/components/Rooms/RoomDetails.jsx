@@ -7,14 +7,38 @@ import "swiper/css/navigation";
 import { IMAGE_URL } from "../../helpers/imageURL";
 import Loading from "../Reusable/Loading";
 import { useGetRoom } from "./useGetRoom";
+import { useMoveBack } from "../../hooks/useMoveBack";
 
 const RoomDetails = () => {
   const { room, isPending, error } = useGetRoom();
+  const moveBack = useMoveBack();
 
   if (isPending) return <Loading />;
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container mx-auto px-4 py-6 relative">
+      <button
+        onClick={moveBack}
+        type="button"
+        className="absolute top-4 right-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        <svg
+          className="w-4 h-4"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 14 10"
+        >
+          <path
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M13 5H1m0 0l4-4M1 5l4 4"
+          />
+        </svg>
+        <span className="sr-only">Move back</span>
+      </button>
       {/* Room Title and Info */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-800">

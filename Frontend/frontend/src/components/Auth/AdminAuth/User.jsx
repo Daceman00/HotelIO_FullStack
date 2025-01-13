@@ -48,7 +48,7 @@ function User({ user }) {
         <td className="px-6 py-4">
           <button
             disabled={isPending}
-            onClick={() => deleteUser(user._id)}
+            onClick={() => deleteUser(user.id)}
             className="font-medium text-red-600 dark:text-red-500 hover:underline"
           >
             Delete User

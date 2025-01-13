@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import Modal from "../Reusable/Modal";
 import useUIStore from "../../stores/UiStore";
 import { useDeleteAccount } from "./useDeleteAccount";
+import { useMoveBack } from "../../hooks/useMoveBack";
 
 function UpdateAccount() {
   const { user, isPending } = useIsLoggedIn();
@@ -31,6 +32,7 @@ function UpdateAccount() {
   const { isModalOpen } = useUIStore();
   const onModalOpen = useUIStore((state) => state.onModalOpen);
   const onModalClose = useUIStore((state) => state.onModalClose);
+  const moveBack = useMoveBack();
 
   if (isPending) return <Loading />;
 
@@ -86,6 +88,7 @@ function UpdateAccount() {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Update Your Account Information
             </h1>
+
             <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
               <div className="flex items-center justify-center w-full">
                 {errorPhoto && (
