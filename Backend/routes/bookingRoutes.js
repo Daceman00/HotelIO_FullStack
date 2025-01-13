@@ -6,10 +6,11 @@ const router = express.Router({ mergeParams: true });
 
 router.use(authController.protect);
 
+router.post('/', bookingController.setUserId, bookingController.createBooking);
+
 router
     .route('/')
-    .get(bookingController.getAllBookings)
-    .post(bookingController.createBooking);
+    .get(bookingController.getAllBookings);
 
 router
     .route('/:id')

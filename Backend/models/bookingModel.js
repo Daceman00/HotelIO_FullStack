@@ -40,6 +40,15 @@ const bookingSchema = new mongoose.Schema({
 
 bookingSchema.index({ room: 1, user: 1 }, { unique: true });
 
+// Pre-save middleware to check for past dates
+bookingSchema.pre('save', function (next) {
+    const currentDate = new Date();
+    if (this.checkIn < currentDate || this.checkOut < currentDate) {
+        return next(new AppError('Booking dates cannot be in the past.'));
+    }
+    next();
+});
+
 // Instance method to check if booking dates overlap with another booking
 bookingSchema.methods.isOverlapping = function (checkIn, checkOut) {
     return (
@@ -65,6 +74,12 @@ bookingSchema.pre('save', async function (next) {
         return next(new AppError('Booking dates overlap with an existing booking.'));
     }
 
+    next();
+});
+
+bookingSchema.pre('save', function (next) {
+    this.checkIn = this.checkIn.toLocaleDateString();
+    this.checkOut = this.checkOut.toLocaleDateString();
     next();
 });
 

@@ -1,11 +1,14 @@
 const express = require('express');
 const roomController = require('./../controllers/roomController')
 const authController = require('./../controllers/authController');
+const reviewRouter = require('./reviewRoutes');
 
 const router = express.Router();
 
 router.use(authController.protect)
 // router.use(authController.restrictTo('admin'))
+
+router.use('/:roomId/reviews', reviewRouter);
 
 router.route('/')
     .get(roomController.getAllRooms)
