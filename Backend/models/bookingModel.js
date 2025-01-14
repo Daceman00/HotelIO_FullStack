@@ -1,6 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const AppError = require("../utils/appError");
 
+
 const bookingSchema = new mongoose.Schema({
     checkIn: {
         type: Date,
@@ -16,7 +17,8 @@ const bookingSchema = new mongoose.Schema({
     },
     price: {
         type: Number,
-        required: [true, "Price is required"]
+        required: [true, "Price is required"],
+        default: 0 // Add a default value for price
     },
     paid: {
         type: Boolean,
@@ -38,6 +40,11 @@ const bookingSchema = new mongoose.Schema({
         toObject: { virtuals: true }
     });
 
+bookingSchema.virtual('numOfNights').get(function () {
+    const oneDay = 24 * 60 * 60 * 1000; // hours * minutes * seconds * milliseconds
+    return Math.round(Math.abs((this.checkOut - this.checkIn) / oneDay));
+});
+
 // Instance method to check if booking dates overlap with another booking
 bookingSchema.methods.isOverlapping = function (checkIn, checkOut) {
     return (
@@ -46,7 +53,7 @@ bookingSchema.methods.isOverlapping = function (checkIn, checkOut) {
     );
 };
 
-// Pre-save middleware to check for past dates and overlapping dates
+// Pre-save middleware to check for past dates, overlapping dates, and calculate price
 bookingSchema.pre('save', async function (next) {
     const currentDate = new Date();
     if (this.checkIn < currentDate || this.checkOut < currentDate) {

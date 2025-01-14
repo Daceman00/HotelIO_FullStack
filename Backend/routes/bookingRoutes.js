@@ -12,6 +12,7 @@ router
     .post(
         authController.restrictTo('user'),
         bookingController.setRoomUserIds,
+        bookingController.calculateBookingPrice,
         bookingController.createBooking
     );
 
@@ -25,4 +26,7 @@ router
     .route('/user/:id')
     .get(bookingController.getBookingsByUser);
 
+router
+    .route('/room/:id')
+    .get(bookingController.getBookingsByRoom);
 module.exports = router;

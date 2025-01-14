@@ -31,4 +31,7 @@ router
     .route('/user/:id')
     .get(reviewController.getReviewsByUser);
 
+router
+    .route('/room/:id')
+    .get(reviewController.getReviewsByRoom);
 module.exports = router;
