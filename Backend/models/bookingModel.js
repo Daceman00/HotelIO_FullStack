@@ -2,16 +2,6 @@ const { default: mongoose } = require("mongoose");
 const AppError = require("../utils/appError");
 
 const bookingSchema = new mongoose.Schema({
-    room: {
-        type: mongoose.Schema.ObjectId,
-        ref: 'Room',
-        required: [true, "Booking must be associated with a room"]
-    },
-    user: {
-        type: mongoose.Schema.ObjectId,
-        ref: 'User',
-        required: [true, "Booking must have a user"]
-    },
     checkIn: {
         type: Date,
         required: [true, "Check-in date is required"]
@@ -31,6 +21,16 @@ const bookingSchema = new mongoose.Schema({
     paid: {
         type: Boolean,
         default: false
+    },
+    room: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Room',
+        required: [true, "Booking must be associated with a room"]
+    },
+    user: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+        required: [true, "Booking must have a user"]
     }
 },
     {
@@ -38,26 +38,21 @@ const bookingSchema = new mongoose.Schema({
         toObject: { virtuals: true }
     });
 
-bookingSchema.index({ room: 1, user: 1 }, { unique: true });
+// Instance method to check if booking dates overlap with another booking
+bookingSchema.methods.isOverlapping = function (checkIn, checkOut) {
+    return (
+        (this.checkIn < checkOut && this.checkOut > checkIn) || // Overlapping dates
+        (this.checkIn.getTime() === checkIn.getTime() && this.checkOut.getTime() === checkOut.getTime()) // Exact same dates
+    );
+};
 
-// Pre-save middleware to check for past dates
-bookingSchema.pre('save', function (next) {
+// Pre-save middleware to check for past dates and overlapping dates
+bookingSchema.pre('save', async function (next) {
     const currentDate = new Date();
     if (this.checkIn < currentDate || this.checkOut < currentDate) {
         return next(new AppError('Booking dates cannot be in the past.'));
     }
-    next();
-});
 
-// Instance method to check if booking dates overlap with another booking
-bookingSchema.methods.isOverlapping = function (checkIn, checkOut) {
-    return (
-        (this.checkIn <= checkOut && this.checkOut >= checkIn) || // Overlapping dates
-        (this.checkIn.getTime() === checkIn.getTime() && this.checkOut.getTime() === checkOut.getTime()) // Exact same dates
-    );
-};
-// Pre-save middleware to check for overlapping dates
-bookingSchema.pre('save', async function (next) {
     // Check if checkIn date is after checkOut date
     if (this.checkIn > this.checkOut) {
         return next(new AppError('Check-in date cannot be after check-out date.'));
@@ -77,12 +72,6 @@ bookingSchema.pre('save', async function (next) {
     next();
 });
 
-bookingSchema.pre('save', function (next) {
-    this.checkIn = this.checkIn.toLocaleDateString();
-    this.checkOut = this.checkOut.toLocaleDateString();
-    next();
-});
-
 bookingSchema.pre(/^find/, function (next) {
     this.populate({
         path: 'user',
@@ -95,6 +84,7 @@ bookingSchema.pre(/^find/, function (next) {
     next();
 });
 
+bookingSchema.index({ room: 1, user: 1 }, { unique: true });
 
 const Booking = mongoose.model('Booking', bookingSchema);
 

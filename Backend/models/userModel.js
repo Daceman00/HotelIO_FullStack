@@ -42,7 +42,6 @@ const userSchema = mongoose.Schema({
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
-    passwordChangedAt: Date,
 
     active: {
         type: Boolean,
@@ -58,6 +57,12 @@ userSchema.virtual('reviews', {
     foreignField: 'user',
     localField: '_id'
 });
+
+userSchema.virtual('bookings', {
+    ref: 'Booking',
+    foreignField: 'user',
+    localField: '_id'
+})
 
 // Password encryption
 userSchema.pre('save', async function (next) {

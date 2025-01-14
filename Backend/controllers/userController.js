@@ -96,6 +96,15 @@ exports.getUserWithReviews = catchAsync(async (req, res, next) => {
     return factory.getOne(User, popOptions)(req, res, next)
 })
 
+exports.getUserWithBookings = catchAsync(async (req, res, next) => {
+    const popOptions = {
+        path: 'bookings',  // Virtual field to populate
+        select: 'room user checkIn checkOut createdAt'  // Specify fields to include from bookings
+    }
+
+    return factory.getOne(User, popOptions)(req, res, next)
+})
+
 exports.getUser = factory.getOne(User)
 exports.getAllUsers = factory.getAll(User)
 exports.updateUser = factory.updateOne(User)
