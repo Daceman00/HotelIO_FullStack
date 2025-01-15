@@ -10,20 +10,6 @@ exports.setRoomUserIds = (req, res, next) => {
     next();
 };
 
-exports.calculateBookingPrice = catchAsync(async (req, res, next) => {
-    const room = await Room.findById(req.body.room);
-    if (!room) {
-        return next(new AppError('Room not found', 404));
-    }
-
-    const checkInDate = new Date(req.body.checkIn);
-    const checkOutDate = new Date(req.body.checkOut);
-    const numberOfDays = (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24);
-
-    req.body.price = numberOfDays * room.price;
-    next();
-});
-
 exports.getBookingsByUser = catchAsync(async (req, res, next) => {
     const bookings = await Booking.find({ user: req.params.id });
 
@@ -50,7 +36,7 @@ exports.getBookingsByRoom = catchAsync(async (req, res, next) => {
         return res.status(404).json({
             status: 'fail',
             message: 'No bookings found for this room'
-        })
+        });
     }
 
     res.status(200).json({
@@ -60,9 +46,32 @@ exports.getBookingsByRoom = catchAsync(async (req, res, next) => {
             bookings
         }
     });
-})
+});
 
-exports.createBooking = factory.createOne(Booking)
+exports.markBookingAsPaid = catchAsync(async (req, res, next) => {
+    const booking = await Booking.findById(req.params.id).populate('user');
+
+    if (!booking) {
+        return next(new AppError('No booking found with that ID', 404));
+    }
+
+    // Check if the user making the request is the one who booked the room
+    if (booking.user._id.toString() !== req.user.id.toString()) {
+        return next(new AppError('You do not have permission to mark this booking as paid', 403));
+    }
+
+    booking.paid = true;
+    await booking.save();
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            booking
+        }
+    });
+});
+
+exports.createBooking = factory.createOne(Booking);
 exports.getBooking = factory.getOne(Booking);
 exports.getAllBookings = factory.getAll(Booking);
 exports.updateBooking = factory.updateOne(Booking);

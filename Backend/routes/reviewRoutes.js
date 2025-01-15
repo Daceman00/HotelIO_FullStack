@@ -1,6 +1,7 @@
 const express = require('express');
 const reviewController = require('./../controllers/reviewController');
 const authController = require('./../controllers/authController');
+const reviewEligibility = require('./../middlewares/reviewEligibility');
 
 const router = express.Router({ mergeParams: true });
 
@@ -11,6 +12,7 @@ router
     .get(reviewController.getAllReviews)
     .post(
         authController.restrictTo('user'),
+        reviewEligibility.checkReviewEligibility,
         reviewController.setRoomUserIds,
         reviewController.createReview
     );
@@ -34,4 +36,5 @@ router
 router
     .route('/room/:id')
     .get(reviewController.getReviewsByRoom);
+
 module.exports = router;

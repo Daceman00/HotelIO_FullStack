@@ -1,7 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const AppError = require("../utils/appError");
 
-
 const bookingSchema = new mongoose.Schema({
     checkIn: {
         type: Date,
@@ -24,6 +23,9 @@ const bookingSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    paidAt: {
+        type: Date
+    },
     room: {
         type: mongoose.Schema.ObjectId,
         ref: 'Room',
@@ -42,16 +44,26 @@ const bookingSchema = new mongoose.Schema({
 
 bookingSchema.virtual('numOfNights').get(function () {
     const oneDay = 24 * 60 * 60 * 1000; // hours * minutes * seconds * milliseconds
-    return Math.round(Math.abs((this.checkOut - this.checkIn) / oneDay));
+    return Math.ceil(Math.abs((this.checkOut - this.checkIn) / oneDay));
 });
 
-// Instance method to check if booking dates overlap with another booking
-bookingSchema.methods.isOverlapping = function (checkIn, checkOut) {
-    return (
-        (this.checkIn < checkOut && this.checkOut > checkIn) || // Overlapping dates
-        (this.checkIn.getTime() === checkIn.getTime() && this.checkOut.getTime() === checkOut.getTime()) // Exact same dates
-    );
+bookingSchema.methods.parseDateTime = function (dateTimeString) {
+    return new Date(dateTimeString);
 };
+
+// Pre-save middleware to parse date-time strings
+bookingSchema.pre('save', function (next) {
+    if (typeof this.checkIn === 'string') {
+        this.checkIn = this.parseDateTime(this.checkIn);
+    }
+    if (typeof this.checkOut === 'string') {
+        this.checkOut = this.parseDateTime(this.checkOut);
+    }
+    if (typeof this.createdAt === 'string') {
+        this.createdAt = this.parseDateTime(this.createdAt);
+    }
+    next();
+});
 
 // Pre-save middleware to check for past dates, overlapping dates, and calculate price
 bookingSchema.pre('save', async function (next) {
@@ -61,12 +73,22 @@ bookingSchema.pre('save', async function (next) {
     }
 
     // Check if checkIn date is after checkOut date
-    if (this.checkIn > this.checkOut) {
-        return next(new AppError('Check-in date cannot be after check-out date.'));
+    if (this.checkIn >= this.checkOut) {
+        return next(new AppError('Check-out date must be at least one day after check-in date.'));
+    }
+
+    // Set default check-in and check-out times
+    this.checkIn.setHours(14, 0, 0, 0); // Set default check-in time to 14:00
+    this.checkOut.setHours(11, 0, 0, 0); // Set default check-out time to 11:00
+
+    // Skip overlapping booking check if only the 'paid' property is being updated
+    if (this.isModified('paid') && !this.isModified('checkIn') && !this.isModified('checkOut')) {
+        return next();
     }
 
     const overlappingBooking = await this.constructor.findOne({
         room: this.room,
+        _id: { $ne: this._id }, // Exclude the current booking from the check
         $or: [
             { checkIn: { $lt: this.checkOut }, checkOut: { $gt: this.checkIn } }
         ]
@@ -76,13 +98,27 @@ bookingSchema.pre('save', async function (next) {
         return next(new AppError('Booking dates overlap with an existing booking.'));
     }
 
+    // Calculate the price based on the number of nights and round it
+    const room = await mongoose.model('Room').findById(this.room);
+    const oneDay = 24 * 60 * 60 * 1000; // hours * minutes * seconds * milliseconds
+    const numberOfNights = Math.ceil((this.checkOut - this.checkIn) / oneDay);
+    this.price = numberOfNights * room.price;
+
+    next();
+});
+
+// Pre-save middleware to set the paidAt field
+bookingSchema.pre('save', function (next) {
+    if (this.isModified('paid') && this.paid) {
+        this.paidAt = new Date();
+    }
     next();
 });
 
 bookingSchema.pre(/^find/, function (next) {
     this.populate({
         path: 'user',
-        select: 'name photo'
+        select: 'name email photo'
     });
     this.populate({
         path: 'room',
@@ -96,3 +132,4 @@ bookingSchema.index({ room: 1, user: 1 }, { unique: true });
 const Booking = mongoose.model('Booking', bookingSchema);
 
 module.exports = Booking;
+
