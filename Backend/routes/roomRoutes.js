@@ -17,9 +17,12 @@ router.route('/')
     .post(roomController.createRoom)
 
 router.route('/:id')
-    .get(roomController.getRoomWithReviews)
+    .get(roomController.getRoomWithReviewsAndBookings)
     .patch(roomController.updateRoom)
     .delete(roomController.deleteRoom)
+
+router.route('/:id/active-bookings')
+    .get(roomController.getRoomWithActiveBookings);
 
 router
     .route('/:id/images')

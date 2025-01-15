@@ -94,6 +94,11 @@ roomSchema.virtual('reviews', {
     localField: '_id'
 });
 
+roomSchema.virtual('bookings', {
+    ref: 'Booking',
+    foreignField: 'room',
+    localField: '_id'
+})
 
 // Room number sanitize
 roomSchema.pre('save', function (next) {

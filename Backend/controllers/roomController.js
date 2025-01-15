@@ -71,6 +71,56 @@ exports.getRoomWithReviews = catchAsync(async (req, res, next) => {
 
 });
 
+exports.getRoomWithBookings = catchAsync(async (req, res, next) => {
+    const popOptions = {
+        path: 'bookings',  // Virtual field to populate
+        select: 'checkIn checkOut user price paid'  // Specify fields to include from bookings
+    }
+    return factory.getOne(Room, popOptions)(req, res, next)
+})
+
+exports.getRoomWithReviewsAndBookings = catchAsync(async (req, res, next) => {
+    const room = await Room.findById(req.params.id)
+        .populate({
+            path: 'reviews',
+            select: 'review rating user createdAt'
+        })
+        .populate({
+            path: 'bookings',
+            select: 'checkIn checkOut user price paid'
+        });
+
+    if (!room) {
+        return next(new AppError('No room found with that ID', 404));
+    }
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            room
+        }
+    });
+});
+
+exports.getRoomWithActiveBookings = catchAsync(async (req, res, next) => {
+    const room = await Room.findById(req.params.id)
+        .populate({
+            path: 'bookings',
+            match: { checkOut: { $gte: new Date() } }, // Only include active bookings
+            select: 'checkIn checkOut user price paid'
+        });
+
+    if (!room) {
+        return next(new AppError('No room found with that ID', 404));
+    }
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            room
+        }
+    });
+});
 
 exports.calculateAverageRating = async (roomId) => {
     // Ensure roomId is valid
