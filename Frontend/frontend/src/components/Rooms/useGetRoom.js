@@ -9,5 +9,6 @@ export function useGetRoom() {
         queryKey: ['room', roomId],
         queryFn: () => getRoom(roomId)
     })
+
     return { room, isPending, error }
 }

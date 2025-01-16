@@ -14,7 +14,7 @@ const RoomDetails = () => {
   const moveBack = useMoveBack();
 
   if (isPending) return <Loading />;
-
+  console.log(room?.data.room.roomType);
   return (
     <div className="container mx-auto px-4 py-6 relative">
       <button
@@ -42,19 +42,19 @@ const RoomDetails = () => {
       {/* Room Title and Info */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-800">
-          {room?.data.roomType
+          {room?.data.room.roomType
             .trim()
             .toLowerCase()
             .replace(/^\w/, (c) => c.toUpperCase())}{" "}
           Room
         </h1>
-        <p className="text-gray-500 mt-1">Room #{room?.data.roomNumber}</p>
+        <p className="text-gray-500 mt-1">Room #{room?.data.room.roomNumber}</p>
         <div className="mt-2 flex items-center gap-2">
           <span className="text-yellow-400">
-            ★ {room?.data.averageRating || "N/A"}
+            ★ {room?.data.room.averageRating || "N/A"}
           </span>
           <span className="text-gray-500">
-            ({room?.data.reviews.length} reviews)
+            ({room?.data.room.reviews.length} reviews)
           </span>
         </div>
       </div>
@@ -65,11 +65,11 @@ const RoomDetails = () => {
           modules={[Pagination, Navigation]}
           pagination={{ clickable: true }}
           navigation
-          loop={room?.data.images.length > 1}
+          loop={room?.data.room.images.length > 1}
           slidesPerView={1}
           className="w-full max-h-96"
         >
-          {room?.data.images.map((image, idx) => (
+          {room?.data.room.images.map((image, idx) => (
             <SwiperSlide key={idx}>
               <img
                 src={`${IMAGE_URL}/${image}`}
@@ -86,14 +86,14 @@ const RoomDetails = () => {
         <h2 className="text-2xl font-semibold text-gray-800">
           About This Room
         </h2>
-        <p className="text-gray-600 mt-2">{room?.data.description}</p>
+        <p className="text-gray-600 mt-2">{room?.data.room.description}</p>
       </div>
 
       {/* Features */}
       <div className="mb-6">
         <h2 className="text-2xl font-semibold text-gray-800">Amenities</h2>
         <ul className="mt-2 grid grid-cols-2 gap-4 text-gray-600">
-          {room?.data.features.map((feature, idx) => (
+          {room?.data.room.features.map((feature, idx) => (
             <li key={idx} className="flex items-center gap-2">
               <span className="text-emerald-600">✔</span> {feature}
             </li>
@@ -105,8 +105,8 @@ const RoomDetails = () => {
       <div className="mb-6">
         <h2 className="text-2xl font-semibold text-gray-800">Guest Reviews</h2>
         <div className="mt-2 space-y-4">
-          {room?.data.reviews.length > 0 ? (
-            room?.data.reviews.map((review, idx) => (
+          {room?.data.room.reviews.length > 0 ? (
+            room?.data.room.reviews.map((review, idx) => (
               <div
                 key={idx}
                 className="p-4 border rounded-md bg-gray-50 dark:bg-gray-700"
@@ -140,7 +140,7 @@ const RoomDetails = () => {
             <p className="text-gray-600 text-lg">
               Price:{" "}
               <span className="font-bold text-emerald-600">
-                ${room?.data.price.toFixed(2)}
+                ${room?.data.room.price.toFixed(2)}
               </span>{" "}
               / Night
             </p>

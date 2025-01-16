@@ -6,8 +6,6 @@ exports.checkReviewEligibility = catchAsync(async (req, res, next) => {
     const userId = req.user.id;
     const roomId = req.body.room || req.params.roomId;
 
-    console.log(`Checking review eligibility for user: ${userId}, room: ${roomId}`);
-
     const booking = await Booking.findOne({
         user: userId,
         room: roomId,

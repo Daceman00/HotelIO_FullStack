@@ -61,23 +61,6 @@ exports.resizeRoomImages = catchAsync(async (req, res, next) => {
     next();
 });
 
-exports.getRoomWithReviews = catchAsync(async (req, res, next) => {
-    const popOptions = {
-        path: 'reviews',  // Virtual field to populate
-        select: 'review rating user createdAt'  // Specify fields to include from reviews
-    };
-
-    return factory.getOne(Room, popOptions)(req, res, next)
-
-});
-
-exports.getRoomWithBookings = catchAsync(async (req, res, next) => {
-    const popOptions = {
-        path: 'bookings',  // Virtual field to populate
-        select: 'checkIn checkOut user price paid'  // Specify fields to include from bookings
-    }
-    return factory.getOne(Room, popOptions)(req, res, next)
-})
 
 exports.getRoomWithReviewsAndBookings = catchAsync(async (req, res, next) => {
     const room = await Room.findById(req.params.id)
@@ -106,7 +89,12 @@ exports.getRoomWithActiveBookings = catchAsync(async (req, res, next) => {
     const room = await Room.findById(req.params.id)
         .populate({
             path: 'bookings',
-            match: { checkOut: { $gte: new Date() } }, // Only include active bookings
+            match: {
+                $or: [
+                    { checkIn: { $lte: new Date() }, checkOut: { $gte: new Date() } }, // Currently running bookings
+                    { checkIn: { $gte: new Date() } } // Future bookings
+                ]
+            },
             select: 'checkIn checkOut user price paid'
         });
 
