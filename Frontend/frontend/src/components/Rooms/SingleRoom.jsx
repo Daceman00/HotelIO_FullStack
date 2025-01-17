@@ -2,7 +2,7 @@ import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
-import { Pagination, Autoplay } from "swiper/modules"; // Add Autoplay module
+import { Pagination, Autoplay } from "swiper/modules";
 import { IMAGE_URL } from "../../helpers/imageURL";
 import { useNavigate } from "react-router-dom";
 
@@ -34,12 +34,12 @@ function SingleRoom({ room }) {
     >
       <div className="relative">
         <Swiper
-          modules={[Pagination, Autoplay]} // Add Autoplay module
+          modules={[Pagination, Autoplay]}
           pagination={{ clickable: true }}
-          loop={room.images.length > 1} // Enable loop only for multiple slides
-          slidesPerView={Math.min(room.images.length, 1)} // Adjust for single image
-          slidesPerGroup={Math.min(room.images.length, 1)} // Adjust for single image
-          autoplay={{ delay: 3000 }} // Enable autoplay with a delay of 3 seconds
+          loop={room.images.length > 1}
+          slidesPerView={Math.min(room.images.length, 1)}
+          slidesPerGroup={Math.min(room.images.length, 1)}
+          autoplay={{ delay: 3000, disableOnInteraction: false }}
           className="w-full max-h-96"
         >
           {room.images.map((image, idx) => (
