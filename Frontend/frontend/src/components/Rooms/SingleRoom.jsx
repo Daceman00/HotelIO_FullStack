@@ -26,77 +26,37 @@ function SingleRoom({ room }) {
 
   return (
     <div
-      className={`animate-fadeInDown border border-gray-100 dark:!border-gray-600 rounded-lg overflow-hidden transition-transform transform ${
-        isMaintenance
-          ? "bg-gray-300 dark:bg-gray-700 pointer-events-none"
-          : "hover:scale-105 hover:shadow-lg"
-      }`}
+      key={room.roomNumber}
+      className="hp-room-item  w-full h-full left-0 top-0 group relative bg-cover bg-center rounded-lg overflow-hidden"
+      style={{
+        backgroundImage: `url(${IMAGE_URL}/${room.imageCover})`,
+        height: "350px",
+      }}
     >
-      <div className="relative">
-        <Swiper
-          modules={[Pagination, Autoplay]}
-          pagination={{ clickable: true }}
-          loop={room.images.length > 1}
-          slidesPerView={Math.min(room.images.length, 1)}
-          slidesPerGroup={Math.min(room.images.length, 1)}
-          autoplay={{ delay: 3000, disableOnInteraction: false }}
-          className="w-full max-h-96"
+      <div className="absolute left-11 right-6 bottom-[-250px] transition-all duration-500 ease-linear group-hover:bottom-[135px] bg-black bg-opacity-60 p-4 rounded-t-lg">
+        <h3 className="text-white text-lg font-semibold mb-4">{room.title}</h3>
+        <h2 className="text-yellow-500 text-2xl font-bold mb-12 group-hover:mb-7 transition-all duration-200">
+          {room.price}
+          <span className="text-sm text-white ml-2">/Pernight</span>
+        </h2>
+        <table className="w-full text-sm text-white mb-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <tbody>
+            <tr>
+              <td className="w-[120px] font-semibold">Status:</td>
+              <td>{room.status}</td>
+            </tr>
+            <tr>
+              <td className="w-[120px] font-semibold">Capacity:</td>
+              <td>{room.roomType}</td>
+            </tr>
+          </tbody>
+        </table>
+        <a
+          href="#"
+          className="primary-btn px-6 py-2 bg-yellow-500 text-white font-semibold rounded hover:bg-white hover:text-yellow-500 transition-colors duration-300"
         >
-          {room.images.map((image, idx) => (
-            <SwiperSlide key={idx}>
-              <img
-                src={`${IMAGE_URL}/${image}`}
-                alt={`${room.type} Room ${idx + 1}`}
-                className="w-full object-cover max-h-96 rounded-t-lg"
-              />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-        <div
-          className={`absolute top-3 right-3 ${getStatusColor(
-            room.status
-          )} text-white text-sm uppercase px-3 py-1 rounded-md z-10`}
-        >
-          {room.status}
-        </div>
-      </div>
-      <div className="px-6 py-4">
-        <p className="text-sm text-gray-300 dark:text-gray-600 font-semibold">
-          Room #{room.roomNumber}
-        </p>
-        <h1 className="text-2xl font-bold text-gray-600">
-          <span className="text-emerald-600">
-            {room.roomType
-              .trim()
-              .toLowerCase()
-              .replace(/^\w/, (c) => c.toUpperCase())}
-          </span>{" "}
-          Room
-        </h1>
-        <p className="text-sm text-gray-500 line-clamp-3 hover:line-clamp-none mt-2">
-          Experience comfort in our {room.roomType} room. Hover to read more
-          about its features.
-        </p>
-      </div>
-      <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100 dark:!border-gray-600">
-        <div className="flex items-center text-gray-500 dark:text-gray-400">
-          <span className="mr-1">$</span>
-          <span>{room.price ? room.price.toFixed(2) : "N/A"} ¬ Night</span>
-        </div>
-        <div className="text-yellow-400 font-semibold">
-          {"★".repeat(room.averageRating)}{" "}
-          <span className="text-gray-500">
-            {"☆".repeat(5 - room.averageRating)}
-          </span>
-        </div>
-        <div className="px-4 py-3 text-center">
-          <button
-            onClick={() => navigate(`/rooms/${room.id}`)}
-            className="bg-emerald-600 text-white font-semibold px-4 py-2 rounded-md transition-transform transform hover:scale-105 hover:bg-emerald-700"
-          >
-            View Details
-          </button>
-        </div>
+          More Details
+        </a>
       </div>
     </div>
   );

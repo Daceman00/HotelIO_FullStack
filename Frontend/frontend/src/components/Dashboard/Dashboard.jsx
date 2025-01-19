@@ -1,9 +1,39 @@
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import Login from "./../Auth/Login";
+
 function Dashboard() {
+  const IMAGE_URL = "http://localhost:5173";
+  const images = [
+    "/images/hero-1.jpg",
+    "/images/hero-2.jpg",
+    "/images/hero-3.jpg",
+  ];
+  console.log(`${IMAGE_URL}${images[0]}`);
   return (
-    <section
-      className="relative pt-16 pb-24 bg-cover bg-center"
-      // style={{ backgroundImage: "url('/path-to-your-image.jpg')" }}
-    >
+    <section className="relative pt-16 pb-24 bg-cover bg-center">
+      <Swiper
+        modules={[Pagination, Autoplay]}
+        pagination={{ clickable: true }}
+        loop={images.length > 1}
+        slidesPerView={Math.min(images.length, 1)}
+        slidesPerGroup={Math.min(images.length, 1)}
+        autoplay={{ delay: 3000, disableOnInteraction: false }}
+        className="absolute inset-0 z-0"
+      >
+        {images.map((image, index) => (
+          <SwiperSlide key={index}>
+            <img
+              src={`${IMAGE_URL}${image}`}
+              alt={`Slide ${index + 1}`}
+              className="w-full h-full object-cover"
+            />
+          </SwiperSlide>
+        ))}
+      </Swiper>
       <div className="container mx-auto relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="text-center md:text-left">
@@ -23,70 +53,7 @@ function Dashboard() {
           </div>
           <div className="bg-white p-6 rounded shadow-md">
             <h3 className="text-xl font-bold mb-4">Booking Your Hotel</h3>
-            <form>
-              <div className="mb-4">
-                <label
-                  htmlFor="date-in"
-                  className="block text-sm font-medium text-gray-600 mb-2"
-                >
-                  Check In:
-                </label>
-                <input
-                  type="text"
-                  id="date-in"
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:ring-yellow-400"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="date-out"
-                  className="block text-sm font-medium text-gray-600 mb-2"
-                >
-                  Check Out:
-                </label>
-                <input
-                  type="text"
-                  id="date-out"
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:ring-yellow-400"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="guests"
-                  className="block text-sm font-medium text-gray-600 mb-2"
-                >
-                  Guests:
-                </label>
-                <select
-                  id="guests"
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:ring-yellow-400"
-                >
-                  <option value="2">2 Adults</option>
-                  <option value="3">3 Adults</option>
-                </select>
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="room"
-                  className="block text-sm font-medium text-gray-600 mb-2"
-                >
-                  Room:
-                </label>
-                <select
-                  id="room"
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:ring-yellow-400"
-                >
-                  <option value="1">1 Room</option>
-                  <option value="2">2 Rooms</option>
-                </select>
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-yellow-500 text-white py-2 rounded font-semibold hover:bg-yellow-600"
-              >
-                Check Availability
-              </button>
-            </form>
+            <Login />
           </div>
         </div>
       </div>

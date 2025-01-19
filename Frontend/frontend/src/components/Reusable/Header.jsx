@@ -6,6 +6,7 @@ import UserAvatar from "../Auth/UserAvatar";
 import UserCard from "../Auth/UserCard";
 import { LoaderIcon } from "react-hot-toast";
 import Rooms from "../Rooms/Rooms"; // Import the Rooms component
+import "@fortawesome/fontawesome-free/css/all.min.css"; // Import Font Awesome CSS
 
 function Header() {
   const { sidebarVisible } = useUIStore();
@@ -16,7 +17,12 @@ function Header() {
 
   return (
     <div>
-      <header className="header-section">
+      <header
+        className="header-section"
+        style={{
+          boxShadow: "0px 12px 15px rgba(36, 11, 12, 0.05)",
+        }}
+      >
         {/* Top Navigation */}
         <div className="top-nav bg-gray-100 border-b">
           <div className="container mx-auto px-4">
@@ -33,24 +39,11 @@ function Header() {
                 </li>
               </ul>
 
+              {/* Center Section */}
+              <span className="text-gray-700 text-lg font-bold">HotelIO</span>
+
               {/* Right Section */}
               <div className="flex items-center space-x-6">
-                {/* Social Links */}
-                <div className="flex space-x-4 text-gray-600">
-                  <a href="#" className="hover:text-yellow-500">
-                    <i className="fa fa-facebook"></i>
-                  </a>
-                  <a href="#" className="hover:text-yellow-500">
-                    <i className="fa fa-twitter"></i>
-                  </a>
-                  <a href="#" className="hover:text-yellow-500">
-                    <i className="fa fa-tripadvisor"></i>
-                  </a>
-                  <a href="#" className="hover:text-yellow-500">
-                    <i className="fa fa-instagram"></i>
-                  </a>
-                </div>
-
                 {/* Booking Button */}
                 <a
                   href="#"
@@ -58,38 +51,6 @@ function Header() {
                 >
                   Booking Now
                 </a>
-
-                {/* Language Selector */}
-                <div className="relative">
-                  <div className="flex items-center cursor-pointer">
-                    <img
-                      src="img/flag.jpg"
-                      alt="Language"
-                      className="w-5 h-5 rounded-full mr-2"
-                    />
-                    <span className="text-gray-600 text-sm">
-                      EN <i className="fa fa-angle-down ml-1"></i>
-                    </span>
-                  </div>
-                  <ul className="absolute left-0 mt-2 bg-white border rounded shadow-lg hidden group-hover:block">
-                    <li>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 text-gray-600 hover:bg-yellow-100"
-                      >
-                        Zi
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 text-gray-600 hover:bg-yellow-100"
-                      >
-                        Fr
-                      </a>
-                    </li>
-                  </ul>
-                </div>
               </div>
             </div>
           </div>
@@ -127,45 +88,7 @@ function Header() {
                       About Us
                     </a>
                   </li>
-                  <li className="relative group">
-                    <a href="./pages.html" className="hover:text-yellow-500">
-                      Pages
-                    </a>
-                    <ul className="absolute left-0 mt-2 bg-white border rounded shadow-lg hidden group-hover:block">
-                      <li>
-                        <a
-                          href="./room-details.html"
-                          className="block px-4 py-2 text-gray-600 hover:bg-yellow-100"
-                        >
-                          Room Details
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="./blog-details.html"
-                          className="block px-4 py-2 text-gray-600 hover:bg-yellow-100"
-                        >
-                          Blog Details
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          className="block px-4 py-2 text-gray-600 hover:bg-yellow-100"
-                        >
-                          Family Room
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          className="block px-4 py-2 text-gray-600 hover:bg-yellow-100"
-                        >
-                          Premium Room
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
+
                   <li>
                     <a href="./blog.html" className="hover:text-yellow-500">
                       News

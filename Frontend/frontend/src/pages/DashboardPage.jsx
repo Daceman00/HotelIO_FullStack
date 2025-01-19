@@ -1,5 +1,5 @@
 import Dashboard from "../components/Dashboard/Dashboard";
-import Testimonials from "../components/Dashboard/Testimonials";
+import Reviews from "../components/Reviews/Reviews";
 import Rooms from "../components/Rooms/Rooms";
 
 function DashboardPage() {
@@ -7,7 +7,7 @@ function DashboardPage() {
     <>
       <Dashboard />
       <Rooms />
-      <Testimonials />
+      <Reviews />
     </>
   );
 }

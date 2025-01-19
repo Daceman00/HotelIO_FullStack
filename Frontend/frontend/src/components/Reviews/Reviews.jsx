@@ -4,8 +4,9 @@ import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
-function Testimonials() {
+function Reviews() {
   const testimonials = [
     {
       id: 1,
@@ -95,4 +96,4 @@ function Testimonials() {
   );
 }
 
-export default Testimonials;
+export default Reviews;

@@ -1,3 +1,5 @@
+import "font-awesome/css/font-awesome.min.css";
+
 function Footer() {
   return (
     <footer className="footer-section bg-gray-900 text-gray-300">
@@ -20,23 +22,6 @@ function Footer() {
                   We inspire and reach millions of travelers
                   <br /> across 90 local websites.
                 </p>
-                <div className="flex space-x-4 mt-4">
-                  <a href="#" className="text-gray-400 hover:text-yellow-500">
-                    <i className="fa fa-facebook"></i>
-                  </a>
-                  <a href="#" className="text-gray-400 hover:text-yellow-500">
-                    <i className="fa fa-twitter"></i>
-                  </a>
-                  <a href="#" className="text-gray-400 hover:text-yellow-500">
-                    <i className="fa fa-tripadvisor"></i>
-                  </a>
-                  <a href="#" className="text-gray-400 hover:text-yellow-500">
-                    <i className="fa fa-instagram"></i>
-                  </a>
-                  <a href="#" className="text-gray-400 hover:text-yellow-500">
-                    <i className="fa fa-youtube-play"></i>
-                  </a>
-                </div>
               </div>
             </div>
 
