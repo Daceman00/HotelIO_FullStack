@@ -32,7 +32,7 @@ function Reviews() {
       <div className="container mx-auto px-4">
         {/* Section Title */}
         <div className="text-center mb-12">
-          <span className="text-yellow-500 uppercase text-sm font-bold">
+          <span className="text-[#dfa974] uppercase text-sm font-bold">
             Testimonials
           </span>
           <h2 className="text-3xl font-bold text-gray-800 mt-2">
@@ -66,9 +66,9 @@ function Reviews() {
                             key={index}
                             className={`${
                               index < Math.floor(testimonial.rating)
-                                ? "text-yellow-500"
+                                ? "text-[#dfa974]"
                                 : index < testimonial.rating
-                                ? "text-yellow-500 opacity-50"
+                                ? "text-[#dfa974] opacity-50"
                                 : "text-gray-300"
                             } fas fa-star`}
                           />

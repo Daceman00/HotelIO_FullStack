@@ -13,6 +13,7 @@ export default {
         white_primary: '#FEFAE0',
         white_secondary: '#F2EED7',
         green_secondary: '#626F47',
+        light_brown: '#dfa974'
       },
       /* colors: {
         green_primary: '#1e3d58',

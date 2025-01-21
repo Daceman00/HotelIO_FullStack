@@ -30,11 +30,11 @@ function Header() {
               {/* Left Section */}
               <ul className="flex space-x-6 text-gray-600 text-sm">
                 <li className="flex items-center">
-                  <i className="fa fa-phone text-yellow-500 mr-2"></i> (12) 345
+                  <i className="fa fa-phone text-[#dfa974] mr-2"></i> (12) 345
                   67890
                 </li>
                 <li className="flex items-center">
-                  <i className="fa fa-envelope text-yellow-500 mr-2"></i>{" "}
+                  <i className="fa fa-envelope text-[#dfa974] mr-2"></i>{" "}
                   info.colorlib@gmail.com
                 </li>
               </ul>
@@ -47,7 +47,7 @@ function Header() {
                 {/* Booking Button */}
                 <a
                   href="#"
-                  className="px-6 py-2 text-white bg-yellow-500 rounded font-semibold text-sm uppercase hover:bg-yellow-600"
+                  className="px-6 py-2 text-white bg-[#dfa974] rounded font-semibold text-sm uppercase hover:bg-yellow-600"
                 >
                   Booking Now
                 </a>
@@ -71,31 +71,31 @@ function Header() {
               <nav className="mainmenu">
                 <ul className="flex space-x-8 text-gray-700 text-sm font-medium">
                   <li className="relative group">
-                    <a
-                      href="./index.html"
-                      className="hover:text-yellow-500 group-hover:after:opacity-100 after:absolute after:left-0 after:bottom-0 after:w-full after:h-1 after:bg-yellow-500 after:opacity-0 after:transition-opacity"
+                    <Link
+                      to="/"
+                      className="hover:text-[#dfa974] group-hover:after:opacity-100 after:absolute after:left-0 after:bottom-0 after:w-full after:h-1 after:bg-[#dfa974] after:opacity-0 after:transition-opacity"
                     >
                       Home
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="./rooms.html" className="hover:text-yellow-500">
+                    <Link to="/rooms" className="hover:text-[#dfa974]">
                       Rooms
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href="./about-us.html" className="hover:text-yellow-500">
+                    <a href="./about-us.html" className="hover:text-[#dfa974]">
                       About Us
                     </a>
                   </li>
 
                   <li>
-                    <a href="./blog.html" className="hover:text-yellow-500">
+                    <a href="./blog.html" className="hover:text-[#dfa974]">
                       News
                     </a>
                   </li>
                   <li>
-                    <a href="./contact.html" className="hover:text-yellow-500">
+                    <a href="./contact.html" className="hover:text-[#dfa974]">
                       Contact
                     </a>
                   </li>

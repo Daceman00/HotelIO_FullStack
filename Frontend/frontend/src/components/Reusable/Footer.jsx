@@ -1,5 +1,3 @@
-import "font-awesome/css/font-awesome.min.css";
-
 function Footer() {
   return (
     <footer className="footer-section bg-gray-900 text-gray-300">
@@ -28,7 +26,7 @@ function Footer() {
             {/* Contact Section */}
             <div>
               <div className="ft-contact">
-                <h6 className="text-lg font-bold text-yellow-500 mb-4">
+                <h6 className="text-lg font-bold text-[#dfa974] mb-4">
                   Contact Us
                 </h6>
                 <ul className="space-y-2 text-sm">
@@ -42,7 +40,7 @@ function Footer() {
             {/* Newsletter Section */}
             <div>
               <div className="ft-newslatter">
-                <h6 className="text-lg font-bold text-yellow-500 mb-4">
+                <h6 className="text-lg font-bold text-[#dfa974] mb-4">
                   Newsletter
                 </h6>
                 <p className="text-sm mb-4">
@@ -56,7 +54,7 @@ function Footer() {
                   />
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-yellow-500 rounded-r text-white hover:bg-yellow-600"
+                    className="px-4 py-2 bg-[#dfa974] rounded-r text-white hover:bg-yellow-600"
                   >
                     <i className="fa fa-send"></i>
                   </button>
@@ -73,22 +71,22 @@ function Footer() {
           <div className="flex flex-wrap justify-between items-center text-sm">
             <ul className="flex space-x-6">
               <li>
-                <a href="#" className="hover:text-yellow-500">
+                <a href="#" className="hover:text-[#dfa974]">
                   Contact
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-yellow-500">
+                <a href="#" className="hover:text-[#dfa974]">
                   Terms of use
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-yellow-500">
+                <a href="#" className="hover:text-[#dfa974]">
                   Privacy
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-yellow-500">
+                <a href="#" className="hover:text-[#dfa974]">
                   Environmental Policy
                 </a>
               </li>
@@ -97,12 +95,12 @@ function Footer() {
               <p>
                 Copyright &copy; {new Date().getFullYear()} All rights reserved
                 | This template is made with{" "}
-                <i className="fa fa-heart text-yellow-500"></i> by{" "}
+                <i className="fa fa-heart text-[#dfa974]"></i> by{" "}
                 <a
                   href="https://colorlib.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-yellow-500 hover:underline"
+                  className="text-[#dfa974] hover:underline"
                 >
                   Colorlib
                 </a>

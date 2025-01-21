@@ -118,10 +118,10 @@ const RoomDetails = () => {
                 <p className="text-gray-600 mt-2">{review.review}</p>
                 <div className="flex items-center mt-2">
                   <span className="text-yellow-500">
-                    {"★".repeat(review.rating)}
+                    {"fas fa-star".repeat(review.rating)}
                   </span>
                   <span className="text-gray-400 ml-2">
-                    {"★".repeat(5 - review.rating)}
+                    {"fas fa-star".repeat(5 - review.rating)}
                   </span>
                 </div>
               </div>
