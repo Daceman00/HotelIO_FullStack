@@ -6,7 +6,7 @@ const bookingRouter = require('./bookingRoutes');
 
 const router = express.Router();
 
-router.use(authController.protect)
+// router.use(authController.protect)
 // router.use(authController.restrictTo('admin'))
 
 router.use('/:roomId/reviews', reviewRouter);

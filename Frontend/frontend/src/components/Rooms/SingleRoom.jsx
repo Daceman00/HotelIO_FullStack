@@ -15,7 +15,7 @@ function SingleRoom({ room }) {
         height: "400px",
       }}
     >
-      <div className="absolute left-11 right-6 bottom-[-150px] transition-all duration-300 ease-linear group-hover:bottom-[135px] bg-opacity-0 p-4 rounded-t-lg">
+      <div className="absolute left-11 right-6 bottom-[-160px] transition-all duration-300 ease-linear group-hover:bottom-[135px] bg-opacity-0 p-4 rounded-t-lg lg:bottom-[-250px] lg:group-hover:bottom-[30px] md:bottom-[-120px] md:group-hover:bottom-[100px] sm:bottom-[100px] sm:group-hover:bottom-[80px] xl:bottom-[-140px] xl:group-hover:bottom-[120px] 2xl:bottom-[-140px] 2xl:group-hover:bottom-[120px]">
         <h3 className="text-white text-lg font-semibold mb-4">
           Room: {room.roomNumber}
         </h3>
@@ -36,13 +36,13 @@ function SingleRoom({ room }) {
             <tr>
               <td className="w-[120px] font-semibold">Rating:</td>
               <td>
-                <div className="flex items-center mt-2">
+                <div className="flex items-center gap-x-2">
                   <span className="text-[#dfa974]">
                     {[...Array(Math.floor(room.averageRating))].map((_, i) => (
                       <i key={i} className="fas fa-star"></i>
                     ))}
                   </span>
-                  <span className="text-gray-400 ml-2">
+                  <span className="text-gray-400">
                     {[...Array(5 - Math.floor(room.averageRating))].map(
                       (_, i) => (
                         <i key={i} className="fas fa-star"></i>

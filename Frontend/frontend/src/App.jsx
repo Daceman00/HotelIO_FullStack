@@ -39,30 +39,9 @@ function App() {
           <div className="flex flex-col flex-1 ml-1 overflow-y-auto">
             <Header />
             <Routes>
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <DashboardPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/rooms"
-                element={
-                  <ProtectedRoute>
-                    <RoomsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/rooms/:roomId"
-                element={
-                  <ProtectedRoute>
-                    <RoomDetails />
-                  </ProtectedRoute>
-                }
-              />
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/rooms" element={<RoomsPage />} />
+              <Route path="/rooms/:roomId" element={<RoomDetails />} />
               <Route
                 path="/bookings"
                 element={

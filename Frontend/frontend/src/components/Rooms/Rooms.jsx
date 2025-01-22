@@ -6,7 +6,7 @@ function Rooms() {
   const { rooms } = useGetAllRooms();
 
   return (
-    <div className="w-full flex flex-col py-24 dark:bg-gray-800">
+    <div id="rooms" className="w-full flex flex-col py-24 dark:bg-gray-800">
       <div className="flex flex-col w-full mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-200 mb-4">

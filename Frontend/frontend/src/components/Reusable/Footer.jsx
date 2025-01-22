@@ -1,6 +1,8 @@
+import "@fortawesome/fontawesome-free/css/all.min.css";
+
 function Footer() {
   return (
-    <footer className="footer-section bg-gray-900 text-gray-300">
+    <footer className="footer-section bg-[#393D4A] text-gray-300">
       <div className="container mx-auto px-4 py-12">
         <div className="footer-text">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -50,7 +52,7 @@ function Footer() {
                   <input
                     type="text"
                     placeholder="Email"
-                    className="w-full px-4 py-2 rounded-l bg-gray-800 text-gray-400 focus:outline-none"
+                    className="w-full px-4 py-2 rounded-l bg-[#393D4A] text-gray-400 focus:outline-none"
                   />
                   <button
                     type="submit"
@@ -66,7 +68,7 @@ function Footer() {
       </div>
 
       {/* Copyright Section */}
-      <div className="copyright-option bg-gray-800 py-4">
+      <div className="copyright-option bg-[#393D4A] py-4">
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap justify-between items-center text-sm">
             <ul className="flex space-x-6">

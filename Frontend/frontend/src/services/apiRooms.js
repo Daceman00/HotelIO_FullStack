@@ -1,4 +1,4 @@
-import axios from "./../helpers/axios"
+import axios from "axios";
 
 export async function getAllRooms() {
     try {

@@ -76,7 +76,7 @@ function UserCard() {
                   Users
                 </button>
               </Link>
-              <Link>
+              <Link to="/rooms">
                 <button
                   type="button"
                   className="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:text-white"
