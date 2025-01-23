@@ -8,152 +8,138 @@ import { IMAGE_URL } from "../../helpers/imageURL";
 import Loading from "../Reusable/Loading";
 import { useGetRoom } from "./useGetRoom";
 import { useMoveBack } from "../../hooks/useMoveBack";
+import { Link } from "react-router-dom";
 
 const RoomDetails = () => {
   const { room, isPending, error } = useGetRoom();
   const moveBack = useMoveBack();
 
   if (isPending) return <Loading />;
-  console.log(room?.data.room.roomType);
+
   return (
-    <div className="container mx-auto px-4 py-6 relative">
-      <button
-        onClick={moveBack}
-        type="button"
-        className="absolute top-4 right-4 text-white bg-emerald-600 hover:bg-emerald-700 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:bg-emerald-500 dark:hover:bg-emerald-600 dark:focus:ring-emerald-700"
-      >
-        <svg
-          className="w-4 h-4"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 14 10"
-        >
-          <path
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M13 5H1m0 0l4-4M1 5l4 4"
-          />
-        </svg>
-        <span className="sr-only">Move back</span>
-      </button>
-      {/* Room Title and Info */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">
-          {room?.data.room.roomType
-            .trim()
-            .toLowerCase()
-            .replace(/^\w/, (c) => c.toUpperCase())}{" "}
-          Room
-        </h1>
-        <p className="text-gray-500 mt-1">Room #{room?.data.room.roomNumber}</p>
-        <div className="mt-2 flex items-center gap-2">
-          <span className="text-yellow-400">
-            ★ {room?.data.room.averageRating || "N/A"}
-          </span>
-          <span className="text-gray-500">
-            ({room?.data.room.reviews.length} reviews)
-          </span>
-        </div>
-      </div>
+    <section className="py-16">
+      <div className="container mx-auto flex flex-col lg:flex-row gap-10">
+        <div className="lg:w-2/3">
+          <div className="pt-[70px] pb-[80px] flex justify-center items-center flex-col text-center">
+            <div className="container">
+              <h2 className="text-4xl text-gray-800 mb-4">Our Rooms</h2>
 
-      {/* Image Gallery */}
-      <div className="relative mb-6">
-        <Swiper
-          modules={[Pagination, Navigation]}
-          pagination={{ clickable: true }}
-          navigation
-          loop={room?.data.room.images.length > 1}
-          slidesPerView={1}
-          className="w-full max-h-96"
-        >
-          {room?.data.room.images.map((image, idx) => (
-            <SwiperSlide key={idx}>
-              <img
-                src={`${IMAGE_URL}/${image}`}
-                alt={`Room Image ${idx + 1}`}
-                className="w-full h-full object-cover rounded-md"
-              />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
+              <div className="flex items-center text-lg text-[#19191a] font-medium justify-center">
+                <Link to="/" className="text-gray-400 relative mr-2">
+                  Home
+                </Link>
 
-      {/* Room Description */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800">
-          About This Room
-        </h2>
-        <p className="text-gray-600 mt-2">{room?.data.room.description}</p>
-      </div>
+                <svg
+                  className="shrink-0 mx-2 size-4 text-gray-400 dark:text-neutral-600"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg>
 
-      {/* Features */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800">Amenities</h2>
-        <ul className="mt-2 grid grid-cols-2 gap-4 text-gray-600">
-          {room?.data.room.features.map((feature, idx) => (
-            <li key={idx} className="flex items-center gap-2">
-              <span className="text-emerald-600">✔</span> {feature}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Reviews */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800">Guest Reviews</h2>
-        <div className="mt-2 space-y-4">
-          {room?.data.room.reviews.length > 0 ? (
-            room?.data.room.reviews.map((review, idx) => (
-              <div
-                key={idx}
-                className="p-4 border rounded-md bg-gray-50 dark:bg-gray-700"
-              >
-                <p className="text-gray-800 font-medium">{review.user.name}</p>
-                <p className="text-sm text-gray-500">
-                  {new Date(review.createdAt).toLocaleDateString()}
-                </p>
-                <p className="text-gray-600 mt-2">{review.review}</p>
-                <div className="flex items-center mt-2">
-                  <span className="text-yellow-500">
-                    {"fas fa-star".repeat(review.rating)}
-                  </span>
-                  <span className="text-gray-400 ml-2">
-                    {"fas fa-star".repeat(5 - review.rating)}
-                  </span>
-                </div>
+                <span className="text-gray-800 ">Rooms</span>
               </div>
-            ))
-          ) : (
-            <p className="text-gray-500">No reviews available.</p>
-          )}
-        </div>
-      </div>
-
-      {/* Booking Section */}
-      <div className="border-t pt-4">
-        <h2 className="text-2xl font-semibold text-gray-800">Book This Room</h2>
-        <div className="mt-4 flex items-center justify-between">
-          <div>
-            <p className="text-gray-600 text-lg">
-              Price:{" "}
-              <span className="font-bold text-emerald-600">
-                ${room?.data.room.price.toFixed(2)}
-              </span>{" "}
-              / Night
-            </p>
-            <p className="text-sm text-gray-500">
-              Includes all taxes and fees.
-            </p>
+            </div>
           </div>
-          <button className="bg-emerald-600 text-white font-semibold px-6 py-3 rounded-md hover:bg-emerald-700 transition">
-            Reserve Now
-          </button>
+          <div className="space-y-6">
+            <Swiper
+              modules={[Pagination, Navigation]}
+              pagination={{ clickable: true }}
+              navigation
+              loop={room?.data.room.images.length > 1}
+              slidesPerView={1}
+              className="w-full max-h-96 rounded-lg shadow"
+            >
+              {room?.data.room.images.map((image, idx) => (
+                <SwiperSlide key={idx}>
+                  <img
+                    src={`${IMAGE_URL}/${image}`}
+                    alt={`Room Image ${idx + 1}`}
+                    className="w-full h-full object-cover rounded-md"
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+            <div className="space-y-4">
+              <h3 className="text-3xl font-semibold text-gray-800">
+                {room?.data.room.roomType
+                  .trim()
+                  .toLowerCase()
+                  .replace(/^\w/, (c) => c.toUpperCase())}{" "}
+                Room
+              </h3>
+
+              <h2 className="text-2xl font-bold text-yellow-500">
+                ${room?.data.room.price.toFixed(2)}
+                <span className="text-gray-600 text-sm">/Pernight</span>
+              </h2>
+              <table className="table-auto w-full text-sm text-gray-700">
+                <tbody>
+                  <tr>
+                    <td className="font-semibold">Size:</td>
+                    <td>30 ft</td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold">Capacity:</td>
+                    <td>Max person 5</td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold">Bed:</td>
+                    <td>King Beds</td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold">Services:</td>
+                    <td>Wifi, Television, Bathroom,...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div className="lg:w-1/3 flex items-start lg:items-center">
+          <div className="bg-gray-100 p-8 rounded-lg shadow-lg space-y-6">
+            <h3 className="text-2xl font-semibold text-gray-800">
+              Your Reservation
+            </h3>
+            <form className="space-y-4">
+              <div className="space-y-1">
+                <label htmlFor="date-in" className="text-sm text-gray-600">
+                  Check In:
+                </label>
+                <input
+                  type="text"
+                  id="date-in"
+                  className="w-full border border-gray-300 rounded px-4 py-2 text-gray-700"
+                />
+              </div>
+              <div className="space-y-1">
+                <label htmlFor="date-out" className="text-sm text-gray-600">
+                  Check Out:
+                </label>
+                <input
+                  type="text"
+                  id="date-out"
+                  className="w-full border border-gray-300 rounded px-4 py-2 text-gray-700"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-yellow-500 text-white py-2 px-4 rounded font-semibold uppercase"
+              >
+                Check Availability
+              </button>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

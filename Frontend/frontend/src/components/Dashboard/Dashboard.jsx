@@ -41,21 +41,21 @@ function Dashboard() {
         slidesPerView={Math.min(images.length, 1)}
         slidesPerGroup={Math.min(images.length, 1)}
         autoplay={{ delay: 3000, disableOnInteraction: false }}
-        className="absolute inset-0 " // Ensure Swiper takes full height of the section
+        className="absolute inset-0 "
       >
         {images.map((image, index) => (
           <SwiperSlide key={index}>
             <img
               src={`${IMAGE_URL}${image}`}
               alt={`Slide ${index + 1}`}
-              className="w-full h-full object-cover" // Ensure image covers the fixed height
+              className="w-full h-full object-cover"
             />
           </SwiperSlide>
         ))}
       </Swiper>
       <div className="container mx-auto relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 z-0">
-          <div className="text-center md:text-left">
+          <div className="text-center md:text-left xl:px-7 lg:px-7 md:px-7">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
               HotelIO A Luxury Hotel
             </h1>
@@ -66,14 +66,14 @@ function Dashboard() {
             </p>
             <button
               onClick={handleRedirect}
-              className="bg-[#dfa974] text-white px-6 py-3 rounded uppercase font-semibold hover:bg-yellow-600"
+              className="bg-[#dfa974] text-white px-6 py-3 rounded uppercase font-semibold hover:bg-[#c68a5e]"
             >
               Discover Now
             </button>
           </div>
           {isUserLoggedIn ? null : (
-            <div className="bg-white p-3 shadow-md text-sm">
-              <div className="flex justify-center">
+            <div className="bg-white p-3 shadow-md text-sm xl:px-7 lg:px-7 md:px-7">
+              <div className="flex justify-center ">
                 <nav className="flex overflow-x-auto items-center p-1 space-x-1 rtl:space-x-reverse text-sm text-gray-600 bg-gray-500/5 rounded-xl dark:bg-gray-500/20">
                   <button
                     role="tab"

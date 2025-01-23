@@ -23,12 +23,12 @@ function Users() {
       : false
   );
   return (
-    <div className="p-6 relative overflow-x-auto shadow-md sm:rounded-lg">
+    <div className="p-6 relative overflow-x-auto shadow-md sm:rounded-lg bg-white dark:bg-gray-800">
       <Search searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <button
         onClick={moveBack}
         type="button"
-        className="absolute top-4 right-4 text-white bg-emerald-600 hover:bg-emerald-700 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:bg-emerald-500 dark:hover:bg-emerald-600 dark:focus:ring-emerald-700"
+        className="absolute top-4 right-4 text-white bg-[#dfa974] hover:bg-[#c68a5e] focus:ring-4 focus:outline-none focus:ring-[#c68a5e] font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:bg-[#c68a5e] dark:hover:bg-[#b07a54] dark:focus:ring-[#b07a54]"
       >
         <svg
           className="w-4 h-4"
@@ -50,18 +50,6 @@ function Users() {
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
-            <th scope="col" className="p-4">
-              <div className="flex items-center">
-                <input
-                  id="checkbox-all-search"
-                  type="checkbox"
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <label htmlFor="checkbox-all-search" className="sr-only">
-                  checkbox
-                </label>
-              </div>
-            </th>
             <th scope="col" className="px-6 py-3">
               Name
             </th>

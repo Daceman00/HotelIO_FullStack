@@ -1,11 +1,7 @@
 import React, { useEffect } from "react";
-import useUIStore from "../../stores/UiStore";
 import { Link } from "react-router-dom";
 import { useIsLoggedIn } from "../Auth/useAuth";
-import UserAvatar from "../Auth/UserAvatar";
-import UserCard from "../Auth/UserCard";
 import { LoaderIcon } from "react-hot-toast";
-import Rooms from "../Rooms/Rooms";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import useAuthStore from "../../stores/AuthStore";
 import Loading from "./Loading";
@@ -56,7 +52,7 @@ function Header() {
                   {/* Booking Button */}
                   <a
                     href="#"
-                    className="px-6 py-2 text-white bg-[#dfa974] rounded font-semibold text-sm uppercase hover:bg-yellow-600"
+                    className="px-6 py-2 text-white bg-[#dfa974] rounded font-semibold text-sm uppercase hover:bg-[#c68a5e]"
                   >
                     Booking Now
                   </a>
@@ -114,16 +110,7 @@ function Header() {
                   </ul>
                 </nav>
 
-                <div className="inline-block relative">
-                  {isUserLoggedIn && (
-                    <>
-                      <UserAvatar />
-                      <div className="absolute right-0 left-[12rem] mt-2">
-                        <UserCard />
-                      </div>
-                    </>
-                  )}
-                </div>
+                <div className="inline-block relative"></div>
               </div>
             </div>
           </div>

@@ -5,28 +5,11 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import { useGetAllReviews } from "./useGetAllReviews";
 
 function Reviews() {
-  const testimonials = [
-    {
-      id: 1,
-      text: `After a construction project took longer than expected, my husband, my daughter and I needed a place to stay for a few nights. 
-                 As a Chicago resident, we know a lot about our city, neighborhood, and the types of housing options available and absolutely 
-                 love our vacation at Sona Hotel.`,
-      author: "Alexander Vasquez",
-      rating: 4.5,
-      image: "img/testimonial-logo.png",
-    },
-    {
-      id: 2,
-      text: `After a construction project took longer than expected, my husband, my daughter and I needed a place to stay for a few nights. 
-                 As a Chicago resident, we know a lot about our city, neighborhood, and the types of housing options available and absolutely 
-                 love our vacation at Sona Hotel.`,
-      author: "Alexander Vasquez",
-      rating: 4.5,
-      image: "img/testimonial-logo.png",
-    },
-  ];
+  const { reviews } = useGetAllReviews();
+
   return (
     <section className="testimonial-section bg-gray-100 py-16">
       <div className="container mx-auto px-4">
@@ -40,23 +23,23 @@ function Reviews() {
           </h2>
         </div>
 
-        {/* Testimonials */}
+        {/* Reviews */}
         <div className="flex justify-center">
           <div className="max-w-4xl w-full">
             <Swiper
               modules={[Pagination, Autoplay]}
               pagination={{ clickable: true }}
-              loop={testimonials.length > 1}
-              slidesPerView={Math.min(testimonials.length, 1)}
-              slidesPerGroup={Math.min(testimonials.length, 1)}
+              loop={reviews?.data.data.length > 1}
+              slidesPerView={Math.min(reviews?.data.data.length, 1)}
+              slidesPerGroup={Math.min(reviews?.data.data.length, 1)}
               autoplay={{ delay: 3000, disableOnInteraction: false }}
               className="mySwiper"
             >
-              {testimonials.map((testimonial) => (
-                <SwiperSlide key={testimonial.id}>
+              {reviews?.data.data.map((review) => (
+                <SwiperSlide key={review.id}>
                   <div className="ts-item bg-white shadow-md rounded-lg p-8 text-center transition-transform transform hover:scale-105">
                     <p className="text-lg text-gray-600 leading-relaxed mb-8">
-                      {testimonial.text}
+                      {review.review}
                     </p>
                     <div className="ti-author">
                       {/* Ratings */}
@@ -65,9 +48,9 @@ function Reviews() {
                           <i
                             key={index}
                             className={`${
-                              index < Math.floor(testimonial.rating)
+                              index < Math.floor(review.rating)
                                 ? "text-[#dfa974]"
-                                : index < testimonial.rating
+                                : index < review.rating
                                 ? "text-[#dfa974] opacity-50"
                                 : "text-gray-300"
                             } fas fa-star`}
@@ -75,15 +58,11 @@ function Reviews() {
                         ))}
                       </div>
                       <h5 className="text-lg font-semibold text-gray-800">
-                        - {testimonial.author}
+                        {review.user.name}
                       </h5>
-                    </div>
-                    <div className="mt-6">
-                      <img
-                        src={testimonial.image}
-                        alt="Testimonial Logo"
-                        className="mx-auto h-12"
-                      />
+                      <p className="text-sm text-gray-500">
+                        Visited: Room-{review.room.roomNumber}
+                      </p>
                     </div>
                   </div>
                 </SwiperSlide>

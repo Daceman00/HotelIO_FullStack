@@ -29,7 +29,7 @@ export function useLogout() {
                 toast.success("You are logged out!")
             }
 
-            navigate("/login", { replace: true })
+
         },
         onError: () => {
             toast.error("Failed to log out. Please try again")

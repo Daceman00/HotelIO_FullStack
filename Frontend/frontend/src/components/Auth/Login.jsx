@@ -73,7 +73,7 @@ function Login() {
 
               <button
                 type="submit"
-                className="w-full text-white bg-[#dfa974] hover:bg-yellow-600 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                className="w-full text-white bg-[#dfa974] hover:bg-[#c68a5e] focus:ring-4 focus:outline-none focus:ring-[#c68a5e]font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                 disabled={isPending}
               >
                 {isPending ? "Signing in..." : "Sign in"}

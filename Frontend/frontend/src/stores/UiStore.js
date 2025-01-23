@@ -19,6 +19,8 @@ const useUIStore = create((set) => ({
     authTab: 'login',
     setAuthTab: (tab) => set({ authTab: tab }),
 
+    sidebarVisible: false,
+    toggleSidebar: () => set((state) => ({ sidebarVisible: !state.sidebarVisible })),
 }))
 
 export default useUIStore

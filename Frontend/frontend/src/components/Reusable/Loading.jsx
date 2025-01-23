@@ -10,8 +10,8 @@ function Loading({ mode = modes.all }) {
   }
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center bg-white bg-opacity-100 z-50">
-      <PuffLoader color="#fee140" />
+    <div className="fixed inset-0 flex justify-center items-center bg-white bg-opacity-90 z-50">
+      <PuffLoader color="#dfa974" />
     </div>
   );
 }

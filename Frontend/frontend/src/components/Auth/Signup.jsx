@@ -111,7 +111,7 @@ function Signup() {
               </div>
               <button
                 type="submit"
-                className="w-full text-white bg-[#dfa974] hover:bg-[#dfa974] focus:ring-4 focus:outline-none focus:ring-[#dfa974] font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-[#dfa974] dark:hover:bg-[#dfa974] dark:focus:ring-[#dfa974]"
+                className="w-full text-white bg-[#dfa974] hover:bg-[#c68a5e] focus:ring-4 focus:outline-none focus:ring-[#dfa974] font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-[#dfa974] dark:hover:bg-[#dfa974] dark:focus:ring-[#dfa974]"
                 disabled={isPending}
               >
                 {isPending ? "Creating account..." : "Create an account"}
