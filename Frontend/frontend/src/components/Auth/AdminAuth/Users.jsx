@@ -5,6 +5,7 @@ import User from "./User";
 import Search from "../../Reusable/Search";
 import useUIStore from "../../../stores/UiStore";
 import { useMoveBack } from "../../../hooks/useMoveBack";
+import { modes } from "../../../hooks/useServiceConfig";
 
 function Users() {
   const { users, isPending, error } = useUsers();
@@ -67,7 +68,7 @@ function Users() {
         {isLoader ? (
           <tr>
             <td colSpan="5" className="px-6 py-4 text-center">
-              <Loading />
+              <Loading mode={modes.all} />
             </td>
           </tr>
         ) : searchQuery.length >= 3 ? (

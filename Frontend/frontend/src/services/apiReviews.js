@@ -10,3 +10,13 @@ export async function getAllReviews() {
     }
 
 }
+
+/* export async function createReview(roomId, review) {
+    try {
+        const { data } = await axios.post(`/rooms/${roomId}/reviews`, review)
+        return data
+    } catch (error) {
+        console.error(error.response);
+        throw new Error(error.response.data.message);
+    }
+} */
