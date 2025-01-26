@@ -21,6 +21,9 @@ const useUIStore = create((set) => ({
 
     sidebarVisible: false,
     toggleSidebar: () => set((state) => ({ sidebarVisible: !state.sidebarVisible })),
+
+    showDatePicker: false,
+    setShowDatePicker: () => set((state) => ({ showDatePicker: !state.showDatePicker })),
 }))
 
 export default useUIStore

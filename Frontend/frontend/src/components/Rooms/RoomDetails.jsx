@@ -13,15 +13,18 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import { modes } from "../../hooks/useServiceConfig";
 import CreateReview from "../Reviews/CreateReview";
 import DatePickerComponent from "../Reusable/DatePicker";
+import useUIStore from "../../stores/UiStore";
+import CreateBookingForm from "../Bookings/CreateBookingForm";
 
 const RoomDetails = () => {
   const { room, isPending, error } = useGetRoom();
+  const { showDatePicker } = useUIStore();
+  const setShowDatePicker = useUIStore((state) => state.setShowDatePicker);
   const moveBack = useMoveBack();
   const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   };
-
-  if (isPending) return <Loading />;
 
   return (
     <>
@@ -173,9 +176,7 @@ const RoomDetails = () => {
               </div>
             </div>
           </div>
-          <div className="lg:w-1/3 flex items-start lg:items-center">
-            <DatePickerComponent />
-          </div>
+          <CreateBookingForm />
         </div>
         <CreateReview />
       </section>

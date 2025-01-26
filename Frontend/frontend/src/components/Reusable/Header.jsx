@@ -29,9 +29,9 @@ function Header() {
           }}
         >
           {/* Top Navigation */}
-          <div className="top-nav bg-gray-100 border-b">
+          <div className="top-nav bg-gray-100 border-b lg:flex lg:justify-between lg:items-center lg:px-16 lg:py-4">
             <div className="container mx-auto px-4">
-              <div className="flex flex-wrap justify-between items-center py-2">
+              <div className="flex flex-wrap justify-between items-center py-2 lg:py-0">
                 {/* Left Section */}
                 <ul className="flex space-x-6 text-gray-600 text-sm">
                   <li className="flex items-center">
@@ -62,9 +62,9 @@ function Header() {
           </div>
 
           {/* Main Menu */}
-          <div className="menu-item bg-white shadow">
+          <div className="menu-item bg-white shadow lg:flex lg:justify-between lg:items-center lg:px-8 lg:py-4">
             <div className="container mx-auto px-4">
-              <div className="flex items-center justify-between py-4">
+              <div className="flex items-center justify-between py-4 lg:py-0">
                 {/* Logo */}
                 <div className="logo">
                   <a href="./index.html">
