@@ -12,14 +12,11 @@ import { Link } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { modes } from "../../hooks/useServiceConfig";
 import CreateReview from "../Reviews/CreateReview";
-import DatePickerComponent from "../Reusable/DatePicker";
 import useUIStore from "../../stores/UiStore";
 import CreateBookingForm from "../Bookings/CreateBookingForm";
 
 const RoomDetails = () => {
   const { room, isPending, error } = useGetRoom();
-  const { showDatePicker } = useUIStore();
-  const setShowDatePicker = useUIStore((state) => state.setShowDatePicker);
   const moveBack = useMoveBack();
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";

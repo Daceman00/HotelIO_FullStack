@@ -113,7 +113,20 @@ const useFormStore = create((set) => ({
             }
 
         })
-    }
+    },
+
+    bookingFormData: {
+        checkIn: '',
+        checkOut: '',
+        numOfGuests: '',
+    },
+
+    updateBookingForm: (field, value) => set((state) => ({
+        bookingFormData: {
+            ...state.bookingFormData,
+            [field]: value
+        }
+    })),
 
 }))
 
