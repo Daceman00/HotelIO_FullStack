@@ -79,6 +79,7 @@ const useFormStore = create((set) => ({
 
     setUpdateAccountFormData: (field, value) => {
         set((state) => ({
+
             updateAccountFormData: {
                 ...state.updateAccountFormData,
                 [field]: value,
@@ -118,7 +119,7 @@ const useFormStore = create((set) => ({
     bookingFormData: {
         checkIn: '',
         checkOut: '',
-        numOfGuests: '',
+        numOfGuests: '1',
     },
 
     updateBookingForm: (field, value) => set((state) => ({
@@ -127,6 +128,16 @@ const useFormStore = create((set) => ({
             [field]: value
         }
     })),
+
+    resetBookingForm: () => {
+        set({
+            bookingFormData: {
+                checkIn: '',
+                checkOut: '',
+                numOfGuests: '1',
+            }
+        })
+    },
 
 }))
 

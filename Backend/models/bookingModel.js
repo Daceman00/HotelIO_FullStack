@@ -10,6 +10,10 @@ const bookingSchema = new mongoose.Schema({
         type: Date,
         required: [true, "Check-out date is required"]
     },
+    numOfGuests: {
+        type: Number,
+        required: [true, "Number of guests is required"],
+    },
     createdAt: {
         type: Date,
         default: Date.now
@@ -68,7 +72,12 @@ bookingSchema.pre('save', function (next) {
 // Pre-save middleware to check for past dates, overlapping dates, and calculate price
 bookingSchema.pre('save', async function (next) {
     const currentDate = new Date();
-    if (this.checkIn < currentDate || this.checkOut < currentDate) {
+    const currentHour = currentDate.getHours();
+
+    // Check if check-in date is today and current time is before 14:00
+    if (this.checkIn.toDateString() === currentDate.toDateString() && currentHour < 12) {
+        // Allow booking for today if current time is before 14:00
+    } else if (this.checkIn < currentDate) {
         return next(new AppError('Booking dates cannot be in the past.'));
     }
 
@@ -104,6 +113,15 @@ bookingSchema.pre('save', async function (next) {
     const numberOfNights = Math.ceil((this.checkOut - this.checkIn) / oneDay);
     this.price = numberOfNights * room.price;
 
+    next();
+});
+
+// Pre-save middleware to check if numOfGuests exceeds maxGuests in the room
+bookingSchema.pre('save', async function (next) {
+    const room = await mongoose.model('Room').findById(this.room);
+    if (this.numOfGuests > room.maxGuests) {
+        return next(new AppError(`Number of guests (${this.numOfGuests}) exceeds the maximum allowed (${room.maxGuests}) for this room.`, 400));
+    }
     next();
 });
 
