@@ -1,15 +1,18 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"; // Add this line
 import useFormStore from "../../stores/FormStore";
-import { format, parseISO } from "date-fns"; // Add parseISO
+import { eachDayOfInterval, format, parseISO } from "date-fns"; // Add parseISO
 import { useGetRoom } from "../Rooms/useGetRoom";
 import Loading from "../Reusable/Loading";
 import { modes } from "../../hooks/useServiceConfig";
 import { useCreateBooking } from "./useCreateBooking";
 
+import { useGetAllBookingsByRoom } from "./useGetAllBookingsByRoom";
+
 function CreateBookingForm() {
   const { room } = useGetRoom();
+  const { bookings } = useGetAllBookingsByRoom(); // Fetch bookings for the room
   const { bookingFormData } = useFormStore(); // Ensure correct reference
   const updateBookingForm = useFormStore((state) => state.updateBookingForm);
   const resetBookingForm = useFormStore((state) => state.resetBookingForm);
@@ -40,6 +43,26 @@ function CreateBookingForm() {
     );
   };
 
+  console.log(bookings?.data.bookings);
+
+  const bookedDates = useMemo(() => {
+    return bookings?.data.bookings
+      ? bookings.data.bookings.flatMap((booking) =>
+          eachDayOfInterval({
+            start: parseISO(booking.checkIn),
+            end: parseISO(booking.checkOut),
+          })
+        )
+      : [];
+  }, [bookings?.data.bookings]);
+
+  const isDateBooked = (date) => {
+    return bookedDates.some(
+      (bookedDate) =>
+        format(bookedDate, "yyyy-MM-dd") === format(date, "yyyy-MM-dd")
+    );
+  };
+
   return (
     <>
       <Loading mode={modes.all} />
@@ -62,6 +85,7 @@ function CreateBookingForm() {
                 className=" w-full h-12 border border-gray-200 rounded text-base text-gray-800 uppercase font-medium pl-5"
                 selected={parseDate(bookingFormData.checkIn)}
                 onChange={(date) => handleDateChange("checkIn", date)}
+                filterDate={(date) => !isDateBooked(date)}
               ></DatePicker>
             </div>
             <div className="relative mb-[15px]">
@@ -77,6 +101,7 @@ function CreateBookingForm() {
                 className=" w-full h-12 border border-gray-200 rounded text-base text-gray-800 uppercase font-medium pl-5"
                 selected={parseDate(bookingFormData.checkOut)}
                 onChange={(date) => handleDateChange("checkOut", date)}
+                filterDate={(date) => !isDateBooked(date)}
               ></DatePicker>
             </div>
             <div className="relative mb-[15px]">

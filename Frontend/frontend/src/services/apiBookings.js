@@ -21,3 +21,14 @@ export async function createBooking(roomId, bookingData) {
     }
 
 }
+
+export async function getAllBookingsByRoom(roomId) {
+    try {
+        const { data } = await axios.get(`/bookings/room/${roomId}`)
+        return data;
+    } catch (error) {
+        console.error(error);
+        throw new Error("Bookings not found");
+    }
+
+}
