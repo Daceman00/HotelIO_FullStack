@@ -1,22 +1,45 @@
-import { useMemo, useState } from "react";
+import { useMemo, useEffect } from "react";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css"; // Add this line
+import "react-datepicker/dist/react-datepicker.css";
 import useFormStore from "../../stores/FormStore";
-import { eachDayOfInterval, format, parseISO } from "date-fns"; // Add parseISO
+import {
+  eachDayOfInterval,
+  format,
+  parseISO,
+  isAfter,
+  setHours,
+  subDays,
+} from "date-fns"; // Add isAfter and setHours
 import { useGetRoom } from "../Rooms/useGetRoom";
 import Loading from "../Reusable/Loading";
 import { modes } from "../../hooks/useServiceConfig";
 import { useCreateBooking } from "./useCreateBooking";
-
 import { useGetAllBookingsByRoom } from "./useGetAllBookingsByRoom";
+import BookingInfoModal from "./BookingInfoModal";
+import { useGetBooking } from "./useGetBooking";
+import useDataStore from "../../stores/DataStore";
 
 function CreateBookingForm() {
   const { room } = useGetRoom();
-  const { bookings } = useGetAllBookingsByRoom(); // Fetch bookings for the room
-  const { bookingFormData } = useFormStore(); // Ensure correct reference
+  const { bookings } = useGetAllBookingsByRoom();
+  const { booking } = useGetBooking();
+  const { bookingData } = useDataStore();
+  const { bookingFormData } = useFormStore();
   const updateBookingForm = useFormStore((state) => state.updateBookingForm);
   const resetBookingForm = useFormStore((state) => state.resetBookingForm);
   const { createBooking } = useCreateBooking();
+
+  useEffect(() => {
+    const handleReset = () => resetBookingForm();
+    window.addEventListener("resize", handleReset);
+    return () => {
+      window.removeEventListener("resize", handleReset);
+    };
+  }, [resetBookingForm]);
+
+  useEffect(() => {
+    resetBookingForm();
+  }, []);
 
   const handleDateChange = (field, date) => {
     const formattedDate = format(date, "yyyy-MM-dd");
@@ -39,27 +62,42 @@ function CreateBookingForm() {
         roomId: room?.data.room.id,
         bookingData: bookingFormData,
       },
-      { onSettled: () => resetBookingForm() }
+      { onSettled: () => resetBookingForm() },
+      {}
     );
   };
 
-  console.log(bookings?.data.bookings);
+  const now = new Date();
+  const noonToday = setHours(new Date(), 12);
 
-  const bookedDates = useMemo(() => {
-    return bookings?.data.bookings
-      ? bookings.data.bookings.flatMap((booking) =>
-          eachDayOfInterval({
-            start: parseISO(booking.checkIn),
-            end: parseISO(booking.checkOut),
-          })
-        )
-      : [];
-  }, [bookings?.data.bookings]);
+  // Correctly calculate booked dates (excludes checkout day)
+  const bookedDates = useMemo(
+    () =>
+      bookings?.data.bookings?.flatMap((booking) =>
+        eachDayOfInterval({
+          start: parseISO(booking.checkIn),
+          end: subDays(parseISO(booking.checkOut), 1), // Subtract 1 day from checkout
+        })
+      ) || [],
+    [bookings?.data.bookings]
+  );
 
   const isDateBooked = (date) => {
+    const dateStr = format(date, "yyyy-MM-dd");
+    const todayStr = format(now, "yyyy-MM-dd");
+    const dateMinusOneDay = subDays(date, -1);
+
+    // Disable all past dates and today if it's past noon
+    if (
+      isAfter(now, dateMinusOneDay) ||
+      (dateStr === todayStr && isAfter(now, noonToday))
+    ) {
+      return true;
+    }
+
+    // Check against existing booked dates (checkIn to checkOut - 1 day)
     return bookedDates.some(
-      (bookedDate) =>
-        format(bookedDate, "yyyy-MM-dd") === format(date, "yyyy-MM-dd")
+      (bookedDate) => format(bookedDate, "yyyy-MM-dd") === dateStr
     );
   };
 
@@ -81,8 +119,7 @@ function CreateBookingForm() {
                 showIcon
                 placeholderText="Check In"
                 toggleCalendarOnIconClick
-                icon="fas fa-calendar"
-                className=" w-full h-12 border border-gray-200 rounded text-base text-gray-800 uppercase font-medium pl-5"
+                className="w-full h-12 border border-gray-200 rounded text-base text-gray-800 uppercase font-medium pl-5"
                 selected={parseDate(bookingFormData.checkIn)}
                 onChange={(date) => handleDateChange("checkIn", date)}
                 filterDate={(date) => !isDateBooked(date)}
@@ -97,8 +134,7 @@ function CreateBookingForm() {
                 showIcon
                 placeholderText="Check Out"
                 toggleCalendarOnIconClick
-                icon="fas fa-calendar"
-                className=" w-full h-12 border border-gray-200 rounded text-base text-gray-800 uppercase font-medium pl-5"
+                className="w-full h-12 border border-gray-200 rounded text-base text-gray-800 uppercase font-medium pl-5"
                 selected={parseDate(bookingFormData.checkOut)}
                 onChange={(date) => handleDateChange("checkOut", date)}
                 filterDate={(date) => !isDateBooked(date)}
@@ -135,6 +171,7 @@ function CreateBookingForm() {
           </form>
         </div>
       </div>
+      <BookingInfoModal bookingData />
     </>
   );
 }

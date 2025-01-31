@@ -32,3 +32,13 @@ export async function getAllBookingsByRoom(roomId) {
     }
 
 }
+
+export async function getBookingById(bookingId) {
+    try {
+        const { data } = await axios.get(`/bookings/${bookingId}`);
+        return data;
+    } catch (error) {
+        console.error(error);
+        throw new Error("Booking not found");
+    }
+}
