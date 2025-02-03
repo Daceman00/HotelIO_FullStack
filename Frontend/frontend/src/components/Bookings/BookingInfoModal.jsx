@@ -52,6 +52,10 @@ function BookingInfoModal({ isOpen, onClose, bookingData }) {
                 <span className="font-semibold text-gray-600">Guests:</span>
                 <span className="text-gray-800">{bookingData.numOfGuests}</span>
               </div>
+              <div className="flex justify-between items-center">
+                <span className="font-semibold text-gray-600">Price:</span>
+                <span className="text-gray-800">${bookingData.price}</span>
+              </div>
             </>
           )}
         </div>

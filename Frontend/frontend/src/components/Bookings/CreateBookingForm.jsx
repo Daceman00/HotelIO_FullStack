@@ -22,8 +22,9 @@ import useDataStore from "../../stores/DataStore";
 function CreateBookingForm() {
   const { room } = useGetRoom();
   const { bookings } = useGetAllBookingsByRoom();
-  const { booking } = useGetBooking();
   const { bookingData } = useDataStore();
+  const { bookingModal } = useDataStore();
+  const setBookingModal = useDataStore((state) => state.setBookingModal);
   const { bookingFormData } = useFormStore();
   const updateBookingForm = useFormStore((state) => state.updateBookingForm);
   const resetBookingForm = useFormStore((state) => state.resetBookingForm);
@@ -62,7 +63,12 @@ function CreateBookingForm() {
         roomId: room?.data.room.id,
         bookingData: bookingFormData,
       },
-      { onSettled: () => resetBookingForm() },
+      {
+        onSettled: () => {
+          resetBookingForm();
+        },
+        // Remove onSuccess callback
+      },
       {}
     );
   };
@@ -171,7 +177,11 @@ function CreateBookingForm() {
           </form>
         </div>
       </div>
-      <BookingInfoModal bookingData />
+      <BookingInfoModal
+        bookingData={bookingData}
+        isOpen={bookingModal}
+        onClose={() => setBookingModal}
+      />
     </>
   );
 }

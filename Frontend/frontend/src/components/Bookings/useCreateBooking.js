@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 
 export function useCreateBooking() {
     const setBookingData = useDataStore((state) => state.setBookingData);
+    const setBookingModal = useDataStore((state) => state.setBookingModal);
     const queryClient = useQueryClient();
 
     const { mutate: createBooking, isPending, error } = useMutation({
@@ -12,9 +13,11 @@ export function useCreateBooking() {
         onMutate: (data) => {
             setBookingData(data);
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
             toast.success("Booking created successfully");
             queryClient.invalidateQueries(["bookings"]);
+            setBookingModal(true);
+            setBookingData([data])
         },
 
         onError: (error) => {
