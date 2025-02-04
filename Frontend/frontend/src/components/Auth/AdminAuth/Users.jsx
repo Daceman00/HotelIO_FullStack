@@ -5,6 +5,7 @@ import User from "./User";
 import useUIStore from "../../../stores/UiStore";
 import { useMoveBack } from "../../../hooks/useMoveBack";
 import { modes } from "../../../hooks/useServiceConfig";
+import Pagination from "../../Reusable/Pagination"; // Import the new Pagination component
 
 function Users() {
   const { isLoader } = useUIStore();
@@ -81,25 +82,12 @@ function Users() {
           users?.data?.map((user) => <User key={user._id} user={user} />)
         )}
       </table>
-      <div className="flex justify-center mt-4 gap-2">
-        <button
-          onClick={handlePrevious}
-          disabled={currentPage === 1}
-          className="px-4 py-2 text-sm bg-[#dfa974] text-white rounded disabled:opacity-50"
-        >
-          Previous
-        </button>
-        <span className="px-4 py-2">
-          Page {currentPage} of {totalPages}
-        </span>
-        <button
-          onClick={handleNext}
-          disabled={currentPage === totalPages}
-          className="px-4 py-2 text-sm bg-[#dfa974] text-white rounded disabled:opacity-50"
-        >
-          Next
-        </button>
-      </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPrevious={handlePrevious}
+        onNext={handleNext}
+      />
     </div>
   );
 }
