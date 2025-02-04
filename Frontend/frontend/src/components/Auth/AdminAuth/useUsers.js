@@ -1,11 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { getAllUsers } from "../../../services/apiUsers";
 
-export function useUsers() {
+export function useUsers(page = 1) {
     const { data: users, isPending, error } = useQuery({
-        queryKey: ['users'],
-        queryFn: getAllUsers
+        queryKey: ['users', page],
+        queryFn: () => getAllUsers(page),
+        keepPreviousData: true,
     })
 
-    return { users, isPending, error }
+    return {
+        users: users?.data || [],
+        total: users?.total || 0,
+        isPending,
+        error
+    }
 }

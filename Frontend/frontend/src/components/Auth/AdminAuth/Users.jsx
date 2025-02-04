@@ -2,30 +2,36 @@ import React from "react";
 import { useUsers } from "./useUsers";
 import Loading from "../../Reusable/Loading";
 import User from "./User";
-import Search from "../../Reusable/Search";
 import useUIStore from "../../../stores/UiStore";
 import { useMoveBack } from "../../../hooks/useMoveBack";
 import { modes } from "../../../hooks/useServiceConfig";
 
 function Users() {
-  const { users, isPending, error } = useUsers();
-  const { searchQuery } = useUIStore();
   const { isLoader } = useUIStore();
-  const setSearchQuery = useUIStore((state) => state.setSearchQuery);
   const moveBack = useMoveBack();
+
+  const { currentPage } = useUIStore();
+  const setCurrentPage = useUIStore((state) => state.setCurrentPage);
+
+  const { users, total, isPending, error } = useUsers(currentPage);
+
+  const itemsPerPage = 10; // Should match your default limit
+  const totalPages = Math.ceil(total / itemsPerPage);
 
   if (isPending) return <Loading />;
 
   if (!users || error) return <p>No users found</p>;
 
-  const searchedUsers = users?.data.filter((user) =>
-    searchQuery.length >= 3
-      ? user.name.toLowerCase().includes(searchQuery.toLowerCase())
-      : false
-  );
+  const handlePrevious = () => {
+    setCurrentPage((prev) => Math.max(1, prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+  };
+
   return (
     <div className="p-6 relative overflow-x-auto shadow-md sm:rounded-lg bg-white dark:bg-gray-800">
-      <Search searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <button
         onClick={moveBack}
         type="button"
@@ -71,20 +77,29 @@ function Users() {
               <Loading mode={modes.all} />
             </td>
           </tr>
-        ) : searchQuery.length >= 3 ? (
-          searchedUsers.length > 0 ? (
-            searchedUsers.map((user) => <User key={user._id} user={user} />)
-          ) : (
-            <tr>
-              <td colSpan="5" className="px-6 py-4 text-center">
-                No users found
-              </td>
-            </tr>
-          )
         ) : (
           users?.data?.map((user) => <User key={user._id} user={user} />)
         )}
       </table>
+      <div className="flex justify-center mt-4 gap-2">
+        <button
+          onClick={handlePrevious}
+          disabled={currentPage === 1}
+          className="px-4 py-2 text-sm bg-[#dfa974] text-white rounded disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <span className="px-4 py-2">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={handleNext}
+          disabled={currentPage === totalPages}
+          className="px-4 py-2 text-sm bg-[#dfa974] text-white rounded disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }

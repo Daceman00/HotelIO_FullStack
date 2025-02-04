@@ -10,14 +10,13 @@ export function useCreateBooking() {
 
     const { mutate: createBooking, isPending, error } = useMutation({
         mutationFn: ({ roomId, bookingData }) => createBookingApi(roomId, bookingData),
-        onMutate: (data) => {
-            setBookingData(data);
-        },
-        onSuccess: (data) => {
+
+        onSuccess: (responseData) => {
+            const booking = responseData.data.booking;
             toast.success("Booking created successfully");
             queryClient.invalidateQueries(["bookings"]);
             setBookingModal(true);
-            setBookingData([data])
+            setBookingData(booking)
         },
 
         onError: (error) => {

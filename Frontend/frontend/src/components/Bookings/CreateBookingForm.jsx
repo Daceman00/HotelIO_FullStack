@@ -25,6 +25,7 @@ function CreateBookingForm() {
   const { bookingData } = useDataStore();
   const { bookingModal } = useDataStore();
   const setBookingModal = useDataStore((state) => state.setBookingModal);
+  const closeBookingModal = useDataStore((state) => state.closeBookingModal);
   const { bookingFormData } = useFormStore();
   const updateBookingForm = useFormStore((state) => state.updateBookingForm);
   const resetBookingForm = useFormStore((state) => state.resetBookingForm);
@@ -67,7 +68,6 @@ function CreateBookingForm() {
         onSettled: () => {
           resetBookingForm();
         },
-        // Remove onSuccess callback
       },
       {}
     );
@@ -106,6 +106,13 @@ function CreateBookingForm() {
       (bookedDate) => format(bookedDate, "yyyy-MM-dd") === dateStr
     );
   };
+
+  useEffect(() => {
+    return () => {
+      useDataStore.getState().setBookingData(null);
+      useDataStore.getState().setBookingModal(false);
+    };
+  }, []);
 
   return (
     <>
@@ -180,7 +187,7 @@ function CreateBookingForm() {
       <BookingInfoModal
         bookingData={bookingData}
         isOpen={bookingModal}
-        onClose={() => setBookingModal}
+        onClose={closeBookingModal}
       />
     </>
   );

@@ -71,7 +71,18 @@ exports.markBookingAsPaid = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.createBooking = factory.createOne(Booking);
+exports.createBooking = catchAsync(async (req, res, next) => {
+    const newBooking = await Booking.create(req.body);
+    const populatedBooking = await Booking.findById(newBooking._id).populate('user').populate('room');
+
+    res.status(201).json({
+        status: 'success',
+        data: {
+            booking: populatedBooking
+        }
+    });
+});
+
 exports.getBooking = factory.getOne(Booking);
 exports.getAllBookings = factory.getAll(Booking);
 exports.updateBooking = factory.updateOne(Booking);

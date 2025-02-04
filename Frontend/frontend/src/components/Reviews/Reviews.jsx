@@ -26,48 +26,54 @@ function Reviews() {
         {/* Reviews */}
         <div className="flex justify-center">
           <div className="max-w-4xl w-full">
-            <Swiper
-              modules={[Pagination, Autoplay]}
-              pagination={{ clickable: true }}
-              loop={reviews?.data.data.length > 1}
-              slidesPerView={Math.min(reviews?.data.data.length, 1)}
-              slidesPerGroup={Math.min(reviews?.data.data.length, 1)}
-              autoplay={{ delay: 3000, disableOnInteraction: false }}
-              className="mySwiper"
-            >
-              {reviews?.data.data.map((review) => (
-                <SwiperSlide key={review.id}>
-                  <div className="ts-item bg-white shadow-md rounded-lg p-8 text-center transition-transform transform hover:scale-105">
-                    <p className="text-lg text-gray-600 leading-relaxed mb-8">
-                      {review.review}
-                    </p>
-                    <div className="ti-author">
-                      {/* Ratings */}
-                      <div className="rating mb-4 flex justify-center space-x-1">
-                        {[...Array(5)].map((_, index) => (
-                          <i
-                            key={index}
-                            className={`${
-                              index < Math.floor(review.rating)
-                                ? "text-[#dfa974]"
-                                : index < review.rating
-                                ? "text-[#dfa974] opacity-50"
-                                : "text-gray-300"
-                            } fas fa-star`}
-                          />
-                        ))}
-                      </div>
-                      <h5 className="text-lg font-semibold text-gray-800">
-                        {review.user.name}
-                      </h5>
-                      <p className="text-sm text-gray-500">
-                        Visited: Room-{review.room.roomNumber}
+            {reviews?.data.data.length > 0 ? (
+              <Swiper
+                modules={[Pagination, Autoplay]}
+                pagination={{ clickable: true }}
+                loop={reviews?.data.data.length > 1}
+                slidesPerView={Math.min(reviews?.data.data.length, 1)}
+                slidesPerGroup={Math.min(reviews?.data.data.length, 1)}
+                autoplay={{ delay: 3000, disableOnInteraction: false }}
+                className="mySwiper"
+              >
+                {reviews?.data.data.map((review) => (
+                  <SwiperSlide key={review.id}>
+                    <div className="ts-item bg-white shadow-md rounded-lg p-8 text-center transition-transform transform hover:scale-105">
+                      <p className="text-lg text-gray-600 leading-relaxed mb-8">
+                        {review.review}
                       </p>
+                      <div className="ti-author">
+                        {/* Ratings */}
+                        <div className="rating mb-4 flex justify-center space-x-1">
+                          {[...Array(5)].map((_, index) => (
+                            <i
+                              key={index}
+                              className={`${
+                                index < Math.floor(review.rating)
+                                  ? "text-[#dfa974]"
+                                  : index < review.rating
+                                  ? "text-[#dfa974] opacity-50"
+                                  : "text-gray-300"
+                              } fas fa-star`}
+                            />
+                          ))}
+                        </div>
+                        <h5 className="text-lg font-semibold text-gray-800">
+                          {review?.user.name}
+                        </h5>
+                        <p className="text-sm text-gray-500">
+                          Visited: Room-{review.room.roomNumber}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            ) : (
+              <div className="text-center text-gray-600">
+                No reviews available
+              </div>
+            )}
           </div>
         </div>
       </div>

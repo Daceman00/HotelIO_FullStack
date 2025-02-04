@@ -67,9 +67,15 @@ exports.getOne = (Model, popOptions) =>
 
 exports.getAll = Model =>
     catchAsync(async (req, res, next) => {
-        // To allow for nested GET reviews on tour (hack)
         let filter = {};
-        if (req.params.tourId) filter = { tour: req.params.tourId };
+        // If a roomId parameter is present in the request, filter by roomId
+        if (req.params.roomId) filter = { tour: req.params.roomId };
+
+        // Count total documents
+        const total = await Model.countDocuments(filter);
+
+        // Debugging: Log the total count to ensure it's correctly calculated
+        console.log('Total documents:', total);
 
         const features = new APIFeatures(Model.find(filter), req.query)
             .filter()
@@ -83,6 +89,7 @@ exports.getAll = Model =>
         res.status(200).json({
             status: 'success',
             results: doc.length,
+            total, // Include total in the response
             data: {
                 data: doc
             }
