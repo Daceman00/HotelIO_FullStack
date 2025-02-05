@@ -139,6 +139,27 @@ const useFormStore = create((set) => ({
         })
     },
 
+    reviewData: {
+        review: '',
+        rating: 0
+    },
+
+    setReviewData: (field, value) => set((state) => ({
+        reviewData: {
+            ...state.reviewData,
+            [field]: value
+        }
+    })),
+
+    resetReviewData: () => {
+        set({
+            reviewData: {
+                review: '',
+                rating: 0
+            }
+        })
+    },
+
 }))
 
 export default useFormStore

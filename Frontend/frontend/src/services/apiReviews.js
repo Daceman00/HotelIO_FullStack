@@ -11,12 +11,12 @@ export async function getAllReviews() {
 
 }
 
-/* export async function createReview(roomId, review) {
+export async function createReview(roomId, reviewData) {
     try {
-        const { data } = await axios.post(`/rooms/${roomId}/reviews`, review)
+        const { data } = await axios.post(`/rooms/${roomId}/reviews`, reviewData)
         return data
     } catch (error) {
         console.error(error.response);
         throw new Error(error.response.data.message);
     }
-} */
+} 

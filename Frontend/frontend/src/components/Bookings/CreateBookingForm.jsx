@@ -65,9 +65,7 @@ function CreateBookingForm() {
         bookingData: bookingFormData,
       },
       {
-        onSettled: () => {
-          resetBookingForm();
-        },
+        onSettled: () => resetBookingForm(),
       },
       {}
     );

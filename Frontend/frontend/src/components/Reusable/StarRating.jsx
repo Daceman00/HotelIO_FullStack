@@ -5,7 +5,7 @@ import Star from "./Star";
 function StarRating({
   maxRating = 5,
   color = "#dfa379",
-  size = 48,
+  size = 64,
   className = "",
   messages = [],
   defaultRating = 0,
@@ -17,7 +17,7 @@ function StarRating({
   // Initialize default rating
   useEffect(() => {
     setDefault(defaultRating);
-  }, [defaultRating, setDefault]);
+  }, [defaultRating, setDefault, rating]);
 
   function handleRating(newRating) {
     setRating(newRating);
