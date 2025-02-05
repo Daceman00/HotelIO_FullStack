@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+/* import React, { useCallback, useEffect } from "react";
 import _ from "lodash";
 import useUIStore from "../../stores/UiStore";
 
@@ -64,3 +64,4 @@ function Search({ searchQuery, setSearchQuery }) {
 }
 
 export default Search;
+ */

@@ -6,6 +6,7 @@ import useUIStore from "../../../stores/UiStore";
 import { useMoveBack } from "../../../hooks/useMoveBack";
 import { modes } from "../../../hooks/useServiceConfig";
 import Pagination from "../../Reusable/Pagination"; // Import the new Pagination component
+import SearchInput from "../../Reusable/SearchInput";
 
 function Users() {
   const { isLoader } = useUIStore();
@@ -33,6 +34,7 @@ function Users() {
 
   return (
     <div className="p-6 relative overflow-x-auto shadow-md sm:rounded-lg bg-white dark:bg-gray-800">
+      <SearchInput placeholder="Search..." />
       <button
         onClick={moveBack}
         type="button"

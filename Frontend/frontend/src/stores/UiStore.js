@@ -26,9 +26,8 @@ const useUIStore = create((set) => ({
     setShowDatePicker: () => set((state) => ({ showDatePicker: !state.showDatePicker })),
 
     currentPage: 1,
-    setCurrentPage: (pageFn) => set((state) => ({
-        currentPage: pageFn(state.currentPage)
-    })),
+    setCurrentPage: (page) => set({ currentPage: page })
+
 }))
 
 export default useUIStore

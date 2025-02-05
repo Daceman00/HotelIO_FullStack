@@ -17,8 +17,6 @@ router.patch("/updateMyAccount", userController.uploadProfilePhoto, userControll
 router.delete("/deleteMyAccount", userController.deleteMyAccount);
 router.patch("/updateMyPassword", authController.updatePassword)
 
-
-
 router.use(authController.restrictTo('admin'))
 
 router.route('/')

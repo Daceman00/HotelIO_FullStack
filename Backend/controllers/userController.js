@@ -4,6 +4,7 @@ const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
 const multer = require('multer');
 const sharp = require('sharp');
+const APIFeatures = require('../utils/apiFeatures');
 
 const filterObj = (obj, ...unallowedFields) => {
     const newObj = {};
@@ -105,8 +106,27 @@ exports.getUserWithBookings = catchAsync(async (req, res, next) => {
     return factory.getOne(User, popOptions)(req, res, next)
 })
 
+exports.getAllUsers = catchAsync(async (req, res, next) => {
+    let filter = {};
+
+    const features = new APIFeatures(User.find(filter), req.query)
+        .filter() // Apply base filters first
+        .search(['name', 'email', 'role']) // Then add search conditions
+        .applyFilters()
+        .sort()
+        .limitFields()
+        .paginate();
+
+    const users = await features.query;
+
+    res.status(200).json({
+        status: 'success',
+        results: users.length,
+        data: { data: users }
+    });
+});
+
 exports.getUser = factory.getOne(User)
-exports.getAllUsers = factory.getAll(User)
 exports.updateUser = factory.updateOne(User)
 exports.createUser = factory.createOne(User)
 exports.deleteUser = factory.deleteOne(User)
