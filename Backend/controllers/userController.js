@@ -109,6 +109,8 @@ exports.getUserWithBookings = catchAsync(async (req, res, next) => {
 exports.getAllUsers = catchAsync(async (req, res, next) => {
     let filter = {};
 
+    const total = await User.countDocuments();
+
     const features = new APIFeatures(User.find(filter), req.query)
         .filter() // Apply base filters first
         .search(['name', 'email', 'role']) // Then add search conditions
@@ -122,6 +124,7 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
     res.status(200).json({
         status: 'success',
         results: users.length,
+        total,
         data: { data: users }
     });
 });

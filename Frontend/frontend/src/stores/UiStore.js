@@ -9,9 +9,7 @@ const useUIStore = create((set) => ({
     onModalOpen: () => set({ isModalOpen: true }),
     onModalClose: () => set({ isModalOpen: false }),
 
-    searchQuery: '',
-    setSearchQuery: (query) => set({ searchQuery: query }),
-    setResetSearchQuery: () => set(() => ({ searchQuery: '' })),
+
 
     isLoader: false,
     setIsLoader: (loader) => set({ isLoader: loader }),
@@ -25,8 +23,12 @@ const useUIStore = create((set) => ({
     showDatePicker: false,
     setShowDatePicker: () => set((state) => ({ showDatePicker: !state.showDatePicker })),
 
+    searchQuery: '',
+    setSearchQuery: (query) => set({ searchQuery: query }),
+    setResetSearchQuery: () => set(() => ({ searchQuery: '' })),
+
     currentPage: 1,
-    setCurrentPage: (page) => set({ currentPage: page })
+    setCurrentPage: (page) => set({ currentPage: page }),
 
 }))
 
