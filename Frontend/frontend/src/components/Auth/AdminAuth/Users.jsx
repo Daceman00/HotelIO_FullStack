@@ -28,9 +28,12 @@ function Users() {
     setCurrentPage(Math.min(totalPages, currentPage + 1));
   };
 
+  const handlePageSelect = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <>
-      <Loading mode={modes.all} />
       <div className="p-6 relative overflow-x-auto shadow-md sm:rounded-lg bg-white dark:bg-gray-800">
         <SearchInput placeholder="Search..." />
         <button
@@ -78,8 +81,14 @@ function Users() {
                 <Loading mode={modes.all} />
               </td>
             </tr>
+          ) : users?.data?.length > 0 ? (
+            users.data.map((user) => <User key={user._id} user={user} />)
           ) : (
-            users?.data?.map((user) => <User key={user._id} user={user} />)
+            <tr>
+              <td colSpan="5" className="px-6 py-4 text-center">
+                There are no users.
+              </td>
+            </tr>
           )}
         </table>
         <Pagination
@@ -87,6 +96,7 @@ function Users() {
           totalPages={totalPages}
           onPrevious={handlePrevious}
           onNext={handleNext}
+          onPageSelect={handlePageSelect}
         />
       </div>
     </>

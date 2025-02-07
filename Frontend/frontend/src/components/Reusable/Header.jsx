@@ -7,7 +7,7 @@ import useAuthStore from "../../stores/AuthStore";
 import Loading from "./Loading";
 import { modes } from "../../hooks/useServiceConfig";
 
-function Header() {
+const Header = React.memo(function Header() {
   const { user, isLoading } = useIsLoggedIn();
   const isUserLoggedIn = useAuthStore((state) => state.isUserLoggedIn);
   const setUserLoggedIn = useAuthStore((state) => state.setUserLoggedIn);
@@ -48,15 +48,17 @@ function Header() {
                 <span className="text-gray-700 text-lg font-bold">HotelIO</span>
 
                 {/* Right Section */}
-                <div className="flex items-center space-x-6">
-                  {/* Booking Button */}
-                  <a
-                    href="#"
-                    className="px-6 py-2 text-white bg-[#dfa974] rounded font-semibold text-sm uppercase hover:bg-[#c68a5e]"
-                  >
-                    Booking Now
-                  </a>
-                </div>
+                <Link to="/rooms">
+                  <div className="flex items-center space-x-6">
+                    {/* Booking Button */}
+                    <a
+                      href="#"
+                      className="px-6 py-2 text-white bg-[#dfa974] rounded font-semibold text-sm uppercase hover:bg-[#c68a5e]"
+                    >
+                      Booking Now
+                    </a>
+                  </div>
+                </Link>
               </div>
             </div>
           </div>
@@ -118,6 +120,6 @@ function Header() {
       </div>
     </>
   );
-}
+});
 
 export default Header;

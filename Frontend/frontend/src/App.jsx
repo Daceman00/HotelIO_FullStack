@@ -1,8 +1,9 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import Footer from "./components/Reusable/Footer";
-import Header from "./components/Reusable/Header";
-import Sidebar from "./components/Reusable/Sidebar";
+import { memo } from "react";
+import FooterComponent from "./components/Reusable/Footer";
+import HeaderComponent from "./components/Reusable/Header";
+import SidebarComponent from "./components/Reusable/Sidebar";
 import DashboardPage from "./pages/DashboardPage";
 import RoomsPage from "./pages/RoomsPage";
 import RoomDetails from "./components/Rooms/RoomDetails";
@@ -28,6 +29,10 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+const Footer = memo(FooterComponent);
+const Header = memo(HeaderComponent);
+const Sidebar = memo(SidebarComponent);
 
 function App() {
   return (

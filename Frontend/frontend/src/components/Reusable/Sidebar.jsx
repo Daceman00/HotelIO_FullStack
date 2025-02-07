@@ -15,7 +15,7 @@ import { useIsLoggedIn } from "../Auth/useAuth";
 import useAuthStore from "../../stores/AuthStore";
 import { useLogout } from "../Auth/useLogout";
 
-function Sidebar() {
+const Sidebar = React.memo(function Sidebar() {
   const { user } = useIsLoggedIn();
   const { logout } = useLogout();
 
@@ -33,7 +33,7 @@ function Sidebar() {
           sidebarVisible ? "translate-x-0" : "-translate-x-full"
         } w-64`}
       >
-        <div className="p-6 text-center border-b border-gray-700">
+        <div className="p-6 text-center ">
           {/* User Info */}
           <img
             src="/img/user-avatar.jpg"
@@ -122,6 +122,6 @@ function Sidebar() {
       </div>
     </div>
   );
-}
+});
 
 export default Sidebar;

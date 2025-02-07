@@ -1,6 +1,7 @@
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import React from "react";
 
-function Footer() {
+const Footer = React.memo(function Footer() {
   return (
     <footer className=" bg-[#393D4A] text-gray-300">
       <div className="container mx-auto px-4 py-12">
@@ -113,6 +114,6 @@ function Footer() {
       </div>
     </footer>
   );
-}
+});
 
 export default Footer;

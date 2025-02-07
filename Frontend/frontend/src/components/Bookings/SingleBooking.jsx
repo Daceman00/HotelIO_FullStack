@@ -1,26 +1,32 @@
-function SingleBooking(booking) {
+function SingleBooking({
+  guestName,
+  roomNumber,
+  checkInDate,
+  checkOutDate,
+  status,
+}) {
   return (
-    <div className=" text-white_primary p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-xl">
-      <h3 className="text-xl font-bold mb-2">{booking.guestName}</h3>
-      <p className="mb-1">Room: {booking.roomNumber}</p>
+    <div className="bg-white text-gray-800 p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-xl">
+      <h3 className="text-xl font-bold mb-2">{guestName}</h3>
+      <p className="mb-1">Room: {roomNumber}</p>
       <p className="mb-1">
-        Check-in: {new Date(booking.checkInDate).toLocaleDateString()}
+        Check-in: {new Date(checkInDate).toLocaleDateString()}
       </p>
       <p className="mb-1">
-        Check-out: {new Date(booking.checkOutDate).toLocaleDateString()}
+        Check-out: {new Date(checkOutDate).toLocaleDateString()}
       </p>
       <p className="font-semibold">
         Status:{" "}
         <span
           className={`${
-            booking.status === "Confirmed"
-              ? "text-green_secondary"
-              : booking.status === "Pending"
-              ? ""
-              : ""
+            status === "Confirmed"
+              ? "text-green-500"
+              : status === "Pending"
+              ? "text-yellow-500"
+              : "text-red-500"
           }`}
         >
-          {booking.status}
+          {status}
         </span>
       </p>
     </div>

@@ -1,6 +1,5 @@
 const express = require('express');
 const roomController = require('./../controllers/roomController')
-const authController = require('./../controllers/authController');
 const reviewRouter = require('./reviewRoutes');
 const bookingRouter = require('./bookingRoutes');
 
