@@ -1,4 +1,5 @@
 const User = require('./../models/userModel');
+const Review = require('./../models/reviewModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
@@ -129,7 +130,35 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.deleteUser = catchAsync(async (req, res, next) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        const user = await User.findByIdAndDelete(req.params.id).session(session);
+
+        if (!user) {
+            return next(new AppError('No user found with that ID', 404));
+        }
+
+        // Delete associated reviews in transaction
+        await Review.deleteMany({ user: user._id }).session(session);
+
+        await session.commitTransaction();
+
+        res.status(204).json({
+            status: 'success',
+            data: null
+        });
+    } catch (error) {
+        await session.abortTransaction();
+        next(error);
+    } finally {
+        session.endSession();
+    }
+});
+
 exports.getUser = factory.getOne(User)
 exports.updateUser = factory.updateOne(User)
 exports.createUser = factory.createOne(User)
-exports.deleteUser = factory.deleteOne(User)
+

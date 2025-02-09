@@ -89,6 +89,14 @@ userSchema.pre('save', async function (next) {
     next()
 })
 
+// Delete all reviews associated with this user
+userSchema.pre('deleteOne', { document: true, query: false }, async function () {
+    const userId = this._id;
+
+
+    await mongoose.model('Review').deleteMany({ user: userId });
+});
+
 // Compare password i passwordConfirm
 userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
     return await bcrypt.compare(candidatePassword, userPassword)

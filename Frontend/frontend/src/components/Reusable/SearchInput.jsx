@@ -17,13 +17,16 @@ function SearchInput({ placeholder = "Search..." }) {
 
   return (
     <div className="mb-4">
-      <input
-        type="text"
-        placeholder={placeholder}
-        value={searchQuery}
-        onChange={handleSearchChange}
-        className="p-2 border rounded-lg w-full max-w-md dark:bg-gray-700 dark:text-white dark:border-gray-600"
-      />
+      <div className="relative w-[200px]">
+        <input
+          type="text"
+          placeholder={placeholder}
+          value={searchQuery}
+          onChange={handleSearchChange}
+          className=" text-sm bg-transparent w-full box-border px-2 py-[0.7em] border-b border-gray-300 focus:outline-none focus:bg-blue-100/10 peer"
+        />
+        <div className="absolute bg-[#dfa379] w-0 h-[2px] bottom-0 left-0 transition-all duration-300 peer-focus:w-full"></div>
+      </div>
       {searchQuery.length > 0 && searchQuery.length < 3 && (
         <p className="text-sm text-gray-500 mt-1">
           Type at least 3 characters to search

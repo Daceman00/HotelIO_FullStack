@@ -9,8 +9,6 @@ const useUIStore = create((set) => ({
     onModalOpen: () => set({ isModalOpen: true }),
     onModalClose: () => set({ isModalOpen: false }),
 
-
-
     isLoader: false,
     setIsLoader: (loader) => set({ isLoader: loader }),
 
@@ -29,6 +27,9 @@ const useUIStore = create((set) => ({
 
     currentPage: 1,
     setCurrentPage: (page) => set({ currentPage: page }),
+
+    bookingActiveTab: 'upcoming',
+    setBookingActiveTab: (tab) => set({ bookingActiveTab: tab }),
 
 }))
 

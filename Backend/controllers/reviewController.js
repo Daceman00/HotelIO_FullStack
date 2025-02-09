@@ -12,6 +12,8 @@ exports.setRoomUserIds = (req, res, next) => {
 exports.getReviewsByUser = catchAsync(async (req, res, next) => {
     const reviews = await Review.find({ user: req.params.id }); // Find all reviews by user ID
 
+
+
     if (!reviews || reviews.length === 0) {
         return res.status(404).json({
             status: 'fail',
@@ -49,7 +51,26 @@ exports.getReviewsByRoom = catchAsync(async (req, res, next) => {
     next()
 });
 
-exports.getAllReviews = factory.getAll(Review);
+exports.getAllReviews = catchAsync(async (req, res, next) => {
+    const reviews = await Review.find()
+        .populate({
+            path: 'user',
+            select: 'username email'
+        });
+
+    // Filter out reviews where user was deleted
+    const validReviews = reviews.filter(review => review.user !== null);
+
+    res.status(200).json({
+        status: 'success',
+        results: validReviews.length,
+        data: {
+            data: validReviews
+        }
+    });
+});
+
+
 exports.getReview = factory.getOne(Review);
 exports.createReview = factory.createOne(Review);
 exports.updateReview = factory.updateOne(Review);

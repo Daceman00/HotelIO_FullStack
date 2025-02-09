@@ -1,8 +1,10 @@
 import React from "react";
 import { useDeleteUser } from "./useDeleteUser";
+import WarningButton from "../../Reusable/WarningButton";
 
 function User({ user }) {
   const { deleteUser, error, isPending } = useDeleteUser();
+  console.log(user._id);
 
   return (
     <tbody>
@@ -34,13 +36,11 @@ function User({ user }) {
           </div>
         </td>
         <td className="px-6 py-4">
-          <button
-            disabled={isPending}
-            onClick={() => deleteUser(user.id)}
-            className="font-medium text-red-600 dark:text-red-500 hover:underline"
-          >
-            Delete User
-          </button>
+          <WarningButton
+            isPending={isPending}
+            cancelAction={deleteUser}
+            data={user}
+          />
         </td>
       </tr>
     </tbody>

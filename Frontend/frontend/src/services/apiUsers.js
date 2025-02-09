@@ -25,7 +25,7 @@ export async function getAllUsers(page = 1, limit = 10, searchTerm = '') {
 
 export async function deleteUser(userID) {
     try {
-        await axios.delete(`/ users / ${userID}`)
+        await axios.delete(`/users/${userID}`)
     } catch (error) {
         console.error(error.response);
         throw new Error(error.response.data.message);
