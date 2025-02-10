@@ -1,10 +1,12 @@
 import axios from "./../helpers/axios"
 
-export async function getAllBookings() {
+export async function getAllBookings(limit = 10, sort = 1) {
     try {
-        const { data } = await axios.get("/bookings");
-        console.log(data)
-        return data
+        const { data } = await axios.get(`/bookings`, { params: { limit, sort } });
+        return {
+            data: data.data,
+            total: data.total,
+        }
     } catch (error) {
         console.error(error);
         throw new Error("Bookings not found");
@@ -40,5 +42,14 @@ export async function getBookingById(bookingId) {
     } catch (error) {
         console.error(error);
         throw new Error("Booking not found");
+    }
+}
+
+export async function deleteBooking(bookingId) {
+    try {
+        await axios.delete(`/bookings/${bookingId}`);
+    } catch (error) {
+        console.error(error);
+        throw new Error("Booking not deleted");
     }
 }

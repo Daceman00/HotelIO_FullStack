@@ -89,12 +89,12 @@ userSchema.pre('save', async function (next) {
     next()
 })
 
-// Delete all reviews associated with this user
+// Delete all reviews and bookings associated with this user
 userSchema.pre('deleteOne', { document: true, query: false }, async function () {
     const userId = this._id;
 
-
     await mongoose.model('Review').deleteMany({ user: userId });
+    await mongoose.model('Booking').deleteMany({ user: userId });
 });
 
 // Compare password i passwordConfirm

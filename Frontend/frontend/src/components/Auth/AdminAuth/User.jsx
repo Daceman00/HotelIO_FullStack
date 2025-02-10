@@ -4,7 +4,6 @@ import WarningButton from "../../Reusable/WarningButton";
 
 function User({ user }) {
   const { deleteUser, error, isPending } = useDeleteUser();
-  console.log(user._id);
 
   return (
     <tbody>

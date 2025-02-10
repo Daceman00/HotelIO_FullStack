@@ -4,20 +4,19 @@ import {
   CurrencyDollarIcon,
   ClockIcon,
 } from "@heroicons/react/24/outline";
-import { format, isBefore, isAfter } from "date-fns";
 import WarningButton from "../Reusable/WarningButton";
 import UpdateButton from "../Reusable/UpdateButton";
+import { useDeleteBooking } from "./useDeleteBooking";
 
 const statusStyles = {
-  confirmed: "bg-green-100 text-green-800",
-  pending: "bg-yellow-100 text-yellow-800",
-  cancelled: "bg-red-100 text-red-800",
-  completed: "bg-blue-100 text-blue-800",
+  paid: "bg-green-100 text-green-800",
+  unpaid: "bg-red-100 text-red-800",
 };
 
 function SingleBooking({ booking }) {
+  const { deleteBooking, isPending, error } = useDeleteBooking();
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+    <div className=" bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">
@@ -29,10 +28,10 @@ function SingleBooking({ booking }) {
         </div>
         <span
           className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-            statusStyles[booking.status]
+            booking.paid ? statusStyles.paid : statusStyles.unpaid
           }`}
         >
-          {booking.status}
+          {booking.paid ? "Paid" : "Unpaid"}
         </span>
       </div>
 
@@ -73,7 +72,11 @@ function SingleBooking({ booking }) {
 
       <div className="border-t pt-4 flex justify-end space-x-3">
         <UpdateButton />
-        <WarningButton />
+        <WarningButton
+          cancelAction={deleteBooking}
+          isPending={isPending}
+          data={booking}
+        />
       </div>
     </div>
   );

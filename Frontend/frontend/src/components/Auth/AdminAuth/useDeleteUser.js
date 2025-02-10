@@ -11,6 +11,9 @@ export function useDeleteUser() {
                 queryKey: ["users"],
             })
             toast.success('User deleted successfully');
+        },
+        onError: () => {
+            toast.error('Error deleting user');
         }
     })
     return { deleteUser, error, isPending }

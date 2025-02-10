@@ -1,8 +1,11 @@
+const mongoose = require('mongoose');
 const Booking = require('./../models/bookingModel');
 const Room = require('./../models/roomModel');
+const Review = require('./../models/reviewModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
+const APIFeatures = require('./../utils/apiFeatures');
 
 exports.setRoomUserIds = (req, res, next) => {
     if (!req.body.user) req.body.user = req.user.id;
@@ -83,7 +86,65 @@ exports.createBooking = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.getAllBookings = catchAsync(async (req, res, next) => {
+    let filter = {};
+
+    const total = await Booking.countDocuments();
+
+    const features = new APIFeatures(Booking.find(filter), req.query)
+        .filter() // Apply base filters first
+        .search(['user', 'room']) // Then add search conditions
+        .applyFilters()
+        .sort()
+        .limitFields()
+        .paginate();
+
+    const bookings = await features.query.populate({
+        path: 'user',
+        select: 'username email'
+    });
+
+    // Filter out bookings where user was deleted
+    const validBookings = bookings.filter(booking => booking.user !== null);
+
+    res.status(200).json({
+        status: 'success',
+        results: validBookings.length,
+        total,
+        data: {
+            data: validBookings
+        }
+    });
+});
+
+exports.deleteBooking = catchAsync(async (req, res, next) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        const booking = await Booking.findByIdAndDelete(req.params.id).session(session);
+
+        if (!booking) {
+            return next(new AppError('No booking found with that ID', 404));
+        }
+
+        // Delete associated reviews in transaction
+        await Review.deleteMany({ booking: booking._id }).session(session);
+
+        await session.commitTransaction();
+
+        res.status(204).json({
+            status: 'success',
+            data: null
+        });
+    } catch (error) {
+        await session.abortTransaction();
+        next(error);
+    } finally {
+        session.endSession();
+    }
+});
+
 exports.getBooking = factory.getOne(Booking);
-exports.getAllBookings = factory.getAll(Booking);
 exports.updateBooking = factory.updateOne(Booking);
-exports.deleteBooking = factory.deleteOne(Booking);
+
