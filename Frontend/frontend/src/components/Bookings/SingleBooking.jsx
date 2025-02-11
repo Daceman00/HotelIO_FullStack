@@ -16,7 +16,7 @@ const statusStyles = {
 function SingleBooking({ booking }) {
   const { deleteBooking, isPending, error } = useDeleteBooking();
   return (
-    <div className=" bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+    <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 flex-shrink-0">
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">
@@ -68,15 +68,25 @@ function SingleBooking({ booking }) {
             Room Number: {booking.room.roomNumber}
           </span>
         </div>
+
+        <div className="flex items-center space-x-2">
+          <span className="text-gray-600">
+            User: {booking.user.name} ({booking.user.email})
+          </span>
+        </div>
       </div>
 
-      <div className="border-t pt-4 flex justify-end space-x-3">
-        <UpdateButton />
-        <WarningButton
-          cancelAction={deleteBooking}
-          isPending={isPending}
-          data={booking}
-        />
+      <div className="border-t pt-4 flex flex-wrap justify-center gap-3">
+        <div className="w-full sm:w-auto">
+          <UpdateButton />
+        </div>
+        <div className="w-full sm:w-auto">
+          <WarningButton
+            cancelAction={deleteBooking}
+            isPending={isPending}
+            data={booking}
+          />
+        </div>
       </div>
     </div>
   );
