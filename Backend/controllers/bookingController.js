@@ -7,6 +7,7 @@ const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
 const APIFeatures = require('./../utils/apiFeatures');
 
+
 exports.setRoomUserIds = (req, res, next) => {
     if (!req.body.user) req.body.user = req.user.id;
     if (!req.body.room) req.body.room = req.params.roomId;
@@ -105,14 +106,14 @@ exports.getAllBookings = catchAsync(async (req, res, next) => {
     });
 
     // Filter out bookings where user was deleted
-    const validBookings = bookings.filter(booking => booking.user !== null);
+    //const validBookings = bookings.filter(booking => booking.user !== null);
 
     res.status(200).json({
         status: 'success',
-        results: validBookings.length,
+        results: bookings.length,
         total,
         data: {
-            data: validBookings
+            data: bookings
         }
     });
 });

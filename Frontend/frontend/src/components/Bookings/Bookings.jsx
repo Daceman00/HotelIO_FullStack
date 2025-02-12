@@ -1,20 +1,21 @@
 import { modes } from "../../hooks/useServiceConfig";
 import useUIStore from "../../stores/UiStore";
 import Loading from "../Reusable/Loading";
+import Pagination from "../Reusable/Pagination";
 import SingleBooking from "./SingleBooking";
 import { useGetAllBookings } from "./useGetAllBookings";
 import { format, isBefore, isAfter } from "date-fns";
 
 function Bookings() {
-  const { bookings, isPending, error } = useGetAllBookings();
-  const { bookingActiveTab } = useUIStore();
-  const setBookingActiveTab = useUIStore((state) => state.setBookingActiveTab);
+  const { bookings, isPending, total, error } = useGetAllBookings();
+  const { bookingActiveTab, setBookingActiveTab } = useUIStore();
 
   if (isPending) return <Loading mode={modes.all} />;
+  console.log(bookings?.data);
 
   const filterBookings = (status) => {
     const now = new Date();
-    return bookings?.data?.data.filter((booking) => {
+    return bookings?.data?.filter((booking) => {
       // Access bookings directly
       const startDate = new Date(booking.checkIn);
       const endDate = new Date(booking.checkOut);

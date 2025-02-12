@@ -16,18 +16,18 @@ const statusStyles = {
 function SingleBooking({ booking }) {
   const { deleteBooking, isPending, error } = useDeleteBooking();
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 flex-shrink-0">
-      <div className="flex justify-between items-start mb-4">
+    <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 flex-shrink-0 w-full max-w-md mx-auto">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 space-y-2 sm:space-y-0">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">
+          <h3 className="text-lg md:text-base lg:text-pretty font-semibold text-gray-900">
             Booking #{booking.id}
           </h3>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm md:text-sm lg:text-[11px] text-gray-500">
             {booking.createdAt.toString().split("T")[0]}
           </p>
         </div>
         <span
-          className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+          className={`inline-flex items-center mr-2 px-3 py-1 rounded-full text-sm md:text-sm lg:text-[10px] font-medium ${
             booking.paid ? statusStyles.paid : statusStyles.unpaid
           }`}
         >
@@ -35,10 +35,10 @@ function SingleBooking({ booking }) {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-1 gap-4 mb-6">
         <div className="flex items-center space-x-2">
           <CalendarIcon className="h-5 w-5 text-gray-400" />
-          <span className="text-gray-600">
+          <span className="text-gray-600 text-pretty md:text-xs lg:text-[12px]">
             {booking.checkIn.toString().split("T")[0]} -{" "}
             {booking.checkOut.toString().split("T")[0]}
           </span>
@@ -46,31 +46,33 @@ function SingleBooking({ booking }) {
 
         <div className="flex items-center space-x-2">
           <UserIcon className="h-5 w-5 text-gray-400" />
-          <span className="text-gray-600">
+          <span className="text-gray-600 text-pretty md:text-sm lg:text-[12px]">
             {booking.numOfGuests} {booking.numOfGuests > 1 ? "guests" : "guest"}
           </span>
         </div>
 
         <div className="flex items-center space-x-2">
           <CurrencyDollarIcon className="h-5 w-5 text-gray-400" />
-          <span className="text-gray-600">Total: ${booking.price}</span>
+          <span className="text-gray-600 text-pretty md:text-sm lg:text-[12px]">
+            Total: ${booking.price}
+          </span>
         </div>
 
         <div className="flex items-center space-x-2">
           <ClockIcon className="h-5 w-5 text-gray-400" />
-          <span className="text-gray-600">
+          <span className="text-gray-600 text-pretty md:text-sm lg:text-[12px]">
             {booking.numOfNights} {booking.numOfNights > 1 ? "nights" : "night"}
           </span>
         </div>
 
         <div className="flex items-center space-x-2">
-          <span className="text-gray-600">
+          <span className="text-gray-600 text-pretty md:text-sm lg:text-[12x]">
             Room Number: {booking.room.roomNumber}
           </span>
         </div>
 
         <div className="flex items-center space-x-2">
-          <span className="text-gray-600">
+          <span className="text-gray-600 text-pretty md:text-pretty lg:text-[14px]">
             User: {booking.user.name} ({booking.user.email})
           </span>
         </div>

@@ -6,6 +6,8 @@ const factory = require('./handlerFactory');
 const multer = require('multer');
 const sharp = require('sharp');
 const APIFeatures = require('../utils/apiFeatures');
+const mongoose = require("mongoose");
+const Booking = require('../models/bookingModel');
 
 const filterObj = (obj, ...unallowedFields) => {
     const newObj = {};
@@ -143,6 +145,7 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
 
         // Delete associated reviews in transaction
         await Review.deleteMany({ user: user._id }).session(session);
+        await Booking.deleteMany({ user: user._id }).session(session);
 
         await session.commitTransaction();
 
