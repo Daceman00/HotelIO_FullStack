@@ -10,6 +10,9 @@ export function useDeleteBooking() {
         onSuccess: () => {
             queryClient.invalidateQueries('bookings')
             toast.success('Booking deleted successfully');
+        },
+        onError: (error) => {
+            toast.error('Error deleting booking');
         }
     });
 

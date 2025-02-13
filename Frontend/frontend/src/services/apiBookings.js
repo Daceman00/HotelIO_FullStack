@@ -6,8 +6,6 @@ export async function getAllBookings(limit) {
             limit,
         };
         const { data } = await axios.get('/bookings', { params });
-        console.log("Total", data.total)
-        console.log("Data", data.data)
         return {
             data: data.data,
             total: data.total,

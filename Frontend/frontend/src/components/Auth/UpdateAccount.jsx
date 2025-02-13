@@ -210,6 +210,8 @@ function UpdateAccount() {
             "If you delete your account, you will lose all your data!"
           }
           onConfirm={handleConfirmModal}
+          isPending={isPendingDelete}
+          opacity="50"
         />
       ) : null}
     </section>

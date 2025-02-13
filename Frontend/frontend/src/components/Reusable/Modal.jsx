@@ -8,13 +8,24 @@ function Modal({
   onConfirm,
   confirmText = "Yes, I'm sure",
   cancelText = "No, cancel",
+  isPending,
+  opacity,
+  userId,
+  action,
 }) {
   if (!isOpen) return null;
+
+  const handleConfirm = () => {
+    if (action) {
+      action(userId);
+    }
+    onConfirm();
+  };
 
   return (
     <div
       id="popup-modal"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-${opacity}`}
     >
       <div className="relative p-4 w-full max-w-md max-h-full">
         <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
@@ -68,7 +79,8 @@ function Modal({
             <button
               type="button"
               className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
-              onClick={onConfirm}
+              onClick={handleConfirm}
+              disabled={isPending}
             >
               {confirmText}
             </button>
