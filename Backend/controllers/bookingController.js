@@ -88,30 +88,55 @@ exports.createBooking = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllBookings = catchAsync(async (req, res, next) => {
+    const currentDate = new Date();
     let filter = {};
 
-    const total = await Booking.countDocuments();
+    // Handle status filtering
+    if (req.query.status) {
+        switch (req.query.status) {
+            case 'upcoming':
+                filter.checkIn = { $gt: currentDate };
+                break;
+            case 'current':
+                filter.$and = [
+                    { checkIn: { $lte: currentDate } },
+                    { checkOut: { $gt: currentDate } }
+                ];
+                break;
+            case 'past':
+                filter.checkOut = { $lte: currentDate };
+                break;
+        }
+    }
 
-    const features = new APIFeatures(Booking.find(filter), req.query)
-        .filter() // Apply base filters first
-        .search(['user', 'room']) // Then add search conditions
-        .applyFilters()
-        .sort()
-        .limitFields()
-        .paginate();
+    // Clone query and remove special parameters
+    const queryCopy = { ...req.query };
+    ['status', 'page', 'limit', 'sort', 'fields'].forEach(el => delete queryCopy[el]);
 
-    const bookings = await features.query.populate({
-        path: 'user',
-        select: 'username email'
-    });
+    // Count total documents WITH FILTERS
+    const total = await Booking.countDocuments(filter);
 
-    // Filter out bookings where user was deleted
-    //const validBookings = bookings.filter(booking => booking.user !== null);
+    // Get pagination values
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const skip = (page - 1) * limit;
+
+    // Get paginated results
+    const bookings = await Booking.find(filter)
+        .skip(skip)
+        .limit(limit)
+        .sort(req.query.sort || '-createdAt')
+        .populate({
+            path: 'user',
+            select: 'username email'
+        });
 
     res.status(200).json({
         status: 'success',
         results: bookings.length,
         total,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
         data: {
             data: bookings
         }
