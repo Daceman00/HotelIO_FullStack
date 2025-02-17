@@ -51,12 +51,9 @@ const Header = React.memo(function Header() {
                 <Link to="/rooms">
                   <div className="flex items-center space-x-6">
                     {/* Booking Button */}
-                    <a
-                      href="#"
-                      className="px-6 py-2 text-white bg-[#dfa974] rounded font-semibold text-sm uppercase hover:bg-[#c68a5e]"
-                    >
+                    <div className="px-6 py-2 text-white bg-[#dfa974] rounded font-semibold text-sm uppercase hover:bg-[#c68a5e]">
                       Booking Now
-                    </a>
+                    </div>
                   </div>
                 </Link>
               </div>

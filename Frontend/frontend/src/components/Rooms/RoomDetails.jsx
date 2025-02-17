@@ -135,7 +135,7 @@ const RoomDetails = () => {
                 <div className="pt-14 border-t border-gray-300 mb-12">
                   <h4 className="text-gray-800 tracking-wide mb-11">Reviews</h4>
                   {room?.data.room.reviews.map((review, idx) => (
-                    <SingleReview review={review} idx={idx} />
+                    <SingleReview review={review} idx={idx} key={review.id} />
                   ))}
                 </div>
               </div>
