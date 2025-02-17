@@ -143,6 +143,28 @@ exports.getAllBookings = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.getBookingCounts = catchAsync(async (req, res, next) => {
+    const currentDate = new Date();
+
+    const upcomingCount = await Booking.countDocuments({ checkIn: { $gt: currentDate } });
+    const currentCount = await Booking.countDocuments({
+        $and: [
+            { checkIn: { $lte: currentDate } },
+            { checkOut: { $gt: currentDate } }
+        ]
+    });
+    const pastCount = await Booking.countDocuments({ checkOut: { $lte: currentDate } });
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            upcoming: upcomingCount,
+            current: currentCount,
+            past: pastCount
+        }
+    });
+});
+
 exports.deleteBooking = catchAsync(async (req, res, next) => {
     const session = await mongoose.startSession();
     session.startTransaction();

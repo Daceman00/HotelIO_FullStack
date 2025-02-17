@@ -28,6 +28,7 @@ export function useLogout() {
             if (!context?.skipToast) {
                 toast.success("You are logged out!")
             }
+            navigate('/')
 
 
         },

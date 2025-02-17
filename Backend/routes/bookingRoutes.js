@@ -7,6 +7,10 @@ const router = express.Router({ mergeParams: true });
 router.use(authController.protect);
 
 router
+    .route('/booking-counts')
+    .get(bookingController.getBookingCounts);
+
+router
     .route('/')
     .get(bookingController.getAllBookings)
     .post(

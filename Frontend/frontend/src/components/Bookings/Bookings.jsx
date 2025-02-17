@@ -1,32 +1,35 @@
+import { useEffect } from "react";
 import { modes } from "../../hooks/useServiceConfig";
 import useUIStore from "../../stores/UiStore";
 import Loading from "../Reusable/Loading";
-import Pagination from "../Reusable/Pagination";
 import SingleBooking from "./SingleBooking";
 import { useGetAllBookings } from "./useGetAllBookings";
-import { format, isBefore, isAfter } from "date-fns";
+import { useInView } from "react-intersection-observer";
+import { useGetBookingsCount } from "./useGetBookingsCount";
 
 function Bookings() {
-  const { bookings, isPending, total, error } = useGetAllBookings();
   const { bookingActiveTab, setBookingActiveTab } = useUIStore();
+  const {
+    bookings,
+    isPending,
+    total,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useGetAllBookings(bookingActiveTab);
+  const { bookings_counts, error_count, isPending_count } =
+    useGetBookingsCount();
 
-  if (isPending) return <Loading mode={modes.all} />;
-  console.log(bookings?.data);
+  const { ref, inView } = useInView();
 
-  const filterBookings = (status) => {
-    const now = new Date();
-    return bookings?.data?.filter((booking) => {
-      // Access bookings directly
-      const startDate = new Date(booking.checkIn);
-      const endDate = new Date(booking.checkOut);
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-      if (status === "upcoming") return isAfter(startDate, now);
-      if (status === "current")
-        return isBefore(startDate, now) && isAfter(endDate, now);
-      if (status === "past") return isBefore(endDate, now);
-      return true;
-    });
-  };
+  if (isPending || isPending_count) return <Loading mode={modes.all} />;
 
   return (
     <>
@@ -46,25 +49,27 @@ function Bookings() {
                 }`}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)} (
-                {filterBookings(tab).length})
+                {bookings_counts?.data[tab] || 0})
               </button>
             ))}
           </nav>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filterBookings(bookingActiveTab).length === 0 ? (
+          {bookings.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-500">
                 No {bookingActiveTab} bookings found
               </p>
             </div>
           ) : (
-            filterBookings(bookingActiveTab).map((booking) => (
+            bookings?.map((booking) => (
               <SingleBooking key={booking.id} booking={booking} />
             ))
           )}
+          <div ref={ref} className="h-2" />
         </div>
+        {isFetchingNextPage && <Loading mode={modes.all} />}
       </div>
     </>
   );

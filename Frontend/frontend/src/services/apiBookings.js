@@ -1,14 +1,19 @@
 import axios from "./../helpers/axios"
 
-export async function getAllBookings(limit) {
+export async function getAllBookings({ limit = 10, page = 1, status }) {
     try {
         const params = {
             limit,
+            page,
+            status
         };
         const { data } = await axios.get('/bookings', { params });
+        const total = data.total;
+        const nextPage = data.results < limit ? undefined : page + 1;
         return {
-            data: data.data,
-            total: data.total,
+            data: data.data.data,
+            total,
+            nextPage
         }
     } catch (error) {
         console.error(error);
@@ -54,5 +59,15 @@ export async function deleteBooking(bookingId) {
     } catch (error) {
         console.error(error);
         throw new Error("Booking not deleted");
+    }
+}
+
+export async function getBookingsCounts() {
+    try {
+        const { data } = await axios.get(`/bookings/booking-counts`)
+        return data;
+    } catch (error) {
+        console.error(error)
+        throw new Error("Cannot get Bookings count")
     }
 }

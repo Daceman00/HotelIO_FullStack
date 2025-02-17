@@ -89,7 +89,7 @@ function CreateBookingForm() {
   const isDateBooked = (date) => {
     const dateStr = format(date, "yyyy-MM-dd");
     const todayStr = format(now, "yyyy-MM-dd");
-    const dateMinusOneDay = subDays(date, -1);
+    const dateMinusOneDay = subDays(date, 0);
 
     // Disable all past dates and today if it's past noon
     if (

@@ -5,7 +5,7 @@ function SingleReview({ review, idx }) {
     <div key={idx} className="mb-[32px] flex">
       <div className="mr-[32px]">
         <img
-          src={review.user.photo}
+          src={review?.user.photo}
           alt="User Avatar"
           className="h-[70px] w-[70px] rounded-full"
         />
