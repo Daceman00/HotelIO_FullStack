@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { calculateAverageRating } = require("../utils/ratingUtils");
+const { calculateAverageRating } = require("../utils/calculateAverageRating");
 
 const reviewSchema = new mongoose.Schema({
     review: {
