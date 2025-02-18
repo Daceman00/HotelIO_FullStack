@@ -1,11 +1,10 @@
 const mongoose = require("mongoose");
-const AppError = require('../utils/appError');
-const roomController = require('./../controllers/roomController')
+const { calculateAverageRating } = require("../utils/ratingUtils");
 
 const reviewSchema = new mongoose.Schema({
     review: {
         type: String,
-        required: [true, 'Review can not be empty!'],
+        required: [true, 'Review cannot be empty!'],
         maxlength: [500, 'Review must be less than or equal to 500 characters']
     },
     rating: {
@@ -31,11 +30,10 @@ const reviewSchema = new mongoose.Schema({
         ref: 'Room',
         required: [true, "Review must be associated with a room"]
     },
-},
-    {
-        toJSON: { virtuals: true },
-        toObject: { virtuals: true }
-    });
+}, {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
 
 reviewSchema.pre(/^find/, function (next) {
     this.populate({
@@ -45,15 +43,18 @@ reviewSchema.pre(/^find/, function (next) {
     this.populate({
         path: 'room',
         select: 'roomNumber price'
-    })
+    });
     next();
 });
+
 reviewSchema.post('save', async function () {
-    await roomController.calculateAverageRating(this.room)
+    console.log(`Review saved. Calculating average rating for room ID: ${this.room}`);
+    await calculateAverageRating(this.room);
 });
 
 reviewSchema.post('remove', async function () {
-    await roomController.calculateAverageRating(this.room)
+    console.log(`Review removed. Calculating average rating for room ID: ${this.room}`);
+    await calculateAverageRating(this.room);
 });
 
 reviewSchema.index({ room: 1, user: 1 }, { unique: true });

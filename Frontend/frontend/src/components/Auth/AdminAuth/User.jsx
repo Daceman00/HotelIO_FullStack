@@ -26,7 +26,7 @@ function User({ user }) {
           description={"If you delete this user, it will lose all his data!"}
           onConfirm={handleConfirmModal}
           isPending={isPending}
-          opacity="30"
+          opacity="10"
         />
       ) : null}
       <tbody>

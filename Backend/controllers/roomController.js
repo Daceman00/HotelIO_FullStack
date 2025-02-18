@@ -1,11 +1,9 @@
-const Room = require('./../models/roomModel')
-const Review = require('../models/reviewModel');
+const Room = require('./../models/roomModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
 const multer = require('multer');
 const sharp = require('sharp');
-const { default: mongoose } = require('mongoose');
 
 // Multer configuration
 const multerStorage = multer.memoryStorage();
@@ -61,7 +59,6 @@ exports.resizeRoomImages = catchAsync(async (req, res, next) => {
     next();
 });
 
-
 exports.getRoomWithReviewsAndBookings = catchAsync(async (req, res, next) => {
     const room = await Room.findById(req.params.id)
         .populate({
@@ -110,39 +107,8 @@ exports.getRoomWithActiveBookings = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.calculateAverageRating = async (roomId) => {
-    // Ensure roomId is valid
-    if (!mongoose.Types.ObjectId.isValid(roomId)) {
-        throw new Error("Invalid Room ID");
-    }
-
-    const stats = await Review.aggregate([
-        { $match: { room: new mongoose.Types.ObjectId(roomId) } },
-        {
-            $group: {
-                _id: '$room',
-                averageRating: { $avg: '$rating' },
-                numRatings: { $sum: 1 }
-            }
-        }
-    ]);
-
-    if (stats.length > 0) {
-        await Room.findByIdAndUpdate(roomId, {
-            averageRating: stats[0].averageRating,
-            numRatings: stats[0].numRatings
-        });
-    } else {
-        await Room.findByIdAndUpdate(roomId, {
-            averageRating: 0,
-            numRatings: 0
-        });
-    }
-};
-
-
-exports.getAllRooms = factory.getAll(Room)
-exports.getRoom = factory.getOne(Room,)
-exports.createRoom = factory.createOne(Room)
-exports.updateRoom = factory.updateOne(Room)
-exports.deleteRoom = factory.deleteOne(Room)
+exports.getAllRooms = factory.getAll(Room);
+exports.getRoom = factory.getOne(Room);
+exports.createRoom = factory.createOne(Room);
+exports.updateRoom = factory.updateOne(Room);
+exports.deleteRoom = factory.deleteOne(Room);

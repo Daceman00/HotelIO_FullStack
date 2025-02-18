@@ -10,13 +10,12 @@ export function useSignup() {
 
     const { mutate: signup, isPending, error } = useMutation({
         mutationFn: signupApi,
-        onMutate: async () => {
-            setUserLoggedIn(true);
-        },
+
         onSuccess: (user) => {
             const token = user.token
             if (token) {
                 localStorage.setItem('token', token)
+                setUserLoggedIn(true);
                 toast.success("Account succesfully created!")
             } else {
                 toast.error("Token missing in response")

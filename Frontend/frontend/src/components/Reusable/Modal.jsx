@@ -25,7 +25,8 @@ function Modal({
   return (
     <div
       id="popup-modal"
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-${opacity}`}
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ backgroundColor: `rgba(0, 0, 0, ${opacity / 100})` }}
     >
       <div className="relative p-4 w-full max-w-md max-h-full">
         <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
