@@ -19,4 +19,14 @@ export async function createReview(roomId, reviewData) {
         console.error(error.response);
         throw new Error(error.response.data.message);
     }
-} 
+}
+
+export async function deleteReview(reviewId) {
+    try {
+        await axios.delete(`/reviews/${reviewId}`)
+    } catch (error) {
+        console.error(error.response);
+        throw new Error(error.response.data.message);
+    }
+
+}

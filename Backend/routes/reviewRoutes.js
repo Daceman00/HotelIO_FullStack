@@ -26,7 +26,7 @@ router
     )
     .delete(
         authController.protect,
-        authController.restrictTo('user', 'admin'),
+        authController.restrictTo('admin'),
         reviewController.deleteReview
     );
 

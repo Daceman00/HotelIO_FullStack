@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { calculateAverageRating } = require("../utils/calculateAverageRating");
+
 
 const reviewSchema = new mongoose.Schema({
     review: {
@@ -35,6 +35,42 @@ const reviewSchema = new mongoose.Schema({
     toObject: { virtuals: true }
 });
 
+// Static method to calculate average ratings
+reviewSchema.statics.calculateAverageRating = async function (roomId) {
+    if (!mongoose.Types.ObjectId.isValid(roomId)) {
+        throw new Error("Invalid Room ID");
+    }
+
+    try {
+        const stats = await this.aggregate([
+            { $match: { room: new mongoose.Types.ObjectId(roomId) } },
+            {
+                $group: {
+                    _id: '$room',
+                    averageRating: { $avg: '$rating' },
+                    numRatings: { $sum: 1 }
+                }
+            }
+        ]);
+
+        const updateData = stats.length > 0
+            ? {
+                averageRating: stats[0].averageRating,
+                numRatings: stats[0].numRatings
+            }
+            : {
+                averageRating: 0,
+                numRatings: 0
+            };
+
+        const Room = mongoose.model('Room');
+        await Room.findByIdAndUpdate(roomId, updateData, { new: true, runValidators: true });
+    } catch (error) {
+        console.error(`Error calculating average rating: ${error.message}`);
+        throw error;
+    }
+};
+
 reviewSchema.pre(/^find/, function (next) {
     this.populate({
         path: 'user',
@@ -47,14 +83,13 @@ reviewSchema.pre(/^find/, function (next) {
     next();
 });
 
+// Update average rating after saving or removing a review
 reviewSchema.post('save', async function () {
-    console.log(`Review saved. Calculating average rating for room ID: ${this.room}`);
-    await calculateAverageRating(this.room);
+    await this.constructor.calculateAverageRating(this.room);
 });
 
 reviewSchema.post('remove', async function () {
-    console.log(`Review removed. Calculating average rating for room ID: ${this.room}`);
-    await calculateAverageRating(this.room);
+    await this.constructor.calculateAverageRating(this.room);
 });
 
 reviewSchema.index({ room: 1, user: 1 }, { unique: true });
