@@ -1,11 +1,9 @@
 const mongoose = require('mongoose');
 const Booking = require('./../models/bookingModel');
-const Room = require('./../models/roomModel');
 const Review = require('./../models/reviewModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
-const APIFeatures = require('./../utils/apiFeatures');
 
 
 exports.setRoomUserIds = (req, res, next) => {
@@ -15,23 +13,59 @@ exports.setRoomUserIds = (req, res, next) => {
 };
 
 exports.getBookingsByUser = catchAsync(async (req, res, next) => {
-    const bookings = await Booking.find({ user: req.params.id });
+    const currentDate = new Date();
+    let filter = { user: req.user.id };
 
-    if (!bookings || bookings.length === 0) {
-        return res.status(404).json({
-            status: 'fail',
-            message: 'No bookings found for this user'
-        });
+    // Handle status filtering
+    if (req.query.status) {
+        switch (req.query.status) {
+            case 'upcoming':
+                filter.checkIn = { $gt: currentDate };
+                break;
+            case 'current':
+                filter.$and = [
+                    { checkIn: { $lte: currentDate } },
+                    { checkOut: { $gt: currentDate } }
+                ];
+                break;
+            case 'past':
+                filter.checkOut = { $lte: currentDate };
+                break;
+        }
     }
+
+    // Clone query and remove special parameters
+    const queryCopy = { ...req.query };
+    ['status', 'page', 'limit', 'sort', 'fields'].forEach(el => delete queryCopy[el]);
+
+    // Count total documents WITH FILTERS
+    const total = await Booking.countDocuments(filter);
+
+    // Get pagination values
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const skip = (page - 1) * limit;
+
+    // Get paginated results
+    const bookings = await Booking.find(filter)
+        .skip(skip)
+        .limit(limit)
+        .sort(req.query.sort || '-createdAt')
+        .populate({
+            path: 'user',
+            select: 'username email'
+        });
 
     res.status(200).json({
         status: 'success',
         results: bookings.length,
+        total,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
         data: {
-            bookings
+            data: bookings
         }
     });
-    next();
 });
 
 exports.getBookingsByRoom = catchAsync(async (req, res, next) => {
@@ -154,6 +188,29 @@ exports.getBookingCounts = catchAsync(async (req, res, next) => {
         ]
     });
     const pastCount = await Booking.countDocuments({ checkOut: { $lte: currentDate } });
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            upcoming: upcomingCount,
+            current: currentCount,
+            past: pastCount
+        }
+    });
+});
+
+exports.getUserBookingCounts = catchAsync(async (req, res, next) => {
+    const currentDate = new Date();
+
+    const upcomingCount = await Booking.countDocuments({ user: req.user.id, checkIn: { $gt: currentDate } });
+    const currentCount = await Booking.countDocuments({
+        user: req.user.id,
+        $and: [
+            { checkIn: { $lte: currentDate } },
+            { checkOut: { $gt: currentDate } }
+        ]
+    });
+    const pastCount = await Booking.countDocuments({ user: req.user.id, checkOut: { $lte: currentDate } });
 
     res.status(200).json({
         status: 'success',

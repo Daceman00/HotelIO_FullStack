@@ -10,9 +10,7 @@ exports.setRoomUserIds = (req, res, next) => {
 };
 
 exports.getReviewsByUser = catchAsync(async (req, res, next) => {
-    const reviews = await Review.find({ user: req.params.id }); // Find all reviews by user ID
-
-
+    const reviews = await Review.find({ user: req.user.id });
 
     if (!reviews || reviews.length === 0) {
         return res.status(404).json({
@@ -28,7 +26,7 @@ exports.getReviewsByUser = catchAsync(async (req, res, next) => {
             reviews
         }
     });
-    next()
+
 });
 
 exports.getReviewsByRoom = catchAsync(async (req, res, next) => {
@@ -48,7 +46,7 @@ exports.getReviewsByRoom = catchAsync(async (req, res, next) => {
             reviews
         }
     });
-    next()
+
 });
 
 exports.getAllReviews = catchAsync(async (req, res, next) => {

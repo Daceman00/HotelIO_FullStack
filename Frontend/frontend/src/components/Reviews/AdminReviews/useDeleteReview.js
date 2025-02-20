@@ -12,6 +12,9 @@ export function useDeleteReview() {
             })
             toast.success('Review deleted successfully');
         },
+        onError: (error) => {
+            toast.error('Error deleting review');
+        }
     })
     return { deleteReview, error, isPending }
 }

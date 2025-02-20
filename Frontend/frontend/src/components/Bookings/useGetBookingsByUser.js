@@ -1,11 +1,10 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { getAllBookings } from "../../services/apiBookings";
+import { getBookingsByUser } from "../../services/apiBookings";
 
-export function useGetAllBookings(status) {
-
+export function useGetBookingsByUser(status) {
     const { data: bookings, isPending, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
         queryKey: ["bookings", status],
-        queryFn: ({ pageParam = 1 }) => getAllBookings({ limit: 10, page: pageParam, status: status }),
+        queryFn: ({ pageParam = 1 }) => getBookingsByUser({ limit: 10, page: pageParam, status: status }),
         getNextPageParam: (lastPage) => lastPage.nextPage,
         initialPageParam: 1
     });

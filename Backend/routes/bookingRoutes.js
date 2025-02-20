@@ -7,10 +7,6 @@ const router = express.Router({ mergeParams: true });
 router.use(authController.protect);
 
 router
-    .route('/booking-counts')
-    .get(bookingController.getBookingCounts);
-
-router
     .route('/')
     .get(bookingController.getAllBookings)
     .post(
@@ -18,6 +14,18 @@ router
         bookingController.setRoomUserIds,
         bookingController.createBooking
     );
+
+router
+    .route('/user')
+    .get(bookingController.getBookingsByUser);
+
+router
+    .route('/user/booking-counts')
+    .get(bookingController.getUserBookingCounts);
+
+router
+    .route('/booking-counts')
+    .get(bookingController.getBookingCounts);
 
 router
     .route('/:id')
@@ -28,10 +36,6 @@ router
 router
     .route('/:id/pay')
     .patch(authController.restrictTo('user', 'admin'), bookingController.markBookingAsPaid);
-
-router
-    .route('/user/:id')
-    .get(bookingController.getBookingsByUser);
 
 router
     .route('/room/:id')

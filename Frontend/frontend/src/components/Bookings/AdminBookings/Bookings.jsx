@@ -1,0 +1,81 @@
+import { useEffect } from "react";
+import { modes } from "../../../hooks/useServiceConfig";
+import useUIStore from "../../../stores/UiStore";
+import Loading from "../../Reusable/Loading";
+import SingleBooking from "../SingleBooking";
+
+import { useInView } from "react-intersection-observer";
+import { useGetBookingsCount } from "../AdminBookings/useGetBookingsCount";
+import useAuthStore from "../../../stores/AuthStore";
+import { useGetAllBookings } from "./useGetAllBookings";
+
+function Bookings() {
+  const { bookingActiveTab, setBookingActiveTab } = useUIStore();
+  const {
+    bookings,
+    isPending,
+    total,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useGetAllBookings(bookingActiveTab);
+
+  const { bookings_counts, error_count, isPending_count } =
+    useGetBookingsCount();
+
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  if (isPending || isPending_count) return <Loading mode={modes.all} />;
+
+  return (
+    <>
+      <div className=" my-6 mx-6 px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Your Bookings</h1>
+
+        <div className="border-b border-gray-200 mb-8">
+          <nav className="flex space-x-8 justify-start">
+            {["upcoming", "current", "past"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setBookingActiveTab(tab)}
+                className={`pb-4 px-1 border-b-2 font-medium text-sm ${
+                  bookingActiveTab === tab
+                    ? "border-[#dfa379] text-[#dfa379]"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)} (
+                {bookings_counts?.data[tab] || 0})
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {bookings.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500">
+                No {bookingActiveTab} bookings found
+              </p>
+            </div>
+          ) : (
+            bookings?.map((booking) => (
+              <SingleBooking key={booking.id} booking={booking} />
+            ))
+          )}
+          <div ref={ref} className="h-2" />
+        </div>
+        {isFetchingNextPage && <Loading mode={modes.all} />}
+      </div>
+    </>
+  );
+}
+
+export default Bookings;

@@ -71,3 +71,34 @@ export async function getBookingsCounts() {
         throw new Error("Cannot get Bookings count")
     }
 }
+
+export async function getBookingsByUser({ limit = 10, page = 1, status }) {
+    try {
+        const params = {
+            limit,
+            page,
+            status
+        };
+        const { data } = await axios.get('/bookings/user', { params });
+        const total = data.total;
+        const nextPage = data.results < limit ? undefined : page + 1;
+        return {
+            data: data.data.data,
+            total,
+            nextPage
+        }
+    } catch (error) {
+        console.error(error);
+        throw new Error("Bookings not found");
+    }
+}
+
+export async function getUsersBookingsCounts() {
+    try {
+        const { data } = await axios.get(`/bookings/user/booking-counts`)
+        return data;
+    } catch (error) {
+        console.error(error)
+        throw new Error("Cannot get Bookings count")
+    }
+}

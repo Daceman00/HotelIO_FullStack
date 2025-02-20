@@ -1,13 +1,13 @@
-import { useEffect } from "react";
-import { modes } from "../../hooks/useServiceConfig";
+import React, { useEffect } from "react";
+import { useGetBookingsByUser } from "./useGetBookingsByUser";
+import { useGetUsersBookingsCount } from "./useGetUsersBookingsCounts";
+import { useInView } from "react-intersection-observer";
 import useUIStore from "../../stores/UiStore";
 import Loading from "../Reusable/Loading";
+import { modes } from "../../hooks/useServiceConfig";
 import SingleBooking from "./SingleBooking";
-import { useGetAllBookings } from "./useGetAllBookings";
-import { useInView } from "react-intersection-observer";
-import { useGetBookingsCount } from "./useGetBookingsCount";
 
-function Bookings() {
+function UserBookings() {
   const { bookingActiveTab, setBookingActiveTab } = useUIStore();
   const {
     bookings,
@@ -17,9 +17,10 @@ function Bookings() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useGetAllBookings(bookingActiveTab);
+  } = useGetBookingsByUser(bookingActiveTab);
+
   const { bookings_counts, error_count, isPending_count } =
-    useGetBookingsCount();
+    useGetUsersBookingsCount();
 
   const { ref, inView } = useInView();
 
@@ -56,10 +57,10 @@ function Bookings() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {bookings.length === 0 ? (
+          {bookings?.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-500">
-                No {bookingActiveTab} bookings found
+                You don't have any {bookingActiveTab} bookings
               </p>
             </div>
           ) : (
@@ -75,4 +76,4 @@ function Bookings() {
   );
 }
 
-export default Bookings;
+export default UserBookings;
