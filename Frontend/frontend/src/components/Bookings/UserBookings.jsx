@@ -35,8 +35,6 @@ function UserBookings() {
   return (
     <>
       <div className=" my-6 mx-6 px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Your Bookings</h1>
-
         <div className="border-b border-gray-200 mb-8">
           <nav className="flex space-x-8 justify-start">
             {["upcoming", "current", "past"].map((tab) => (

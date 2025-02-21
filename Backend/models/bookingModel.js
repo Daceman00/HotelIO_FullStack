@@ -145,7 +145,9 @@ bookingSchema.pre(/^find/, function (next) {
     next();
 });
 
-bookingSchema.index({ room: 1, user: 1 }, { unique: true });
+bookingSchema.index({ room: 1, checkIn: 1, checkOut: 1 }); // For searching available rooms
+bookingSchema.index({ user: 1, room: 1, checkIn: 1 }); // For allowing multiple bookings of same room by user
+bookingSchema.index({ paid: 1, checkIn: 1 }); // For querying unpaid/paid bookings
 
 const Booking = mongoose.model('Booking', bookingSchema);
 

@@ -92,7 +92,11 @@ reviewSchema.post('remove', async function () {
     await this.constructor.calculateAverageRating(this.room);
 });
 
-reviewSchema.index({ room: 1, user: 1 }, { unique: true });
+// Add indexes for efficient querying of reviews
+reviewSchema.index({ room: 1 }); // For finding all reviews for a room
+reviewSchema.index({ user: 1 }); // For finding all reviews by a user
+reviewSchema.index({ rating: -1 }); // For sorting/filtering reviews by rating
+reviewSchema.index({ createdAt: -1 }); // For getting latest reviews efficiently
 
 const Review = mongoose.model("Review", reviewSchema);
 

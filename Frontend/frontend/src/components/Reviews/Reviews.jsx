@@ -10,6 +10,13 @@ import { useGetAllReviews } from "./useGetAllReviews";
 function Reviews() {
   const { reviews } = useGetAllReviews();
 
+  const latestReviews = (reviews, count = 3) => {
+    if (!reviews?.data?.data) return [];
+    return reviews?.data?.data
+      ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, count);
+  };
+
   return (
     <section className="testimonial-section bg-gray-100 py-16">
       <div className="container mx-auto px-4">
@@ -26,7 +33,7 @@ function Reviews() {
         {/* Reviews */}
         <div className="flex justify-center">
           <div className="max-w-4xl w-full">
-            {reviews?.data.data.length > 0 ? (
+            {latestReviews(reviews, 5).length > 0 ? (
               <Swiper
                 modules={[Pagination, Autoplay]}
                 pagination={{ clickable: true }}
@@ -36,7 +43,7 @@ function Reviews() {
                 autoplay={{ delay: 3000, disableOnInteraction: false }}
                 className="mySwiper"
               >
-                {reviews?.data.data.map((review) => (
+                {latestReviews(reviews, 5).map((review) => (
                   <SwiperSlide key={review.id}>
                     <div className="ts-item bg-white shadow-md rounded-lg p-8 text-center transition-transform transform hover:scale-105">
                       <p className="text-lg text-gray-600 leading-relaxed mb-8">
