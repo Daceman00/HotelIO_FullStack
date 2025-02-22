@@ -65,10 +65,13 @@ export async function resetPassword(token, passwordData) {
 
 export async function updateAccountPhoto(userPhoto) {
     try {
-        const { data } = await axios.patch(`/users/updateMyAccount/`, userPhoto)
-        return data
+        const { data } = await axios.patch(`/users/updateMyAccount/`, userPhoto, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return data;
     } catch (error) {
-        console.error(error.response);
         throw new Error(error.response.data.message);
     }
 }

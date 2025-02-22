@@ -14,6 +14,7 @@ import useUIStore from "../../stores/UiStore";
 import { useIsLoggedIn } from "../Auth/useAuth";
 import useAuthStore from "../../stores/AuthStore";
 import { useLogout } from "../Auth/useLogout";
+import { IMAGE_URL_USERS } from "../../helpers/imageURL";
 
 const Sidebar = React.memo(function Sidebar() {
   const { user } = useIsLoggedIn();
@@ -24,6 +25,8 @@ const Sidebar = React.memo(function Sidebar() {
 
   const { isAdmin } = useAuthStore();
   const { isUserLoggedIn } = useAuthStore();
+
+  console.log(`${IMAGE_URL_USERS}/${user?.data.photo}`);
 
   return (
     <div className="flex">
@@ -36,7 +39,7 @@ const Sidebar = React.memo(function Sidebar() {
         <div className="p-6 text-center ">
           {/* User Info */}
           <img
-            src="/img/user-avatar.jpg"
+            src={`${IMAGE_URL_USERS}/${user?.data.photo}`}
             alt="User Avatar"
             className="w-24 h-24 mx-auto rounded-full border-4 border-[#dfa974]"
           />

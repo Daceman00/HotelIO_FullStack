@@ -60,7 +60,7 @@ function UpdateAccount() {
         return;
       }
       const formData = new FormData();
-      formData.append("photo", file);
+      formData.append("profilePhoto", file);
 
       setError(null); // Clear any previous error
       setPreview(URL.createObjectURL(file)); // Create a preview URL

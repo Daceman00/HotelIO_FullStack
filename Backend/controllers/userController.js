@@ -33,53 +33,49 @@ const upload = multer({
 });
 
 // Middleware to handle profile photo upload
-exports.uploadProfilePhoto = upload.single('profilePhoto');
+exports.uploadProfilePhoto = upload.single('photo');
 
 // Middleware to resize profile photo
 exports.resizeProfilePhoto = catchAsync(async (req, res, next) => {
     if (!req.file) return next(); // If no file is uploaded, proceed to the next middleware
 
     // Generate filename and resize photo
-    req.body.profilePhoto = `user-${req.user.id}-${Date.now()}.jpeg`;
+    req.body.photo = `user-${req.user.id}-${Date.now()}.jpeg`;
     await sharp(req.file.buffer)
         .resize(500, 500) // Resize to a square image
         .toFormat('jpeg')
         .jpeg({ quality: 90 })
-        .toFile(`public/img/users/${req.body.profilePhoto}`);
+        .toFile(`public/img/users/${req.body.photo}`);
+
+    // Attach the photo to the user
+    await User.findByIdAndUpdate(req.user.id, { photo: req.body.photo });
 
     next();
 });
+
 exports.getMyAccount = (req, res, next) => {
     req.params.id = req.user.id
     next()
 }
 
 exports.updateMyAccount = catchAsync(async (req, res, next) => {
-    // Create error if user POSTs password
     if (req.body.password || req.body.passwordConfirm) {
-        return next(new AppError('This route is not for password updates. Please use /updateMyPassword.', 400))
+        return next(new AppError('This route is not for password updates.', 400));
     }
 
-    // Filter out fields that are not allowed to be updated
-    const filteredBody = filterObj(req.body, 'email', 'name')
+    // Only allow 'profilePhoto' to be updated
+    const filteredBody = filterObj(req.body, 'photo');
 
-    if (req.body.name || req.body.email) {
-        return next(new AppError('You are not allowed to change your name or email', 400))
-    }
-
-    // Update user document
     const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
         new: true,
         runValidators: true
-    })
+    });
 
     res.status(200).json({
         status: "success",
-        data: {
-            user: updatedUser
-        }
-    })
-})
+        data: { user: updatedUser }
+    });
+});
 
 
 exports.deleteMyAccount = catchAsync(async (req, res, next) => {
