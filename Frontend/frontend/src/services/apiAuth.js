@@ -63,16 +63,16 @@ export async function resetPassword(token, passwordData) {
     }
 }
 
-export async function updateAccountPhoto(userPhoto) {
+export async function updateAccountPhoto(formData) {
     try {
-        const { data } = await axios.patch(`/users/updateMyAccount/`, userPhoto, {
+        const { data } = await axios.patch(`http://localhost:3000/api/v1/users/updateMyAccount`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
         });
         return data;
     } catch (error) {
-        throw new Error(error.response.data.message);
+        throw new Error(error.response?.data?.message || 'Error updating photo');
     }
 }
 

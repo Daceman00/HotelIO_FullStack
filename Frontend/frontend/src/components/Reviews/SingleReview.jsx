@@ -4,6 +4,7 @@ import useAuthStore from "../../stores/AuthStore";
 import { useDeleteReview } from "./AdminReviews/useDeleteReview";
 import useUIStore from "../../stores/UiStore";
 import Modal from "../Reusable/Modal";
+import { IMAGE_URL_USERS } from "../../helpers/imageURL";
 
 function SingleReview({ review, idx }) {
   const { isAdmin } = useAuthStore();
@@ -14,6 +15,7 @@ function SingleReview({ review, idx }) {
   const handleDeleteReview = () => {
     onModalClose();
   };
+  console.log(review?.user.photo);
   return (
     <>
       {isModalOpen ? (
@@ -32,7 +34,7 @@ function SingleReview({ review, idx }) {
       <div key={idx} className="mb-[32px] flex">
         <div className="mr-[32px]">
           <img
-            src={review?.user.photo}
+            src={`${IMAGE_URL_USERS}/${review?.user.photo}`}
             alt="User Avatar"
             className="h-[70px] w-[70px] rounded-full"
           />

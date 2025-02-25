@@ -1,13 +1,14 @@
 import toast from "react-hot-toast";
 import { updateAccountPhoto as updateAccountPhotoApi } from "../../services/apiAuth";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useUpdateAccountPhoto() {
-
+    const queryClient = useQueryClient()
     const { mutate: updateAccountPhoto, isPending, error } = useMutation({
-        mutationFn: updateAccountPhotoApi,
+        mutationFn: (formData) => updateAccountPhotoApi(formData),
         onSuccess: () => {
-            toast.success("Account successfully updated!")
+            queryClient.invalidateQueries(['user'])
+            toast.success("Account photo successfully updated!")
         },
         onError: (error) => {
             toast.error(error.message || "Failed to update account photo")

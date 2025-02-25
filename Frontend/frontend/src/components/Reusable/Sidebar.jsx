@@ -26,8 +26,6 @@ const Sidebar = React.memo(function Sidebar() {
   const { isAdmin } = useAuthStore();
   const { isUserLoggedIn } = useAuthStore();
 
-  console.log(`${IMAGE_URL_USERS}/${user?.data.photo}`);
-
   return (
     <div className="flex">
       {/* Sidebar */}

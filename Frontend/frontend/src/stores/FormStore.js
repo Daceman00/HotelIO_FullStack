@@ -87,9 +87,6 @@ const useFormStore = create((set) => ({
         }));
     },
 
-    photo: null,
-    updatePhotoData: (photoData) => set({ photo: photoData }),
-
     updatePasswordData: {
         passwordCurrent: '',
         password: '',

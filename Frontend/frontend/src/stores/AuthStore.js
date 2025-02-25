@@ -20,6 +20,11 @@ const useAuthStore = create((set) => ({
         const token = localStorage.getItem('token');
         set({ isUserLoggedIn: !!token });
     },
+
+    updatePhotoData: (formData) => {
+        console.log("Updating photoData with:", formData);
+        set({ photoData: formData });
+    },
 }));
 
 export default useAuthStore;
