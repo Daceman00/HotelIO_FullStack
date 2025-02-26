@@ -5,7 +5,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 
 function SingleRoom({ room }) {
   const navigate = useNavigate();
-  console.log(`${IMAGE_URL}/${room.imageCover}`);
+
   return (
     <div
       key={room.roomNumber}
