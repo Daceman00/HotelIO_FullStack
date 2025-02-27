@@ -31,12 +31,34 @@ exports.uploadRoomImages = upload.fields([
 exports.resizeRoomImages = catchAsync(async (req, res, next) => {
     if (!req.files.imageCover || !req.files.images) return next();
 
+    // Enable experimental SIMD optimizations for faster processing
+    sharp.concurrency(1);
+    sharp.simd(true);
+
     // 1) Process cover image
-    req.body.imageCover = `room-${req.params.id}-${Date.now()}-cover.jpeg`;
-    await sharp(req.files.imageCover[0].buffer)
-        .resize(2000, 1333)
-        .toFormat('jpeg')
-        .jpeg({ quality: 90 })
+    const coverImage = req.files.imageCover[0];
+    req.body.imageCover = `room-${req.params.id}-${Date.now()}-cover.webp`;
+
+    await sharp(coverImage.buffer)
+        .resize({
+            width: 2000,
+            height: 1333,
+            fit: 'inside',        // Maintain aspect ratio without cropping
+            withoutEnlargement: true, // Don't enlarge smaller images
+            kernel: sharp.kernel.lanczos3 // Higher quality interpolation
+        })
+        .webp({
+            quality: 85,         // Optimal quality/size balance
+            alphaQuality: 90,
+            lossless: false,
+            nearLossless: true
+        })
+        .sharpen({               // Add subtle sharpening
+            sigma: 0.5,
+            m1: 1,
+            m2: 3
+        })
+        .withMetadata()          // Preserve EXIF data
         .toFile(`public/img/rooms/${req.body.imageCover}`);
 
     // 2) Process additional images
@@ -44,12 +66,28 @@ exports.resizeRoomImages = catchAsync(async (req, res, next) => {
 
     await Promise.all(
         req.files.images.map(async (file, i) => {
-            const filename = `room-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
+            const filename = `room-${req.params.id}-${Date.now()}-${i + 1}.webp`;
 
             await sharp(file.buffer)
-                .resize(2000, 1333)
-                .toFormat('jpeg')
-                .jpeg({ quality: 90 })
+                .resize({
+                    width: 2000,
+                    height: 1333,
+                    fit: 'inside',
+                    withoutEnlargement: true,
+                    kernel: sharp.kernel.lanczos3
+                })
+                .webp({
+                    quality: 85,
+                    alphaQuality: 90,
+                    lossless: false,
+                    nearLossless: true
+                })
+                .sharpen({
+                    sigma: 0.5,
+                    m1: 1,
+                    m2: 3
+                })
+                .withMetadata()
                 .toFile(`public/img/rooms/${filename}`);
 
             req.body.images.push(filename);

@@ -116,7 +116,7 @@ function CreateBookingForm() {
     <>
       <Loading mode={modes.all} />
       <div className="lg:w-1/3 flex items-start lg:items-center lg:mb-[10rem] xl:mb-[17rem] md:mb-[7rem]">
-        <div className="px-[30px] pl-[40px] mt-0">
+        <div className="px-[30px] pl-[40px] mt-0 border border-gray-200 rounded-lg p-6 shadow-sm">
           <h3 className="text-gray-800 mb-7 font-bold text-2xl mt-0">
             Your Reservation
           </h3>

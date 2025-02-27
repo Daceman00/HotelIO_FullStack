@@ -11,6 +11,7 @@ import { modes } from "../../hooks/useServiceConfig";
 import useFileStore from "../../stores/FileStore";
 import { useUpdateAccountPhoto } from "./useUpdateAccountPhoto";
 import FileUploadInput from "../Reusable/FileUploadInput";
+import WarningButton from "../Reusable/WarningButton";
 
 function UpdateAccount() {
   const { user, isPending } = useIsLoggedIn();
@@ -104,27 +105,20 @@ function UpdateAccount() {
 
               <button
                 type="submit"
-                className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                className="w-full text-white bg-[#dfa379] hover:bg-[#c48960] focus:ring-4 focus:outline-none focus:ring-[#dfa379]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-[#dfa379] dark:hover:bg-[#c48960] dark:focus:ring-[#dfa379]/50"
               >
                 Update Account
               </button>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Want to change your password?{" "}
                 <Link to="/updatePassword">
-                  <button className="font-medium text-blue-600 hover:underline dark:text-blue-500">
+                  <button className="font-medium text-[#dfa379] hover:text-[#c48960] hover:underline dark:text-[#dfa379]">
                     Click Here!
                   </button>
                 </Link>
               </p>
             </form>
-            <button
-              type="button"
-              disabled={isPendingDelete}
-              onClick={onModalOpen}
-              className="w-5rem text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mt-4 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
-            >
-              Delete My Account
-            </button>
+            <WarningButton onClick={onModalOpen} />
           </div>
         </div>
       )}

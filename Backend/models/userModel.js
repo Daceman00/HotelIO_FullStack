@@ -2,6 +2,8 @@ const mongoose = require("mongoose")
 const validator = require("validator")
 const bcrypt = require("bcryptjs")
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 
 const userSchema = mongoose.Schema({
     name: {
@@ -89,12 +91,20 @@ userSchema.pre('save', async function (next) {
     next()
 })
 
-// Delete all reviews and bookings associated with this user
+// Delete all reviews, bookings, and user photo associated with this user
 userSchema.pre('deleteOne', { document: true, query: false }, async function () {
     const userId = this._id;
 
     await mongoose.model('Review').deleteMany({ user: userId });
     await mongoose.model('Booking').deleteMany({ user: userId });
+
+    // Delete user photo from public folder
+    if (this.photo) {
+        const photoPath = path.join(__dirname, '..', 'public', 'img', 'users', this.photo);
+        fs.unlink(photoPath, (err) => {
+            if (err) console.error('Failed to delete user photo:', err);
+        });
+    }
 });
 
 // Compare password i passwordConfirm

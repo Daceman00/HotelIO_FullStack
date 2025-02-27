@@ -9,6 +9,7 @@ import {
   faClipboard,
   faUser,
   faSignOutAlt,
+  faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import useUIStore from "../../stores/UiStore";
 import { useIsLoggedIn } from "../Auth/useAuth";
@@ -47,6 +48,12 @@ const Sidebar = React.memo(function Sidebar() {
 
         {/* Menu Items */}
         <ul className="mt-6 space-y-4 px-4">
+          <Link to="/updateAccount">
+            <li className="block py-2 px-4 rounded-lg hover:bg-[#dfa974] transition">
+              <FontAwesomeIcon icon={faUser} className="w-6" />
+              <span className="ml-4">My Account</span>
+            </li>
+          </Link>
           <Link to="/dashboard">
             <li className="block py-2 px-4 rounded-lg hover:bg-[#dfa974] transition">
               <FontAwesomeIcon icon={faClipboard} className="w-6" />
@@ -81,7 +88,7 @@ const Sidebar = React.memo(function Sidebar() {
 
               <Link to="/users">
                 <li className="block py-2 px-4 rounded-lg hover:bg-[#dfa974] transition">
-                  <FontAwesomeIcon icon={faUser} className="w-6" />
+                  <FontAwesomeIcon icon={faUsers} className="w-6" />
                   <span className="ml-4">Users</span>
                 </li>
               </Link>

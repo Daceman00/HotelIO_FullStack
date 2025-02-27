@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const AppError = require('./../utils/appError');
+const fs = require('fs');
+const path = require('path');
 
 const roomSchema = mongoose.Schema({
     roomNumber: {
@@ -136,6 +138,26 @@ roomSchema.pre('save', function (next) {
     next();
 });
 
+// Middleware to delete room images before removing the room document
+roomSchema.pre('remove', async function (next) {
+    const room = this;
+
+    // Delete cover image
+    const coverImagePath = path.join(__dirname, `../../public/img/rooms/${room.imageCover}`);
+    if (fs.existsSync(coverImagePath)) {
+        fs.unlinkSync(coverImagePath);
+    }
+
+    // Delete additional images
+    room.images.forEach(image => {
+        const imagePath = path.join(__dirname, `../../public/img/rooms/${image}`);
+        if (fs.existsSync(imagePath)) {
+            fs.unlinkSync(imagePath);
+        }
+    });
+
+    next();
+});
 
 // Exclude rooms under maintenance
 /* roomSchema.pre(/^find/, function (next) {

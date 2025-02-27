@@ -65,14 +65,18 @@ const RoomDetails = () => {
                 navigation
                 loop={room?.data.room.images.length > 1}
                 slidesPerView={1}
-                className="w-full max-h-[450px] xl:max-w-[850px] xl:max-h-[600px] rounded-lg shadow mb-[40px]"
+                className="w-full max-h-[450px] lg:max-w-[2000px] lg:max-h-[1333px] rounded-lg shadow mb-[40px]"
               >
                 {room?.data.room.images.map((image, idx) => (
                   <SwiperSlide key={idx}>
                     <img
                       src={`${IMAGE_URL}/${image}`}
+                      sizes="(max-width: 600px) 600px,
+                       (max-width: 1200px) 1200px,
+                       2000px"
                       alt={`Room Image ${idx + 1}`}
                       className="w-full h-full object-cover rounded-md"
+                      loading="lazy"
                     />
                   </SwiperSlide>
                 ))}
