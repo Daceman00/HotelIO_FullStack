@@ -38,16 +38,25 @@ function SingleRoom({ room }) {
               <td>
                 <div className="flex items-center gap-x-2">
                   <span className="text-[#dfa974]">
-                    {[...Array(Math.floor(room.averageRating))].map((_, i) => (
+                    {[
+                      ...Array(
+                        room.averageRating ? Math.floor(room.averageRating) : 0
+                      ),
+                    ].map((_, i) => (
                       <i key={i} className="fas fa-star"></i>
                     ))}
                   </span>
                   <span className="text-gray-400">
-                    {[...Array(5 - Math.floor(room.averageRating))].map(
-                      (_, i) => (
-                        <i key={i} className="fas fa-star"></i>
-                      )
-                    )}
+                    {[
+                      ...Array(
+                        5 -
+                          (room.averageRating
+                            ? Math.floor(room.averageRating)
+                            : 0)
+                      ),
+                    ].map((_, i) => (
+                      <i key={i} className="fas fa-star"></i>
+                    ))}
                   </span>
                 </div>
               </td>

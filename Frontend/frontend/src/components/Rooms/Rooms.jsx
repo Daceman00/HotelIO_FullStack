@@ -5,6 +5,11 @@ import { useGetAllRooms } from "./useGetAllRooms";
 function Rooms() {
   const { rooms } = useGetAllRooms();
 
+  const top4ratedRooms = rooms?.data.data
+    .filter((room) => room.averageRating > 0)
+    .sort((a, b) => b.averageRating - a.averageRating)
+    .slice(0, 4);
+
   return (
     <div id="rooms" className="w-full flex flex-col py-24 dark:bg-gray-800">
       <div className="flex flex-col w-full mx-auto">
@@ -20,7 +25,7 @@ function Rooms() {
         <section className="flex justify-center py-16 bg-gray-50">
           <div className="container ">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {rooms?.data.data.map((room, idx) => (
+              {top4ratedRooms.map((room, idx) => (
                 <SingleRoom room={room} key={room._id} />
               ))}
             </div>
