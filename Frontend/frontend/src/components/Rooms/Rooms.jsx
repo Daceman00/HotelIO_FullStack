@@ -3,7 +3,9 @@ import SingleRoom from "./SingleRoom";
 import { useGetAllRooms } from "./useGetAllRooms";
 
 function Rooms() {
-  const { rooms } = useGetAllRooms();
+  const { rooms, isPending } = useGetAllRooms();
+
+  if (isPending) return <Loading mode={modes.all} />;
 
   const top4ratedRooms = rooms?.data.data
     .filter((room) => room.averageRating > 0)
@@ -23,7 +25,7 @@ function Rooms() {
           </p>
         </div>
         <section className="flex justify-center py-16 bg-gray-50">
-          <div className="container ">
+          <div className="container">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {top4ratedRooms.map((room, idx) => (
                 <SingleRoom room={room} key={room._id} />
