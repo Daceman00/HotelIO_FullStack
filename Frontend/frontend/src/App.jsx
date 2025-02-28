@@ -81,6 +81,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/login" element={<Login />} />
 
               {/*
             <Route path="/reports" element={<div>Reports Page</div>} />
