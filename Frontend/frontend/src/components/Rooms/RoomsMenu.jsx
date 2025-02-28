@@ -3,9 +3,17 @@ import { useGetAllRooms } from "./useGetAllRooms";
 import SingleRoomMenu from "./SingleRoomMenu";
 import { Link } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import Loading from "../Reusable/Loading";
+import { modes } from "../../hooks/useServiceConfig";
 
 function RoomsMenu() {
-  const { rooms } = useGetAllRooms();
+  const { rooms, isPending } = useGetAllRooms();
+
+  if (isPending) return <Loading mode={modes.all} />;
+
+  const sortedRooms = rooms?.data.data.sort(
+    (a, b) => a.roomNumber - b.roomNumber
+  );
 
   return (
     <>
@@ -41,7 +49,7 @@ function RoomsMenu() {
       <section className="pt-[0px] pb-[80px] flex justify-center">
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
-            {rooms?.data.data.map((room) => (
+            {sortedRooms.map((room) => (
               <SingleRoomMenu room={room} key={room._id} />
             ))}
           </div>
