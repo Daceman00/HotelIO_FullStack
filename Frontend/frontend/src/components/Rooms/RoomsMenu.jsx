@@ -15,6 +15,10 @@ function RoomsMenu() {
     (a, b) => a.roomNumber - b.roomNumber
   );
 
+  const sortedRooms = rooms?.data.data.sort(
+    (a, b) => a.roomNumber - b.roomNumber
+  );
+
   return (
     <>
       <div className="pt-[70px] pb-[80px] flex justify-center items-center flex-col text-center">
