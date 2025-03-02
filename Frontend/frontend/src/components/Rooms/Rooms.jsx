@@ -5,14 +5,11 @@ import Loading from "../Reusable/Loading";
 import { modes } from "../../hooks/useServiceConfig";
 
 function Rooms() {
-  const { rooms, isPending } = useGetAllRooms();
+  const { rooms, isPending } = useGetAllRooms("-averageRating");
 
   if (isPending) return <Loading mode={modes.all} />;
 
-  const top4ratedRooms = rooms?.data.data
-    .filter((room) => room.averageRating > 0)
-    .sort((a, b) => b.averageRating - a.averageRating)
-    .slice(0, 4);
+  const top4ratedRooms = rooms?.data.data.slice(0, 4);
 
   return (
     <div id="rooms" className="w-full flex flex-col py-24 dark:bg-gray-800">

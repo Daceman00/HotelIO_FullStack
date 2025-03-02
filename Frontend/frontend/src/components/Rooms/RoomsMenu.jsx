@@ -7,13 +7,9 @@ import Loading from "../Reusable/Loading";
 import { modes } from "../../hooks/useServiceConfig";
 
 function RoomsMenu() {
-  const { rooms, isPending } = useGetAllRooms();
+  const { rooms, isPending } = useGetAllRooms("roomNumber");
 
   if (isPending) return <Loading mode={modes.all} />;
-
-  const sortedRooms = rooms?.data.data.sort(
-    (a, b) => a.roomNumber - b.roomNumber
-  );
 
   return (
     <>
@@ -49,7 +45,7 @@ function RoomsMenu() {
       <section className="pt-[0px] pb-[80px] flex justify-center">
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
-            {sortedRooms.map((room) => (
+            {rooms?.data.data.map((room) => (
               <SingleRoomMenu room={room} key={room._id} />
             ))}
           </div>

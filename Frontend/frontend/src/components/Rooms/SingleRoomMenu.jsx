@@ -44,10 +44,10 @@ function SingleRoomMenu({ room }) {
       </div>
       <div className="border border-gray-200 border-t-0 p-4 px-4 pt-4 pb-5 pl-5">
         <h4 className="text-gray-800 text-lg font-semibold mb-3">
-          {room.roomNumber}
+          #{room.roomNumber}
         </h4>
         <h3 className="text-[#dfa974] text-2xl font-bold mb-3">
-          {room.price}
+          {room.price}$
           <span className="text-gray-800 text-sm font-normal ml-1">
             Pernight
           </span>

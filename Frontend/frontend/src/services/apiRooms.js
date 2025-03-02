@@ -1,8 +1,11 @@
 import axios from "axios";
 
-export async function getAllRooms() {
+export async function getAllRooms(sort) {
     try {
-        const { data } = await axios.get("/rooms")
+        const params = {
+            sort
+        }
+        const { data } = await axios.get(`/rooms`, { params })
         return data
     } catch (error) {
         console.error(error.response);
