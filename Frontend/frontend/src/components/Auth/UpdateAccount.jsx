@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import Modal from "../Reusable/Modal";
 import useUIStore from "../../stores/UiStore";
 import { useDeleteAccount } from "./useDeleteAccount";
-import { useMoveBack } from "../../hooks/useMoveBack";
 import { modes } from "../../hooks/useServiceConfig";
 import useFileStore from "../../stores/FileStore";
 import { useUpdateAccountPhoto } from "./useUpdateAccountPhoto";
@@ -45,12 +44,13 @@ function UpdateAccount() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formData = new FormData();
     if (selectedFile) {
-      const formData = new FormData();
       formData.append("photo", selectedFile);
-      // Send FormData directly, not wrapped in an object
-      await updateAccountPhoto(formData);
     }
+    formData.append("name", updateAccountFormData.name);
+    // Send FormData directly, not wrapped in an object
+    await updateAccountPhoto(formData);
   };
 
   const handleConfirmModal = () => {
@@ -84,6 +84,11 @@ function UpdateAccount() {
                   id="name"
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder={updateAccountFormData.name}
+                  value={updateAccountFormData.name}
+                  onChange={(e) =>
+                    setUpdateAccountFormData("name", e.target.value)
+                  }
+                  disabled={isPendingUpdatePhoto}
                 />
               </div>
               <div>
@@ -104,6 +109,7 @@ function UpdateAccount() {
               </div>
 
               <button
+                disabled={isPendingUpdatePhoto}
                 type="submit"
                 className="w-full text-white bg-[#dfa379] hover:bg-[#c48960] focus:ring-4 focus:outline-none focus:ring-[#dfa379]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-[#dfa379] dark:hover:bg-[#c48960] dark:focus:ring-[#dfa379]/50"
               >
