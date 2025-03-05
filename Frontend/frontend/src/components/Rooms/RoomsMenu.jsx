@@ -5,18 +5,32 @@ import { Link } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Loading from "../Reusable/Loading";
 import { modes } from "../../hooks/useServiceConfig";
+import CreateButton from "../Reusable/CreateButton";
+import useUIStore from "../../stores/UiStore";
+import CreateRoom from "./CreateRoom";
 
 function RoomsMenu() {
   const { rooms, isPending } = useGetAllRooms("roomNumber");
+  const { isRoomModalOpen } = useUIStore();
+  const onRoomModalOpen = useUIStore((state) => state.onRoomModalOpen);
+  const onRoomModalClose = useUIStore((state) => state.onRoomModalClose);
 
   if (isPending) return <Loading mode={modes.all} />;
 
   return (
     <>
+      {/* Render the RoomModal if it is open */}
+      {isRoomModalOpen ? (
+        <CreateRoom
+          isOpen={isRoomModalOpen}
+          opacity={50}
+          onClose={onRoomModalClose}
+        />
+      ) : null}
       <div className="pt-[70px] pb-[80px] flex justify-center items-center flex-col text-center">
         <div className="container">
           <h2 className="text-4xl text-gray-800 mb-4">Our Rooms</h2>
-
+          <CreateButton onClick={onRoomModalOpen} />
           <div className="flex items-center text-lg text-[#19191a] font-medium justify-center">
             <Link to="/" className="text-gray-400 relative mr-2">
               Home

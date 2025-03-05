@@ -22,6 +22,16 @@ export async function getRoom(roomId) {
     }
 }
 
+export async function createRoom(room) {
+    try {
+        const { data } = await axios.post(`/rooms`, room)
+        return data
+    } catch (error) {
+        console.error(error.response);
+        throw new Error(error.response.data.message);
+    }
+}
+
 export async function updateRoom(roomId, roomData) {
     try {
         const { data } = await axios.patch(`/rooms/${roomId}`, roomData)

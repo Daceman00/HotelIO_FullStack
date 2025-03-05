@@ -157,6 +157,37 @@ const useFormStore = create((set) => ({
         })
     },
 
+    roomData: {
+        roomNumber: '',
+        roomType: '',
+        price: 0,
+        description: '',
+        imageCover: '',
+        images: [],
+        features: [],
+        maxGuests: 1,
+    },
+
+    setRoomData: (field, value) => set((state) => ({
+        roomData: {
+            ...state.roomData,
+            [field]: value
+        }
+    })),
+
+    resetRoomData: () => set({
+        roomData: {
+            roomNumber: '',
+            roomType: '',
+            price: 0,
+            description: '',
+            imageCover: '',
+            images: [],
+            features: [],
+            maxGuests: 1,
+        }
+    }),
+
 }))
 
 export default useFormStore

@@ -7,18 +7,19 @@ import "swiper/css/navigation";
 import { IMAGE_URL } from "../../helpers/imageURL";
 import Loading from "../Reusable/Loading";
 import { useGetRoom } from "./useGetRoom";
-import { useMoveBack } from "../../hooks/useMoveBack";
 import { Link } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { modes } from "../../hooks/useServiceConfig";
 import CreateReview from "../Reviews/CreateReview";
-import useUIStore from "../../stores/UiStore";
 import CreateBookingForm from "../Bookings/CreateBookingForm";
 import SingleReview from "../Reviews/SingleReview";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
+import useUIStore from "../../stores/UiStore";
+import CreateRoom from "./CreateRoom";
 
 const RoomDetails = () => {
   const { room, isPending, error } = useGetRoom();
-  const moveBack = useMoveBack();
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
@@ -27,7 +28,12 @@ const RoomDetails = () => {
   return (
     <>
       <Loading mode={modes.all} />
-      <section className="pt-0 pb-[80px] px-[200px]">
+      <section className="pt-0 pb-[80px] px-[200px] relative">
+        <FontAwesomeIcon
+          icon={faPencilAlt}
+          className="absolute top-8 right-8 text-gray-600 cursor-pointer"
+        />
+
         <div className="container mx-auto flex flex-col lg:flex-row gap-10">
           <div className="lg:w-2/3">
             <div className="pt-[70px] mb-[50px] flex justify-center items-center flex-col text-center">

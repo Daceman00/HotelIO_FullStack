@@ -47,6 +47,7 @@ function App() {
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/rooms" element={<RoomsPage />} />
               <Route path="/rooms/:roomId" element={<RoomDetails />} />
+
               <Route
                 path="/bookings"
                 element={

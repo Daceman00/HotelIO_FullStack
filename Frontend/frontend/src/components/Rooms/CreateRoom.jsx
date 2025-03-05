@@ -1,12 +1,33 @@
-import React from "react";
-import Modal from "../Reusable/Modal";
+import React, { useEffect } from "react";
 import FileUploadInput from "../Reusable/FileUploadInput";
 import Loading from "../Reusable/Loading";
 import { modes } from "../../hooks/useServiceConfig";
+import { useCreateRoom } from "./useCreateRoom";
 
-function UpdateSingleRoom() {
+function CreateRoom({ isOpen, onClose, opacity }) {
+  const { CreateRoom, isPending, error } = useCreateRoom();
+
+  const { roomData } = useFormStore();
+  const setRoomData = useFormStore((state) => state.setRoomData);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
   return (
-    <section className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4 sm:px-6 lg:px-8">
+    <section
+      id="popup-modal"
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ backgroundColor: `rgba(0, 0, 0, ${opacity / 100})` }}
+    >
       <div className="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-2xl dark:shadow-gray-900/30 transition-all duration-300">
         {false ? (
           <Loading mode={modes.all} />
@@ -37,11 +58,11 @@ function UpdateSingleRoom() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Guest Capacity
+                    Room Capacity
                   </label>
                   <input
-                    type="email"
-                    className="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 border-none cursor-not-allowed text-gray-500 dark:text-gray-400"
+                    type="text"
+                    className="w-full px-4 py-3 rounded-lg bg-transparent border-b-2 border-gray-300 dark:border-gray-600 focus:border-[#dfa379] focus:outline-none transition-colors placeholder-gray-400 dark:placeholder-gray-500 text-gray-800 dark:text-white"
                   />
                 </div>
 
@@ -70,34 +91,28 @@ function UpdateSingleRoom() {
                   </span>
                 </div>
 
-                <button
-                  type="submit"
-                  className="w-full py-3.5 px-6 bg-gradient-to-r from-[#dfa379] to-[#c48960] hover:from-[#c48960] hover:to-[#a8734e] text-white font-semibold rounded-xl shadow-lg transition-all transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-[#dfa379] focus:ring-opacity-50"
-                >
-                  Update Room Details
-                </button>
+                <div className="flex space-x-4">
+                  <button
+                    type="submit"
+                    className="flex-1 py-3.5 px-6 bg-gradient-to-r from-[#dfa379] to-[#c48960] hover:from-[#c48960] hover:to-[#a8734e] text-white font-semibold rounded-xl shadow-lg transition-all transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-[#dfa379] focus:ring-opacity-50"
+                  >
+                    Create Room
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="flex-1 py-3.5 px-6 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-xl shadow-lg transition-all transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+                  >
+                    Close
+                  </button>
+                </div>
               </form>
             </div>
           </div>
-        )}
-
-        {isModalOpen && (
-          <Modal
-            isOpen={isModalOpen}
-            onClose={onModalClose}
-            title={"Confirm Room Deletion"}
-            description={
-              "This action will permanently remove all room data and cannot be undone."
-            }
-            onConfirm={handleConfirmModal}
-            isPending={isPendingDelete}
-            overlayClass="backdrop-blur-sm bg-black/50"
-            modalClass="rounded-2xl p-8 max-w-md"
-          />
         )}
       </div>
     </section>
   );
 }
 
-export default UpdateSingleRoom;
+export default CreateRoom;
