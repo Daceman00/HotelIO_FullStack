@@ -1,14 +1,24 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import FileUploadInput from "../Reusable/FileUploadInput";
 import Loading from "../Reusable/Loading";
 import { modes } from "../../hooks/useServiceConfig";
 import { useCreateRoom } from "./useCreateRoom";
+import useFormStore from "../../stores/FormStore";
 
 function CreateRoom({ isOpen, onClose, opacity }) {
-  const { CreateRoom, isPending, error } = useCreateRoom();
+  const { createRoom, isPending, error } = useCreateRoom();
 
   const { roomData } = useFormStore();
   const setRoomData = useFormStore((state) => state.setRoomData);
+  const [featuresInput, setFeaturesInput] = useState("");
+
+  const handleFeaturesChange = (e) => {
+    setFeaturesInput(e.target.value);
+    const featuresArray = e.target.value
+      .split(",")
+      .map((feature) => feature.trim());
+    setRoomData("features", featuresArray);
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -21,6 +31,11 @@ function CreateRoom({ isOpen, onClose, opacity }) {
       document.body.style.overflow = "unset";
     };
   }, [isOpen]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    createRoom(roomData);
+  };
 
   return (
     <section
@@ -43,16 +58,18 @@ function CreateRoom({ isOpen, onClose, opacity }) {
                 </p>
               </div>
 
-              <form className="space-y-6">
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 <FileUploadInput className="group relative h-32 w-32 mx-auto rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors cursor-pointer border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center" />
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Room Name
+                    Room Number
                   </label>
                   <input
                     type="text"
                     className="w-full px-4 py-3 rounded-lg bg-transparent border-b-2 border-gray-300 dark:border-gray-600 focus:border-[#dfa379] focus:outline-none transition-colors placeholder-gray-400 dark:placeholder-gray-500 text-gray-800 dark:text-white"
+                    value={roomData.roomNumber}
+                    onChange={(e) => setRoomData("roomNumber", e.target.value)}
                   />
                 </div>
 
@@ -63,6 +80,8 @@ function CreateRoom({ isOpen, onClose, opacity }) {
                   <input
                     type="text"
                     className="w-full px-4 py-3 rounded-lg bg-transparent border-b-2 border-gray-300 dark:border-gray-600 focus:border-[#dfa379] focus:outline-none transition-colors placeholder-gray-400 dark:placeholder-gray-500 text-gray-800 dark:text-white"
+                    value={roomData.maxGuests}
+                    onChange={(e) => setRoomData("maxGuests", e.target.value)}
                   />
                 </div>
 
@@ -72,8 +91,25 @@ function CreateRoom({ isOpen, onClose, opacity }) {
                   </label>
                   <textarea
                     className="w-full px-4 py-3 rounded-lg bg-transparent border-b-2 border-gray-300 dark:border-gray-600 focus:border-[#dfa379] focus:outline-none transition-colors placeholder-gray-400 dark:placeholder-gray-500 text-gray-800 dark:text-white"
-                    rows="4"
+                    rows="2"
+                    value={roomData.description}
+                    onChange={(e) => setRoomData("description", e.target.value)}
                   ></textarea>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Features
+                  </label>
+                  <textarea
+                    className="w-full px-4 py-3 rounded-lg bg-transparent border-b-2 border-gray-300 dark:border-gray-600 focus:border-[#dfa379] focus:outline-none transition-colors placeholder-gray-400 dark:placeholder-gray-500 text-gray-800 dark:text-white"
+                    rows="1"
+                    value={featuresInput}
+                    onChange={handleFeaturesChange}
+                  ></textarea>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    Separate features with commas.
+                  </p>
                 </div>
 
                 <div>
@@ -84,6 +120,8 @@ function CreateRoom({ isOpen, onClose, opacity }) {
                     <input
                       type="text"
                       className="w-full px-4 py-3 rounded-lg bg-transparent border-b-2 border-gray-300 dark:border-gray-600 focus:border-[#dfa379] focus:outline-none transition-colors placeholder-gray-400 dark:placeholder-gray-500 text-gray-800 dark:text-white"
+                      value={roomData.price}
+                      onChange={(e) => setRoomData("price", e.target.value)}
                     />
                     <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">
                       USD
