@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import useFormStore from "../../stores/FormStore";
@@ -30,6 +30,7 @@ function CreateBookingForm() {
   const updateBookingForm = useFormStore((state) => state.updateBookingForm);
   const resetBookingForm = useFormStore((state) => state.resetBookingForm);
   const { createBooking } = useCreateBooking();
+  const [isGuestDropdownOpen, setIsGuestDropdownOpen] = useState(false);
 
   useEffect(() => {
     const handleReset = () => resetBookingForm();
@@ -130,7 +131,7 @@ function CreateBookingForm() {
                 showIcon
                 placeholderText="Check In"
                 toggleCalendarOnIconClick
-                className="w-full h-12 border border-gray-200 rounded text-base text-gray-800 uppercase font-medium pl-5"
+                className="w-full h-12 border border-gray-200 hover:border-[#dfa379] rounded text-base text-gray-800 uppercase font-medium pl-5"
                 selected={parseDate(bookingFormData.checkIn)}
                 onChange={(date) => handleDateChange("checkIn", date)}
                 filterDate={(date) => !isDateBooked(date)}
@@ -145,35 +146,78 @@ function CreateBookingForm() {
                 showIcon
                 placeholderText="Check Out"
                 toggleCalendarOnIconClick
-                className="w-full h-12 border border-gray-200 rounded text-base text-gray-800 uppercase font-medium pl-5"
+                className="w-full h-12 border border-gray-200 hover:border-[#dfa379] rounded text-base text-gray-800 uppercase font-medium pl-5"
                 selected={parseDate(bookingFormData.checkOut)}
                 onChange={(date) => handleDateChange("checkOut", date)}
                 filterDate={(date) => !isDateBooked(date)}
               ></DatePicker>
             </div>
+
             <div className="relative mb-[15px]">
-              <label
-                className="text-sm text-gray-500 block mb-2.5"
-                htmlFor="guest"
-              >
+              <label className="text-sm text-gray-500 block mb-2.5">
                 Guests:
               </label>
-              <select
-                className="rounded border border-gray-200 h-12 flex items-center pl-5 w-full custom-select"
-                id="guest"
-                value={bookingFormData.numOfGuests}
-                onChange={handleGuestChange}
-              >
-                {Array.from(
-                  { length: room?.data.room.maxGuests || 1 },
-                  (_, i) => (
-                    <option key={i + 1} value={i + 1}>
-                      {i + 1}
-                    </option>
-                  )
+              <div className="relative">
+                {/* Custom dropdown trigger */}
+                <div
+                  className="rounded border border-gray-200 h-12 flex items-center pl-5 pr-10 w-full cursor-pointer hover:border-[#dfa379] transition-colors"
+                  onClick={() => setIsGuestDropdownOpen(!isGuestDropdownOpen)}
+                  role="button"
+                >
+                  {bookingFormData.numOfGuests}
+                  <svg
+                    className={`absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 transition-transform ${
+                      isGuestDropdownOpen ? "rotate-180" : ""
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+
+                {/* Custom dropdown options */}
+                {isGuestDropdownOpen && (
+                  <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded shadow-lg max-h-40 overflow-y-auto">
+                    {Array.from(
+                      { length: room?.data.room.maxGuests || 1 },
+                      (_, i) => {
+                        const value = i + 1;
+                        return (
+                          <li
+                            key={value}
+                            className={`px-5 py-3 cursor-pointer transition-colors ${
+                              bookingFormData.numOfGuests === value
+                                ? "bg-[#dfa379] text-white"
+                                : "hover:bg-[#dfa379] hover:text-white"
+                            }`}
+                            onClick={() => {
+                              handleGuestChange({
+                                target: { value: value.toString() },
+                              });
+                              setIsGuestDropdownOpen(false);
+                            }}
+                            role="option"
+                            aria-selected={
+                              bookingFormData.numOfGuests === value
+                            }
+                          >
+                            {value}
+                          </li>
+                        );
+                      }
+                    )}
+                  </ul>
                 )}
-              </select>
+              </div>
             </div>
+
             <div className="relative mb-[15px]">
               <button className="block text-sm uppercase border border-[#dfa379] rounded text-[#dfa379] font-medium bg-transparent w-full h-11 mt-7">
                 Booking Now

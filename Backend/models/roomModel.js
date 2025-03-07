@@ -54,7 +54,8 @@ const roomSchema = mongoose.Schema({
     maxGuests: {
         type: Number,
         required: [true, "Max guests is required"],
-        min: [1, "Min guests must be at least 1"]
+        min: [1, "Min guests must be at least 1"],
+        max: [4, "Max guests cannot exceed 4"]
     },
 
     averageRating: {
@@ -125,6 +126,12 @@ roomSchema.pre('save', function (next) {
     }
     if (this.roomType === "double" && this.maxGuests > 2) {
         return next(new AppError("The max guests for a double room is 2", 400))
+    }
+    if (this.roomType === "suite" && this.maxGuests > 3) {
+        return next(new AppError("The max guests for a suite room is 3", 400))
+    }
+    if (this.roomType === "deluxe" && this.maxGuests > 4) {
+        return next(new AppError("The max guests for a deluxe room is 4", 400))
     }
 
     next()

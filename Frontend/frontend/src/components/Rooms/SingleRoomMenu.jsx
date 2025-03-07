@@ -65,9 +65,14 @@ function SingleRoomMenu({ room }) {
 
             <tr>
               <td className="w-[100px]">Features:</td>
-              {room.features.map((feature) => (
-                <td key={feature}>{feature}</td>
-              ))}
+              <td>
+                {room.features.map((feature, index) => (
+                  <span key={feature}>
+                    {feature}
+                    {index < room.features.length - 1 && " · "}
+                  </span>
+                ))}
+              </td>
             </tr>
           </tbody>
         </table>

@@ -78,6 +78,12 @@ const Sidebar = React.memo(function Sidebar() {
           {isAdmin && (
             <>
               <hr className="border-gray-700 my-4" />
+              <Link to="/users">
+                <li className="block py-2 px-4 rounded-lg hover:bg-[#dfa974] transition">
+                  <FontAwesomeIcon icon={faUsers} className="w-6" />
+                  <span className="ml-4">Users</span>
+                </li>
+              </Link>
 
               <Link to="/stats">
                 <li className="block py-2 px-4 rounded-lg hover:bg-[#dfa974] transition">
@@ -86,12 +92,6 @@ const Sidebar = React.memo(function Sidebar() {
                 </li>
               </Link>
 
-              <Link to="/users">
-                <li className="block py-2 px-4 rounded-lg hover:bg-[#dfa974] transition">
-                  <FontAwesomeIcon icon={faUsers} className="w-6" />
-                  <span className="ml-4">Users</span>
-                </li>
-              </Link>
               <Link to="/settings">
                 <li className="block py-2 px-4 rounded-lg hover:bg-[#dfa974] transition">
                   <FontAwesomeIcon icon={faCogs} className="w-6" />

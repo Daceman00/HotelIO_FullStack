@@ -17,8 +17,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import useUIStore from "../../stores/UiStore";
 import CreateRoom from "./CreateRoom";
+import useAuthStore from "../../stores/AuthStore";
 
 const RoomDetails = () => {
+  const { isAdmin } = useAuthStore();
   const { room, isPending, error } = useGetRoom();
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
