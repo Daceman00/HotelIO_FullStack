@@ -184,6 +184,32 @@ const useFormStore = create((set) => ({
         }
     }),
 
+    roomImagesData: {
+        imageCover: '',
+        images: [],
+    },
+
+    setRoomImagesData: (field, value) => set((state) => ({
+        roomImagesData: {
+            ...state.roomImagesData,
+            [field]: value
+        }
+    })),
+
+    addImageToRoomImagesData: (image) => set((state) => ({
+        roomImagesData: {
+            ...state.roomImagesData,
+            images: [...state.roomImagesData.images, image]
+        }
+    })),
+
+    resetRoomImagesData: () => set({
+        roomImagesData: {
+            imageCover: '',
+            images: [],
+        }
+    })
+
 }))
 
 export default useFormStore

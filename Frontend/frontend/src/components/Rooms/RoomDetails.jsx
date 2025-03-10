@@ -14,6 +14,7 @@ import CreateReview from "../Reviews/CreateReview";
 import CreateBookingForm from "../Bookings/CreateBookingForm";
 import SingleReview from "../Reviews/SingleReview";
 import useAuthStore from "../../stores/AuthStore";
+import AddRoomImages from "./AddRoomImages";
 import UpdateRoom from "./UpdateRoom";
 import useUIStore from "../../stores/UiStore";
 import CreateButton from "../Reusable/CreateButton";
@@ -85,28 +86,33 @@ const RoomDetails = () => {
               </div>
             </div>
             <div className="space-y-6">
-              <Swiper
-                modules={[Pagination, Navigation]}
-                pagination={{ clickable: true }}
-                navigation
-                loop={room?.data.room.images.length > 1}
-                slidesPerView={1}
-                className="w-full max-h-[450px] lg:max-w-[2000px] lg:max-h-[1333px] rounded-lg shadow mb-[40px]"
-              >
-                {room?.data.room.images.map((image, idx) => (
-                  <SwiperSlide key={idx}>
-                    <img
-                      src={`${IMAGE_URL}/${image}`}
-                      sizes="(max-width: 600px) 600px,
+              {room?.data.room.images.length > 1 ? (
+                <Swiper
+                  modules={[Pagination, Navigation]}
+                  pagination={{ clickable: true }}
+                  navigation
+                  loop={room?.data.room.images.length > 1}
+                  slidesPerView={1}
+                  className="w-full max-h-[450px] lg:max-w-[2000px] lg:max-h-[1333px] rounded-lg shadow mb-[40px]"
+                >
+                  {room?.data.room.images.map((image, idx) => (
+                    <SwiperSlide key={idx}>
+                      <img
+                        src={`${IMAGE_URL}/${image}`}
+                        sizes="(max-width: 600px) 600px,
                        (max-width: 1200px) 1200px,
                        2000px"
-                      alt={`Room Image ${idx + 1}`}
-                      className="w-full h-full object-cover rounded-md"
-                      loading="lazy"
-                    />
-                  </SwiperSlide>
-                ))}
-              </Swiper>
+                        alt={`Room Image ${idx + 1}`}
+                        className="w-full h-full object-cover rounded-md"
+                        loading="lazy"
+                      />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              ) : (
+                <AddRoomImages />
+              )}
+
               <div className="space-y-4">
                 <h3 className="text-3xl font-semibold text-gray-800 overflow-hidden flex items-center justify-between">
                   <span>
