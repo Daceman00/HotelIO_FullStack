@@ -13,15 +13,22 @@ import { modes } from "../../hooks/useServiceConfig";
 import CreateReview from "../Reviews/CreateReview";
 import CreateBookingForm from "../Bookings/CreateBookingForm";
 import SingleReview from "../Reviews/SingleReview";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
-import useUIStore from "../../stores/UiStore";
-import CreateRoom from "./CreateRoom";
 import useAuthStore from "../../stores/AuthStore";
+import UpdateRoom from "./UpdateRoom";
+import useUIStore from "../../stores/UiStore";
+import CreateButton from "../Reusable/CreateButton";
+import UpdateButton from "../Reusable/UpdateButton";
 
 const RoomDetails = () => {
   const { isAdmin } = useAuthStore();
   const { room, isPending, error } = useGetRoom();
+  const { isRoomUpdateModalOpen } = useUIStore();
+  const onRoomUpdateModalOpen = useUIStore(
+    (state) => state.onRoomUpdateModalOpen
+  );
+  const onRoomUpdateModalClose = useUIStore(
+    (state) => state.onRoomUpdateModalClose
+  );
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
@@ -30,12 +37,23 @@ const RoomDetails = () => {
   return (
     <>
       <Loading mode={modes.all} />
-      <section className="pt-0 pb-[80px] px-[200px] relative">
-        <FontAwesomeIcon
-          icon={faPencilAlt}
-          className="absolute top-8 right-8 text-gray-600 cursor-pointer"
+      {isRoomUpdateModalOpen ? (
+        <UpdateRoom
+          isOpen={isRoomUpdateModalOpen}
+          onClose={onRoomUpdateModalClose}
+          opacity={50}
         />
-
+      ) : null}
+      <section className="pt-0 pb-[80px] px-[200px] relative">
+        {isAdmin && (
+          <div className="absolute top-8 right-8 z-10">
+            <CreateButton
+              title="Update"
+              color="primary"
+              onClick={onRoomUpdateModalOpen}
+            />
+          </div>
+        )}
         <div className="container mx-auto flex flex-col lg:flex-row gap-10">
           <div className="lg:w-2/3">
             <div className="pt-[70px] mb-[50px] flex justify-center items-center flex-col text-center">

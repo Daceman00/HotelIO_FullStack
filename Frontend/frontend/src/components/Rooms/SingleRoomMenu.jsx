@@ -24,6 +24,8 @@ function SingleRoomMenu({ room }) {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   };
 
+  console.log(room);
+
   return (
     <div
       className={`mb-[20px] relative ${

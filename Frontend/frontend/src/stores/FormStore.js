@@ -162,8 +162,6 @@ const useFormStore = create((set) => ({
         roomType: '',
         price: 0,
         description: '',
-        imageCover: '',
-        images: [],
         features: [],
         maxGuests: 1,
     },
@@ -181,8 +179,6 @@ const useFormStore = create((set) => ({
             roomType: '',
             price: 0,
             description: '',
-            imageCover: '',
-            images: [],
             features: [],
             maxGuests: 1,
         }

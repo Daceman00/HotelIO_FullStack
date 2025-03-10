@@ -1,15 +1,24 @@
 import React from "react";
 
-function CreateButton({ onClick }) {
+function CreateButton({ onClick, color, title }) {
+  const bgColor = color === "primary" ? "bg-[#dfa379]" : "bg-blue-500";
+  const hoverBgColor =
+    color === "primary" ? "hover:bg-[#c68a5e]" : "hover:bg-blue-600";
+  const borderColor =
+    color === "primary" ? "border-[#c68a5e]" : "border-blue-600";
+  const titleName = title === "Create" ? "Create" : "Update";
+
   return (
     <button
       onClick={onClick}
-      className="relative min-w-[120px] h-[40px] flex flex-shrink-0 items-center justify-center cursor-pointer bg-[#dfa379] border-none rounded-md shadow-md transition-all duration-200 hover:bg-[#c68a5e] focus:outline-none group overflow-hidden sm:min-w-[100px] sm:h-[35px] lg:min-w-[140px] lg:h-[45px] xl:min-w-[160px] xl:h-[50px] ml-auto"
+      className={`relative min-w-[120px] h-[40px] flex flex-shrink-0 items-center justify-center cursor-pointer border-none rounded-md shadow-md transition-all duration-200 ${bgColor} ${hoverBgColor} focus:outline-none group overflow-hidden sm:min-w-[100px] sm:h-[35px] lg:min-w-[140px] lg:h-[45px] xl:min-w-[160px] xl:h-[50px] ml-auto`}
     >
       <span className="text-white font-bold transition-all duration-200 group-hover:text-transparent pl-4 pr-[40px] sm:pr-[35px] lg:pr-[45px] xl:pr-[50px]">
-        Create
+        {titleName}
       </span>
-      <span className="absolute border-l border-[#c68a5e] transition-all duration-200 right-0 h-full w-[40px] flex items-center justify-center group-hover:w-full group-hover:border-none sm:w-[35px] lg:w-[45px] xl:w-[50px]">
+      <span
+        className={`absolute border-l ${borderColor} transition-all duration-200 right-0 h-full w-[40px] flex items-center justify-center group-hover:w-full group-hover:border-none sm:w-[35px] lg:w-[45px] xl:w-[50px]`}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

@@ -13,6 +13,10 @@ const useUIStore = create((set) => ({
     onRoomModalOpen: () => set({ isRoomModalOpen: true }),
     onRoomModalClose: () => set({ isRoomModalOpen: false }),
 
+    isRoomUpdateModalOpen: false,
+    onRoomUpdateModalOpen: () => set({ isRoomUpdateModalOpen: true }),
+    onRoomUpdateModalClose: () => set({ isRoomUpdateModalOpen: false }),
+
     isLoader: false,
     setIsLoader: (loader) => set({ isLoader: loader }),
 

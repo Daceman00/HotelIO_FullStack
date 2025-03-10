@@ -29,10 +29,16 @@ function RoomsMenu() {
           onClose={onRoomModalClose}
         />
       ) : null}
-      <div className="pt-[70px] pb-[80px] flex justify-center items-center flex-col text-center">
-        <div className="container">
+      <div className="pt-[70px] pb-[80px] flex justify-center items-center flex-col text-center lg:pt-[100px] lg:pb-[120px] md:pt-[80px] md:pb-[100px]">
+        <div className="container lg:max-w-screen-lg md:max-w-screen-md">
           <h2 className="text-4xl text-gray-800 mb-4">Our Rooms</h2>
-          {isAdmin && <CreateButton onClick={onRoomModalOpen} />}
+          {isAdmin && (
+            <CreateButton
+              title={"Create"}
+              color={"primary"}
+              onClick={onRoomModalOpen}
+            />
+          )}
           <div className="flex items-center text-lg text-[#19191a] font-medium justify-center">
             <Link to="/" className="text-gray-400 relative mr-2">
               Home
@@ -58,8 +64,8 @@ function RoomsMenu() {
         </div>
       </div>
 
-      <section className="pt-[0px] pb-[80px] flex justify-center">
-        <div className="container">
+      <section className="pt-[0px] pb-[80px] flex justify-center lg:pt-[20px] lg:pb-[100px] md:pt-[10px] md:pb-[90px]">
+        <div className="container lg:max-w-screen-lg md:max-w-screen-md">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
             {rooms?.data.data.map((room) => (
               <SingleRoomMenu room={room} key={room._id} />
