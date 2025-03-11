@@ -110,7 +110,7 @@ const RoomDetails = () => {
                   ))}
                 </Swiper>
               ) : (
-                <AddRoomImages />
+                <AddRoomImages roomId={room?.data.room.id} />
               )}
 
               <div className="space-y-4">

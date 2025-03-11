@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateRoomPhoto as updateRoomPhotoApi } from "../../services/apiRooms";
+import { updateRoomPhotos as updateRoomPhotosApi } from "../../services/apiRooms";
 
-export function useUpdateRoomPhoto() {
+export function useUpdateRoomPhotos() {
     const queryClient = useQueryClient()
-    const { mutate: updateRoomPhoto, error, isPending } = useMutation({
-        mutationFn: (roomId, photoData) => updateRoomPhotoApi(roomId, photoData),
+    const { mutate: updateRoomPhotos, error, isPending } = useMutation({
+        mutationFn: (roomId, photoData) => updateRoomPhotosApi(roomId, photoData),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["room"],
@@ -15,5 +15,5 @@ export function useUpdateRoomPhoto() {
             toast.error('Error updating room photo');
         }
     })
-    return { updateRoomPhoto, error, isPending }
+    return { updateRoomPhotos, error, isPending }
 }

@@ -44,7 +44,7 @@ export async function updateRoom(roomId, roomData) {
 
 export async function updateRoomPhotos(roomId, formData) {
     try {
-        const { data } = await axios.patch(`/rooms/${roomId}/images`, formData, {
+        const { data } = await axios.post(`/rooms/${roomId}/images`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
