@@ -6,6 +6,7 @@ import { modes } from "../../hooks/useServiceConfig";
 import ImageGrid from "../Reusable/ImageGrid";
 import CreateButton from "../Reusable/CreateButton";
 import CoverImageUpload from "../Reusable/ImageCover";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 function AddRoomImages({ roomId }) {
   const { updateRoomPhotos, isPending } = useUpdateRoomPhotos();
@@ -45,47 +46,81 @@ function AddRoomImages({ roomId }) {
     }
   };
 
+  const handleClose = () => {
+    clearGalleryImages();
+    clearCoverImage();
+    onClose();
+  };
+
   return (
     <>
       <Loading mode={modes.all} />
-      <div className="space-y-8">
-        {/* Gallery Images Section */}
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">Gallery Images</h2>
-          <ImageGrid
-            images={galleryImages}
-            onFilesSelected={(files) => {
-              addGalleryImages(files);
-            }}
-            multiple
-          />
-          <CreateButton
-            onClick={handleGalleryUpload}
-            disabled={isPending || galleryImages.length === 0}
-            className="mt-4"
-          >
-            {isPending ? "Uploading..." : "Upload Gallery Images"}
-          </CreateButton>
-        </div>
+      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          {/* Modal Header */}
+          <div className="flex items-center justify-between p-6 border-b">
+            <h2 className="text-2xl font-semibold">Manage Room Images</h2>
+            <button
+              onClick={handleClose}
+              className="p-2 hover:bg-gray-100 rounded-full"
+            >
+              <XMarkIcon className="w-6 h-6 text-gray-600" />
+            </button>
+          </div>
 
-        {/* Cover Image Section */}
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">Cover Image</h2>
-          <CoverImageUpload
-            currentCover={coverPreviewUrl}
-            onFileSelected={(file) => {
-              setCoverImage(file);
-            }}
-          />
-          <CreateButton
-            title="Update"
-            color="primary"
-            onClick={handleCoverUpload}
-            disabled={isPending || !coverImage}
-            className="mt-4"
-          >
-            {isPending ? "Uploading..." : "Upload Cover Image"}
-          </CreateButton>
+          {/* Modal Content */}
+          <div className="p-6 space-y-8">
+            <Loading mode={modes.all} />
+
+            {/* Cover Image Section */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Cover Image</h3>
+              <CoverImageUpload
+                currentCover={coverPreviewUrl}
+                onFileSelected={setCoverImage}
+              />
+              <div className="flex justify-end">
+                <CreateButton
+                  onClick={handleCoverUpload}
+                  disabled={isPending || !coverImage}
+                  variant="primary"
+                  size="md"
+                >
+                  {isPending ? "Uploading..." : "Upload Cover"}
+                </CreateButton>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <hr className="my-6 border-t border-gray-200" />
+
+            {/* Gallery Images Section */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Gallery Images</h3>
+              <ImageGrid
+                images={galleryImages}
+                onFilesSelected={addGalleryImages}
+                multiple
+              />
+              <div className="flex justify-end">
+                <CreateButton
+                  onClick={handleGalleryUpload}
+                  disabled={isPending || galleryImages.length === 0}
+                  variant="primary"
+                  size="md"
+                >
+                  {isPending ? "Uploading..." : "Upload Gallery"}
+                </CreateButton>
+              </div>
+            </div>
+          </div>
+
+          {/* Modal Footer */}
+          <div className="p-6 border-t flex justify-end gap-4">
+            <CreateButton onClick={handleClose} variant="secondary" size="md">
+              Close
+            </CreateButton>
+          </div>
         </div>
       </div>
     </>
