@@ -25,7 +25,7 @@ router.route('/:id/active-bookings')
 
 router
     .route('/:id/images')
-    .post(
+    .patch(
         roomController.uploadRoomImages,
         roomController.resizeRoomImages,
         roomController.updateRoom // Update the room with image paths

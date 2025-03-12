@@ -29,70 +29,76 @@ exports.uploadRoomImages = upload.fields([
 
 // Middleware to resize images
 exports.resizeRoomImages = catchAsync(async (req, res, next) => {
-    if (!req.files.imageCover || !req.files.images) return next();
+    if (!req.files) return next()
 
-    // Enable experimental SIMD optimizations for faster processing
-    sharp.concurrency(1);
-    sharp.simd(true);
+    if (req.files.imageCover) {
+        // Enable experimental SIMD optimizations for faster processing
+        sharp.concurrency(1);
+        sharp.simd(true);
 
-    // 1) Process cover image
-    const coverImage = req.files.imageCover[0];
-    req.body.imageCover = `room-${req.params.id}-${Date.now()}-cover.webp`;
+        // 1) Process cover image
+        const coverImage = req.files.imageCover[0];
+        req.body.imageCover = `room-${req.params.id}-${Date.now()}-cover.webp`;
 
-    await sharp(coverImage.buffer)
-        .resize({
-            width: 2000,
-            height: 1333,
-            fit: 'inside',        // Maintain aspect ratio without cropping
-            withoutEnlargement: true, // Don't enlarge smaller images
-            kernel: sharp.kernel.lanczos3 // Higher quality interpolation
-        })
-        .webp({
-            quality: 85,         // Optimal quality/size balance
-            alphaQuality: 90,
-            lossless: false,
-            nearLossless: true
-        })
-        .sharpen({               // Add subtle sharpening
-            sigma: 0.5,
-            m1: 1,
-            m2: 3
-        })
-        .withMetadata()          // Preserve EXIF data
-        .toFile(`public/img/rooms/${req.body.imageCover}`);
+        await sharp(coverImage.buffer)
+            .resize({
+                width: 320,
+                height: 360,
+                fit: 'inside',        // Maintain aspect ratio without cropping
+                withoutEnlargement: true, // Don't enlarge smaller images
+                kernel: sharp.kernel.lanczos3 // Higher quality interpolation
+            })
+            .webp({
+                quality: 85,         // Optimal quality/size balance
+                alphaQuality: 90,
+                lossless: false,
+                nearLossless: true
+            })
+            .sharpen({               // Add subtle sharpening
+                sigma: 0.5,
+                m1: 1,
+                m2: 3
+            })
+            .withMetadata()          // Preserve EXIF data
+            .toFile(`public/img/rooms/${req.body.imageCover}`);
+    }
+
+
 
     // 2) Process additional images
-    req.body.images = [];
+    if (req.files.images) {
+        req.body.images = [];
 
-    await Promise.all(
-        req.files.images.map(async (file, i) => {
-            const filename = `room-${req.params.id}-${Date.now()}-${i + 1}.webp`;
+        await Promise.all(
+            req.files.images.map(async (file, i) => {
+                const filename = `room-${req.params.id}-${Date.now()}-${i + 1}.webp`;
 
-            await sharp(file.buffer)
-                .resize({
-                    width: 2000,
-                    height: 1333,
-                    fit: 'inside',
-                    withoutEnlargement: true,
-                    kernel: sharp.kernel.lanczos3
-                })
-                .webp({
-                    quality: 85,
-                    alphaQuality: 90,
-                    lossless: false,
-                    nearLossless: true
-                })
-                .sharpen({
-                    sigma: 0.5,
-                    m1: 1,
-                    m2: 3
-                })
-                .withMetadata()
-                .toFile(`public/img/rooms/${filename}`);
+                await sharp(file.buffer)
+                    .resize({
+                        width: 2000,
+                        height: 1333,
+                        fit: 'inside',
+                        withoutEnlargement: true,
+                        kernel: sharp.kernel.lanczos3
+                    })
+                    .webp({
+                        quality: 85,
+                        alphaQuality: 90,
+                        lossless: false,
+                        nearLossless: true
+                    })
+                    .sharpen({
+                        sigma: 0.5,
+                        m1: 1,
+                        m2: 3
+                    })
+                    .withMetadata()
+                    .toFile(`public/img/rooms/${filename}`);
 
-            req.body.images.push(filename);
-        })
-    );
+                req.body.images.push(filename);
+            })
+        );
+    }
 
     next();
 });

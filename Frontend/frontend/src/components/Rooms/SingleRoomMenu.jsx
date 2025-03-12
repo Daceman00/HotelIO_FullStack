@@ -33,7 +33,7 @@ function SingleRoomMenu({ room }) {
       }`}
     >
       <img
-        className="min-w-[100%]"
+        className="w-[320px] h-[360px]"
         src={`${IMAGE_URL}/${room.imageCover}`}
         alt=""
       />

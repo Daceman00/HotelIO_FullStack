@@ -4,7 +4,7 @@ import { updateRoomPhotos as updateRoomPhotosApi } from "../../services/apiRooms
 export function useUpdateRoomPhotos() {
     const queryClient = useQueryClient()
     const { mutate: updateRoomPhotos, error, isPending } = useMutation({
-        mutationFn: (roomId, photoData) => updateRoomPhotosApi(roomId, photoData),
+        mutationFn: ({ roomId, formData }) => updateRoomPhotosApi(roomId, formData),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["room"],
