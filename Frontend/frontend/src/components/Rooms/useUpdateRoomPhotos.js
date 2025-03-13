@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateRoomPhotos as updateRoomPhotosApi } from "../../services/apiRooms";
+import toast from "react-hot-toast";
 
 export function useUpdateRoomPhotos() {
     const queryClient = useQueryClient()

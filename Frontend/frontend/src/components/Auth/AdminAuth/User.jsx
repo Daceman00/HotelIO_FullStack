@@ -58,7 +58,7 @@ function User({ user }) {
             </div>
           </td>
           <td className="px-6 py-4">
-            <WarningButton onClick={onModalOpen} />
+            <WarningButton onClick={onModalOpen}>Delete</WarningButton>
           </td>
         </tr>
       </tbody>

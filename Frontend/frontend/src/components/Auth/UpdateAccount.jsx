@@ -124,7 +124,9 @@ function UpdateAccount() {
                 </Link>
               </p>
             </form>
-            <WarningButton onClick={onModalOpen} />
+            <WarningButton onClick={onModalOpen}>
+              Delete My Account
+            </WarningButton>
           </div>
         </div>
       )}

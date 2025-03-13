@@ -33,11 +33,9 @@ function RoomsMenu() {
         <div className="container lg:max-w-screen-lg md:max-w-screen-md">
           <h2 className="text-4xl text-gray-800 mb-4">Our Rooms</h2>
           {isAdmin && (
-            <CreateButton
-              title={"Create"}
-              color={"primary"}
-              onClick={onRoomModalOpen}
-            />
+            <CreateButton color={"primary"} onClick={onRoomModalOpen}>
+              Create
+            </CreateButton>
           )}
           <div className="flex items-center text-lg text-[#19191a] font-medium justify-center">
             <Link to="/" className="text-gray-400 relative mr-2">

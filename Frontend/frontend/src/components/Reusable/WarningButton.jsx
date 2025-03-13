@@ -1,13 +1,13 @@
 import React from "react";
 
-function WarningButton({ onClick }) {
+function WarningButton({ onClick, children }) {
   return (
     <button
       onClick={onClick}
       className="relative min-w-[120px] h-[40px] flex flex-shrink-0 items-center justify-center cursor-pointer bg-red-500 border-none rounded-md shadow-md transition-all duration-200 hover:bg-red-500 focus:outline-none group overflow-hidden sm:min-w-[100px] sm:h-[35px] lg:min-w-[140px] lg:h-[45px] xl:min-w-[160px] xl:h-[50px]"
     >
       <span className="text-white font-bold transition-all duration-200 group-hover:text-transparent pl-4 pr-[40px] sm:pr-[35px] lg:pr-[45px] xl:pr-[50px]">
-        Delete
+        {children}
       </span>
       <span className="absolute border-l border-red-600 transition-all duration-200 right-0 h-full w-[40px] flex items-center justify-center group-hover:w-full group-hover:border-none sm:w-[35px] lg:w-[45px] xl:w-[50px]">
         <svg

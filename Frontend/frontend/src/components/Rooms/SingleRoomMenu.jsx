@@ -28,61 +28,75 @@ function SingleRoomMenu({ room }) {
 
   return (
     <div
-      className={`mb-[20px] relative ${
+      className={`relative flex flex-col rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl ${
         isMaintenance ? "opacity-50 pointer-events-none" : ""
       }`}
     >
-      <img
-        className="w-[320px] h-[360px]"
-        src={`${IMAGE_URL}/${room.imageCover}`}
-        alt=""
-      />
-      <div
-        className={`absolute top-0 right-0 m-2 p-2 text-white ${getStatusColor(
-          room.status
-        )}`}
-      >
-        {room.status.toUpperCase()}
+      {/* Image Container */}
+      <div className="relative h-60 overflow-hidden">
+        <img
+          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+          src={`${IMAGE_URL}/${room.imageCover}`}
+          alt={room.roomNumber}
+        />
+        <div
+          className={`absolute top-2 right-2 px-3 py-1 text-xs font-semibold text-white rounded-full ${getStatusColor(
+            room.status
+          )}`}
+        >
+          {room.status.toUpperCase()}
+        </div>
       </div>
-      <div className="border border-gray-200 border-t-0 p-4 px-4 pt-4 pb-5 pl-5">
-        <h4 className="text-gray-800 text-lg font-semibold mb-3">
-          #{room.roomNumber}
-        </h4>
-        <h3 className="text-[#dfa974] text-2xl font-bold mb-3">
-          {room.price}$
-          <span className="text-gray-800 text-sm font-normal ml-1">
-            Pernight
-          </span>
-        </h3>
-        <table className="mb-[14px]">
-          <tbody className="text-base text-gray-500 leading-[30px]">
-            <tr>
-              <td className="w-[100px]">Size:</td>
-              <td>{capitalizeFirstLetter(room.roomType)}</td>
-            </tr>
-            <tr>
-              <td className="w-[100px]">Capacity:</td>
-              <td>{room.maxGuests}</td>
-            </tr>
 
-            <tr>
-              <td className="w-[100px]">Features:</td>
-              <td>
-                {room.features.map((feature, index) => (
-                  <span key={feature}>
-                    {feature}
-                    {index < room.features.length - 1 && " · "}
-                  </span>
-                ))}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      {/* Content Container */}
+      <div className="p-5 bg-white flex flex-col flex-1">
+        {/* Room Info */}
+        <div className="mb-4 flex-1">
+          <div className="flex justify-between items-start mb-3">
+            <h3 className="text-2xl font-bold text-gray-800">
+              #{room.roomNumber}
+            </h3>
+            <div className="text-right">
+              <p className="text-xl font-bold text-[#dfa974]">{room.price}$</p>
+              <p className="text-sm text-gray-500">per night</p>
+            </div>
+          </div>
+
+          {/* Details Grid */}
+          <div className="grid grid-cols-2 gap-3 text-gray-600 mb-4">
+            <div>
+              <p className="text-sm font-medium">Room Type</p>
+              <p className="capitalize">{room.roomType.toLowerCase()}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium">Capacity</p>
+              <p>{room.maxGuests} Guests</p>
+            </div>
+          </div>
+
+          {/* Features */}
+          <div className="mb-4">
+            <p className="text-sm font-medium text-gray-600 mb-2">Features</p>
+            <div className="flex flex-wrap gap-2">
+              {room.features.map((feature) => (
+                <span
+                  key={feature}
+                  className="px-2 py-1 bg-gray-100 rounded-full text-sm text-gray-600"
+                >
+                  {feature}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Button */}
         <button
           onClick={() => navigate(`/rooms/${room._id}`)}
-          className="primary-btn inline-block text-gray-800 font-medium px-4 py-2 border border-gray-800 rounded hover:bg-gray-800 hover:text-white transition-all"
+          className="w-full mt-auto py-2 px-4 bg-gray-800 text-white rounded-lg font-medium
+          hover:bg-[#dfa974] transition-colors duration-300"
         >
-          More Details
+          View Details
         </button>
       </div>
     </div>

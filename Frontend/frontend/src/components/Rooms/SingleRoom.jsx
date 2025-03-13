@@ -5,69 +5,67 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 
 function SingleRoom({ room }) {
   const navigate = useNavigate();
+  const rating = Math.floor(room.averageRating) || 0;
 
   return (
     <div
-      key={room.roomNumber}
-      className="w-full h-full left-0 top-0 group relative bg-cover bg-center overflow-hidden"
-      style={{
-        backgroundImage: `url(${IMAGE_URL}/${room.imageCover})`,
-        height: "400px",
-      }}
+      className="group relative h-[400px] w-full overflow-hidden rounded-xl bg-cover bg-center shadow-xl transition-all duration-300 hover:shadow-2xl"
+      style={{ backgroundImage: `url(${IMAGE_URL}/${room.imageCover})` }}
     >
-      <div className="absolute left-11 right-6 bottom-[-160px] transition-all duration-300 ease-linear group-hover:bottom-[135px] bg-opacity-0 p-4 rounded-t-lg lg:bottom-[-250px] lg:group-hover:bottom-[30px] md:bottom-[-120px] md:group-hover:bottom-[100px] sm:bottom-[100px] sm:group-hover:bottom-[80px] xl:bottom-[-140px] xl:group-hover:bottom-[120px] 2xl:bottom-[-140px] 2xl:group-hover:bottom-[120px]">
-        <h3 className="text-white text-lg font-semibold mb-4">
-          Room: {room.roomNumber}
-        </h3>
-        <h2 className="text-[#dfa974] text-2xl font-bold mb-12 group-hover:mb-7 transition-all duration-200">
-          {room.price}$
-          <span className="text-sm text-white ml-2">/Pernight</span>
-        </h2>
-        <table className="w-full text-sm text-white mb-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <tbody>
-            <tr>
-              <td className="w-[120px] font-semibold">Capacity:</td>
-              <td>{room.maxGuests}</td>
-            </tr>
-            <tr>
-              <td className="w-[120px] font-semibold">Type:</td>
-              <td>{room.roomType}</td>
-            </tr>
-            <tr>
-              <td className="w-[120px] font-semibold">Rating:</td>
-              <td>
-                <div className="flex items-center gap-x-2">
-                  <span className="text-[#dfa974]">
-                    {[
-                      ...Array(
-                        room.averageRating ? Math.floor(room.averageRating) : 0
-                      ),
-                    ].map((_, i) => (
-                      <i key={i} className="fas fa-star"></i>
-                    ))}
-                  </span>
-                  <span className="text-gray-400">
-                    {[
-                      ...Array(
-                        5 -
-                          (room.averageRating
-                            ? Math.floor(room.averageRating)
-                            : 0)
-                      ),
-                    ].map((_, i) => (
-                      <i key={i} className="fas fa-star"></i>
-                    ))}
-                  </span>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+      {/* Content Card */}
+      <div className="absolute inset-x-4 bottom-0 translate-y-[65%] transform rounded-t-2xl bg-white/90 p-6 backdrop-blur-sm transition-all duration-500 ease-[cubic-bezier(0.33,1,0.68,1)] group-hover:translate-y-0">
+        <div className="mb-4 flex items-start justify-between">
+          <h3 className="text-2xl font-bold text-gray-800">
+            #{room.roomNumber}
+          </h3>
+          <div className="text-right">
+            <p className="text-xl font-bold text-[#dfa974]">${room.price}</p>
+            <span className="text-sm text-gray-500">per night</span>
+          </div>
+        </div>
+
+        {/* Details Grid */}
+        <div className="mb-6 grid grid-cols-2 gap-4 opacity-0 transition-opacity delay-100 duration-300 group-hover:opacity-100">
+          <div className="flex items-center gap-2">
+            <i className="fas fa-users text-gray-500" />
+            <div>
+              <p className="text-sm font-medium text-gray-500">Capacity</p>
+              <p className="text-gray-700">{room.maxGuests} Guests</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <i className="fas fa-bed text-gray-500" />
+            <div>
+              <p className="text-sm font-medium text-gray-500">Type</p>
+              <p className="capitalize text-gray-700">{room.roomType}</p>
+            </div>
+          </div>
+
+          <div className="col-span-2 flex items-center gap-2">
+            <i className="fas fa-star text-gray-500" />
+            <div>
+              <p className="text-sm font-medium text-gray-500">Rating</p>
+              <div className="flex gap-1 text-[#ffc107]">
+                {[...Array(5)].map((_, i) => (
+                  <i
+                    key={i}
+                    className={`fas fa-star${i < rating ? "" : "-half-alt"}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
         <button
           onClick={() => navigate(`/rooms/${room._id}`)}
-          className="primary-btn px-6 py-2 bg-light_brown text-white font-semibold rounded hover:bg-[#dfa974] transition-colors duration-300"
+          className="w-full transform rounded-lg bg-gray-800 px-6 py-3 font-semibold text-white transition-all duration-300 hover:bg-[#dfa974] hover:shadow-lg"
         >
-          More Details
+          View Details
         </button>
       </div>
     </div>

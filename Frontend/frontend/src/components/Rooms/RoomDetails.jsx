@@ -19,6 +19,8 @@ import UpdateRoom from "./UpdateRoom";
 import useUIStore from "../../stores/UiStore";
 import CreateButton from "../Reusable/CreateButton";
 import UpdateButton from "../Reusable/UpdateButton";
+import StarRating from "../Reusable/StarRating";
+import FeatureItem from "../Reusable/FeatureItem";
 
 const RoomDetails = () => {
   const { isAdmin } = useAuthStore();
@@ -30,6 +32,15 @@ const RoomDetails = () => {
   const onRoomUpdateModalClose = useUIStore(
     (state) => state.onRoomUpdateModalClose
   );
+
+  const { isRoomImageModalOpen } = useUIStore();
+  const onRoomImageModalOpen = useUIStore(
+    (state) => state.onRoomImageModalOpen
+  );
+  const onRoomImageModalClose = useUIStore(
+    (state) => state.onRoomImageModalClose
+  );
+
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
@@ -38,147 +49,172 @@ const RoomDetails = () => {
   return (
     <>
       <Loading mode={modes.all} />
-      {isRoomUpdateModalOpen ? (
+      {isRoomUpdateModalOpen && (
         <UpdateRoom
           isOpen={isRoomUpdateModalOpen}
           onClose={onRoomUpdateModalClose}
           opacity={50}
         />
-      ) : null}
-      <section className="pt-0 pb-[80px] px-[200px] relative">
+      )}
+      {isRoomImageModalOpen && (
+        <AddRoomImages
+          roomId={room?.data.room.id}
+          isOpen={isRoomImageModalOpen}
+          onClose={onRoomImageModalClose}
+          opacity={50}
+        />
+      )}
+
+      <section className="relative py-16 px-4 sm:px-6 lg:px-8">
         {isAdmin && (
-          <div className="absolute top-8 right-8 z-10">
-            <CreateButton
-              title="Update"
-              color="primary"
+          <div className="absolute top-6 right-6 z-10 flex gap-3">
+            <button
               onClick={onRoomUpdateModalOpen}
-            />
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+            >
+              <i className="fas fa-edit mr-2" /> Update
+            </button>
+            <button
+              onClick={onRoomImageModalOpen}
+              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors shadow-sm"
+            >
+              <i className="fas fa-camera mr-2" /> Add Images
+            </button>
           </div>
         )}
-        <div className="container mx-auto flex flex-col lg:flex-row gap-10">
-          <div className="lg:w-2/3">
-            <div className="pt-[70px] mb-[50px] flex justify-center items-center flex-col text-center">
-              <div className="container text-center">
-                <h2 className="text-4xl text-gray-800 mb-4">Our Rooms</h2>
 
-                <div className="flex items-center text-lg text-[#19191a] font-medium justify-center">
-                  <Link to="/" className="text-gray-400 relative mr-2">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8">
+          <div className="lg:w-2/3">
+            {/* Breadcrumb */}
+            <nav className="pt-8 pb-12" aria-label="Breadcrumb">
+              <ol className="flex items-center space-x-2 text-sm text-gray-500">
+                <li>
+                  <Link to="/" className="hover:text-gray-700">
                     Home
                   </Link>
-
+                </li>
+                <li>
                   <svg
-                    className="shrink-0 mx-2 size-4 text-gray-400 dark:text-neutral-600"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                    className="h-5 w-5 mx-1"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
                   >
-                    <path d="m9 18 6-6-6-6"></path>
+                    <path
+                      fillRule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
+                </li>
+                <li aria-current="page">
+                  <span className="text-gray-700">Rooms</span>
+                </li>
+              </ol>
+            </nav>
 
-                  <span className="text-gray-800 ">Rooms</span>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-6">
-              {room?.data.room.images.length > 1 ? (
+            {/* Image Gallery */}
+            {room?.data.room.images.length > 0 && (
+              <div className="mb-8 rounded-xl overflow-hidden shadow-xl">
                 <Swiper
                   modules={[Pagination, Navigation]}
-                  pagination={{ clickable: true }}
+                  pagination={{ clickable: true, dynamicBullets: true }}
                   navigation
                   loop={room?.data.room.images.length > 1}
                   slidesPerView={1}
-                  className="w-full max-h-[450px] lg:max-w-[2000px] lg:max-h-[1333px] rounded-lg shadow mb-[40px]"
+                  className="aspect-[4/3]"
                 >
                   {room?.data.room.images.map((image, idx) => (
                     <SwiperSlide key={idx}>
                       <img
                         src={`${IMAGE_URL}/${image}`}
-                        sizes="(max-width: 600px) 600px,
-                       (max-width: 1200px) 1200px,
-                       2000px"
-                        alt={`Room Image ${idx + 1}`}
-                        className="w-full h-full object-cover rounded-md"
+                        alt={`Room ${idx + 1}`}
+                        className="w-full h-full object-cover"
                         loading="lazy"
                       />
                     </SwiperSlide>
                   ))}
                 </Swiper>
-              ) : (
-                <AddRoomImages roomId={room?.data.room.id} />
-              )}
+              </div>
+            )}
 
-              <div className="space-y-4">
-                <h3 className="text-3xl font-semibold text-gray-800 overflow-hidden flex items-center justify-between">
-                  <span>
-                    {room?.data.room.roomType
-                      .trim()
-                      .toLowerCase()
-                      .replace(/^\w/, (c) => c.toUpperCase())}{" "}
-                    Room
-                  </span>
-                  <span className="flex space-x-1 text-[#dfa479]">
-                    {Array.from({ length: 5 }, (_, i) => (
-                      <i
-                        key={i}
-                        className={`fas fa-star ${
-                          i < room?.data.room.averageRating
-                            ? "text-[#dfa479]"
-                            : "text-gray-300"
-                        }`}
-                      ></i>
-                    ))}
-                  </span>
-                </h3>
-
-                <h2 className="text-2xl font-bold text-[#dfa794]">
-                  {room?.data.room.price.toFixed(2)}$
-                  <span className="text-gray-600 text-sm">/Pernight</span>
-                </h2>
-
-                <table className="table-auto w-full text-sm text-gray-700">
-                  <tbody>
-                    <tr>
-                      <td className="font-semibold">Size:</td>
-                      <td>{capitalizeFirstLetter(room?.data.room.roomType)}</td>
-                    </tr>
-                    <tr>
-                      <td className="font-semibold">Capacity:</td>
-                      <td>{room?.data.room.maxGuests}</td>
-                    </tr>
-                    <tr>
-                      <td className="font-semibold">Services:</td>
-                      <td>
-                        {room?.data.room.features.map((feature, idx) => (
-                          <span key={idx}>
-                            {capitalizeFirstLetter(feature)}
-                            {idx < room?.data.room.features.length - 1 && ", "}
-                          </span>
-                        ))}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-
-                <div className="mt-10">
-                  <p className="text-gray-600">{room?.data.room.description}</p>
+            {/* Room Details */}
+            <div className="space-y-6">
+              <header className="border-b pb-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <h1 className="text-3xl font-bold text-gray-900">
+                    {capitalizeFirstLetter(room?.data.room.roomType)} Suite
+                  </h1>
+                  <div className="flex items-center gap-2">
+                    <StarRating rating={room?.data.room.averageRating} />
+                    <span className="text-sm text-gray-500">
+                      ({room?.data.room.reviews.length} reviews)
+                    </span>
+                  </div>
                 </div>
-                <div className="pt-14 border-t border-gray-300 mb-12">
-                  <h4 className="text-gray-800 tracking-wide mb-11">Reviews</h4>
-                  {room?.data.room.reviews.map((review, idx) => (
-                    <SingleReview review={review} idx={idx} key={review.id} />
+
+                <div className="mt-4 flex items-center gap-4">
+                  <p className="text-2xl font-bold text-[#dfa974]">
+                    ${room?.data.room.price.toFixed(2)}
+                    <span className="text-base font-normal text-gray-500 ml-1">
+                      /night
+                    </span>
+                  </p>
+                </div>
+              </header>
+
+              {/* Room Features */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-6">
+                <FeatureItem icon="users" title="Capacity">
+                  {room?.data.room.maxGuests} Guests
+                </FeatureItem>
+                <FeatureItem icon="bed" title="Room Type">
+                  {capitalizeFirstLetter(room?.data.room.roomType)}
+                </FeatureItem>
+                <FeatureItem icon="star" title="Rating">
+                  <StarRating rating={room?.data.room.averageRating} />
+                </FeatureItem>
+                <FeatureItem icon="tags" title="Features">
+                  <div className="flex flex-wrap gap-2">
+                    {room?.data.room.features.map((feature, idx) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1 bg-gray-100 rounded-full text-sm"
+                      >
+                        {capitalizeFirstLetter(feature)}
+                      </span>
+                    ))}
+                  </div>
+                </FeatureItem>
+              </div>
+
+              {/* Description */}
+              <div className="prose max-w-none text-gray-600">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                  About This Room
+                </h3>
+                <p className="leading-relaxed">{room?.data.room.description}</p>
+              </div>
+
+              {/* Reviews */}
+              <div className="pt-8 border-t border-gray-200">
+                <h3 className="text-xl font-semibold text-gray-900 mb-6">
+                  Guest Reviews
+                </h3>
+                <div className="space-y-6">
+                  {room?.data.room.reviews.map((review) => (
+                    <SingleReview key={review.id} review={review} />
                   ))}
                 </div>
               </div>
             </div>
           </div>
-          <CreateBookingForm />
+
+          {/* Booking Form */}
+          <div className="lg:w-1/3">
+            <CreateBookingForm />
+          </div>
         </div>
+
         <CreateReview />
       </section>
     </>

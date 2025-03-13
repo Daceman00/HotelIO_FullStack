@@ -17,6 +17,10 @@ const useUIStore = create((set) => ({
     onRoomUpdateModalOpen: () => set({ isRoomUpdateModalOpen: true }),
     onRoomUpdateModalClose: () => set({ isRoomUpdateModalOpen: false }),
 
+    isRoomImageModalOpen: false,
+    onRoomImageModalOpen: () => set({ isRoomImageModalOpen: true }),
+    onRoomImageModalClose: () => set({ isRoomImageModalOpen: false }),
+
     isLoader: false,
     setIsLoader: (loader) => set({ isLoader: loader }),
 
