@@ -17,10 +17,8 @@ import useAuthStore from "../../stores/AuthStore";
 import AddRoomImages from "./AddRoomImages";
 import UpdateRoom from "./UpdateRoom";
 import useUIStore from "../../stores/UiStore";
-import CreateButton from "../Reusable/CreateButton";
-import UpdateButton from "../Reusable/UpdateButton";
-import StarRating from "../Reusable/StarRating";
 import FeatureItem from "../Reusable/FeatureItem";
+import StarRatingDisplay from "../Reusable/StarRatingDisplay";
 
 const RoomDetails = () => {
   const { isAdmin } = useAuthStore();
@@ -142,10 +140,11 @@ const RoomDetails = () => {
               <header className="border-b pb-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <h1 className="text-3xl font-bold text-gray-900">
-                    {capitalizeFirstLetter(room?.data.room.roomType)} Suite
+                    # Room {room?.data.room.roomNumber}-
+                    {capitalizeFirstLetter(room?.data.room.roomType)}
                   </h1>
                   <div className="flex items-center gap-2">
-                    <StarRating rating={room?.data.room.averageRating} />
+                    <StarRatingDisplay rating={room?.data.room.averageRating} />
                     <span className="text-sm text-gray-500">
                       ({room?.data.room.reviews.length} reviews)
                     </span>
@@ -171,7 +170,7 @@ const RoomDetails = () => {
                   {capitalizeFirstLetter(room?.data.room.roomType)}
                 </FeatureItem>
                 <FeatureItem icon="star" title="Rating">
-                  <StarRating rating={room?.data.room.averageRating} />
+                  <StarRatingDisplay rating={room?.data.room.averageRating} />
                 </FeatureItem>
                 <FeatureItem icon="tags" title="Features">
                   <div className="flex flex-wrap gap-2">
@@ -206,16 +205,17 @@ const RoomDetails = () => {
                   ))}
                 </div>
               </div>
+              <CreateReview />
             </div>
           </div>
 
           {/* Booking Form */}
-          <div className="lg:w-1/3">
-            <CreateBookingForm />
+          <div className="lg:col-span-1">
+            <div className="sticky top-4 space-y-8">
+              <CreateBookingForm />
+            </div>
           </div>
         </div>
-
-        <CreateReview />
       </section>
     </>
   );

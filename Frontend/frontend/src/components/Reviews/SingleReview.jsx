@@ -5,6 +5,7 @@ import { useDeleteReview } from "./AdminReviews/useDeleteReview";
 import useUIStore from "../../stores/UiStore";
 import Modal from "../Reusable/Modal";
 import { IMAGE_URL_USERS } from "../../helpers/imageURL";
+import StarRatingDisplay from "../Reusable/StarRatingDisplay";
 
 function SingleReview({ review, idx }) {
   const { isAdmin } = useAuthStore();
@@ -15,7 +16,7 @@ function SingleReview({ review, idx }) {
   const handleDeleteReview = () => {
     onModalClose();
   };
-  console.log(review?.user.photo);
+
   return (
     <>
       {isModalOpen ? (
@@ -31,39 +32,63 @@ function SingleReview({ review, idx }) {
           opacity="20"
         />
       ) : null}
-      <div key={idx} className="mb-[32px] flex">
-        <div className="mr-[32px]">
-          <img
-            src={`${IMAGE_URL_USERS}/${review?.user.photo}`}
-            alt="User Avatar"
-            className="h-[70px] w-[70px] rounded-full"
-          />
-        </div>
-        <div className="relative pl-[30px] flex-1 border-l border-gray-300">
-          <span className="text-xs text-[#dfa479] uppercase tracking-widest">
-            {review.createdAt.toString().split("T")[0]}
-          </span>
-          <div className="absolute right-0 top-0 flex items-center">
-            <span className="text-[#dfa974]">
-              {[...Array(Math.floor(review.rating))].map((_, i) => (
-                <i key={i} className="fas fa-star"></i>
-              ))}
-            </span>
-            <span className="text-gray-400">
-              {[...Array(5 - Math.floor(review.rating))].map((_, i) => (
-                <i key={i} className="fas fa-star"></i>
-              ))}
-            </span>
-            {isAdmin && (
-              <TrashIcon
-                onClick={onModalOpen}
-                className="h-5 w-5 text-gray-400 cursor-pointer ml-2"
-              />
-            )}
+      <div
+        key={idx}
+        className="group relative mb-8 p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200"
+      >
+        <div className="flex items-start gap-4">
+          {/* User Avatar */}
+          <div className="shrink-0">
+            <img
+              src={`${IMAGE_URL_USERS}/${review?.user.photo}`}
+              alt="User Avatar"
+              className="h-16 w-16 rounded-full border-2 border-white shadow-sm"
+            />
           </div>
-          <h5 className="text-gray-800 mt-1 mb-2">{review.user.name}</h5>
-          <p className="text-gray-600 mb-0">{review.review}</p>
+
+          {/* Review Content */}
+          <div className="flex-1 min-w-0">
+            {/* Header */}
+            <div className="flex justify-between items-start mb-2">
+              <div>
+                <h5 className="text-lg font-semibold text-gray-900">
+                  {review.user.name}
+                </h5>
+                <span className="text-sm text-gray-500">
+                  {new Date(review.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </span>
+              </div>
+
+              {/* Rating and Actions */}
+              <div className="flex items-center gap-2">
+                <StarRatingDisplay
+                  rating={review.rating}
+                  size={16}
+                  className="mt-1"
+                />
+                {isAdmin && (
+                  <button
+                    onClick={onModalOpen}
+                    className="p-1 text-gray-400 hover:text-red-500 transition-colors duration-200"
+                    aria-label="Delete review"
+                  >
+                    <TrashIcon className="h-5 w-5" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Review Text */}
+            <p className="text-gray-600 leading-relaxed">{review.review}</p>
+          </div>
         </div>
+
+        {/* Hover Effect Border */}
+        <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#dfa974]/20 rounded-xl pointer-events-none transition-all duration-200" />
       </div>
     </>
   );

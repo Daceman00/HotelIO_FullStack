@@ -18,11 +18,11 @@ function BookingInfoModal({ isOpen, onClose, bookingData }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/70 bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
+      className="fixed inset-0 bg-black/70 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all"
+        className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden relative z-[10000]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

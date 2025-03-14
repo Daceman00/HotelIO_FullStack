@@ -108,7 +108,7 @@ function SingleBooking({ booking }) {
             <UpdateButton />
           </div>
           <div className="w-full sm:w-auto">
-            <WarningButton onClick={onModalOpen} />
+            <WarningButton onClick={onModalOpen}>Delete</WarningButton>
           </div>
         </div>
       </div>

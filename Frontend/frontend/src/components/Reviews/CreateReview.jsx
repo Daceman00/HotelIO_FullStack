@@ -41,30 +41,38 @@ function CreateReview() {
   return (
     <>
       <Loading mode={modes.all} />
-      <div className="mb-11">
-        <h4 className="text-gray-800 tracking-wide "></h4>
-        <form onSubmit={handleSubmit}>
-          <div className="lg:w-1/2">
-            <div>
-              <h5 className="text-lg text-gray-800 mb-6 float-left mr-2">
-                You Rating:
+      <div className="mt-12 pt-8 border-t border-gray-200">
+        <h3 className="text-xl font-semibold text-gray-900 mb-6">
+          Write a Review
+        </h3>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <h5 className="text-lg text-gray-800 whitespace-nowrap">
+                Your Rating:
               </h5>
               <StarRating
-                onSetRating={setRating} // Capture rating changes
-                defaultRating={rating} // Pass current rating
-                className="float-left" // Position stars next to the label
-                size={24} // Adjust star size as needed
+                onSetRating={setRating}
+                defaultRating={rating}
+                size={24}
+                className="flex-grow"
               />
             </div>
+
             <textarea
               value={reviewData.review}
               onChange={(e) => setReviewData("review", e.target.value)}
-              className="w-full h-32 border border-gray-300 text-base text-gray-400 px-5 pt-3 mb-6 resize-none"
-            ></textarea>
-            <button className="text-xs font-bold uppercase text-white tracking-wide bg-[#dfa479] border-0 px-8 py-3 inline-block">
-              Submit
-            </button>
+              placeholder="Share your experience..."
+              className="w-full h-32 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dfa974] focus:border-transparent resize-none transition-all"
+            />
           </div>
+
+          <button
+            type="submit"
+            className="px-6 py-3 bg-[#dfa974] text-white font-semibold rounded-lg hover:bg-[#c79162] transition-colors duration-200"
+          >
+            Submit Review
+          </button>
         </form>
       </div>
     </>
