@@ -1,7 +1,9 @@
 import { format, parseISO } from "date-fns";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-function BookingInfoModal({ isOpen, onClose, bookingData }) {
+function BookingInfoModal({ isOpen, onClose, bookingData, opacity = 50 }) {
+  const navigate = useNavigate();
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -18,61 +20,74 @@ function BookingInfoModal({ isOpen, onClose, bookingData }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/70 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm"
+      className="fixed inset-0 flex items-center justify-center z-[1000] p-4"
+      style={{ backgroundColor: `rgba(0, 0, 0, ${opacity / 100})` }}
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden relative z-[10000]"
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-md lg:max-w-2xl overflow-hidden relative z-[1001] max-h-full lg:max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#dfa379] to-[#e8b18d] p-6">
-          <div className="flex flex-col items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-12 w-12 text-white mb-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-            <h3 className="text-2xl font-bold text-white text-center">
-              Booking Confirmed!
+        <div className="bg-gradient-to-r from-green-500 to-green-400 p-8 relative">
+          {/* Animated checkmark circle */}
+          <div className="absolute -top-6 -left-6 w-32 h-32 bg-green-100/30 rounded-full" />
+          <div className="flex flex-col items-center relative">
+            <div className="mb-4 relative">
+              <div className="absolute inset-0 bg-green-200/30 rounded-full animate-ping" />
+              <div className="relative flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8 text-green-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+            </div>
+            <h3 className="text-2xl font-bold text-white text-center mb-2">
+              Booking Confirmed! 🎉
             </h3>
-            <p className="text-white/90 mt-2 text-sm">
-              Thank you for your reservation
+            <p className="text-white/95 text-sm">
+              Your reservation has been successfully created
             </p>
           </div>
         </div>
 
         {/* Body */}
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-6 overflow-y-auto">
           {bookingData && (
-            <div className="space-y-4">
+            <div className="space-y-6">
               {/* Guest Info */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-gray-600">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-[#dfa379]"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="font-medium">Guest Information</span>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-green-100 rounded-lg">
+                    <svg
+                      className="w-5 h-5 text-green-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                  </div>
+                  <h4 className="text-lg font-semibold text-gray-800">
+                    Guest Information
+                  </h4>
                 </div>
-                <div className="flex flex-col space-y-2 pl-7">
+                <div className="space-y-3 pl-4">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-500">Name:</span>
                     <span className="text-gray-800 font-medium">
@@ -81,7 +96,7 @@ function BookingInfoModal({ isOpen, onClose, bookingData }) {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-500">Email:</span>
-                    <span className="text-gray-800 break-all">
+                    <span className="text-gray-800 break-all max-w-[160px] truncate">
                       {bookingData.user.email}
                     </span>
                   </div>
@@ -89,39 +104,43 @@ function BookingInfoModal({ isOpen, onClose, bookingData }) {
               </div>
 
               {/* Booking Details */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-gray-600">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-[#dfa379]"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                    <path
-                      fillRule="evenodd"
-                      d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="font-medium">Booking Details</span>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-green-100 rounded-lg">
+                    <svg
+                      className="w-5 h-5 text-green-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
+                  <h4 className="text-lg font-semibold text-gray-800">
+                    Booking Details
+                  </h4>
                 </div>
-                <div className="space-y-3 pl-7">
+                <div className="space-y-4 pl-4">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-500">Room:</span>
-                    <span className="text-gray-800">
+                    <span className="text-gray-800 font-medium">
                       {bookingData.room.roomNumber}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-500">Check-in:</span>
-                    <span className="text-gray-800 font-medium">
+                    <span className="text-gray-800">
                       {format(parseISO(bookingData.checkIn), "MMM dd, yyyy")}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-500">Check-out:</span>
-                    <span className="text-gray-800 font-medium">
+                    <span className="text-gray-800">
                       {format(parseISO(bookingData.checkOut), "MMM dd, yyyy")}
                     </span>
                   </div>
@@ -133,7 +152,7 @@ function BookingInfoModal({ isOpen, onClose, bookingData }) {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-500">Total Price:</span>
-                    <span className="text-[#dfa379] font-semibold">
+                    <span className="text-green-600 font-semibold">
                       ${bookingData.price}
                     </span>
                   </div>
@@ -144,12 +163,18 @@ function BookingInfoModal({ isOpen, onClose, bookingData }) {
         </div>
 
         {/* Footer */}
-        <div className="bg-gray-50 px-6 py-4 border-t border-gray-100">
+        <div className="bg-gray-50 px-6 py-4 border-t border-gray-100 flex gap-3">
           <button
             onClick={onClose}
-            className="w-full bg-[#dfa379] hover:bg-[#d1936c] text-white font-medium py-2 px-4 rounded-lg transition-colors"
+            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-3 px-4 rounded-lg transition-colors"
           >
-            Close Details
+            Close
+          </button>
+          <button
+            onClick={() => navigate("/bookings")}
+            className="flex-1 bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 text-white font-medium py-3 px-4 rounded-lg transition-all"
+          >
+            View Bookings
           </button>
         </div>
       </div>

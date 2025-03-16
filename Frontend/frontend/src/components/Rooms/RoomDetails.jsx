@@ -120,6 +120,7 @@ const RoomDetails = () => {
                   loop={room?.data.room.images.length > 1}
                   slidesPerView={1}
                   className="aspect-[4/3]"
+                  style={{ zIndex: -1 }}
                 >
                   {room?.data.room.images.map((image, idx) => (
                     <SwiperSlide key={idx}>

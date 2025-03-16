@@ -8,7 +8,7 @@ import Loading from "./Loading";
 import { modes } from "../../hooks/useServiceConfig";
 
 const Header = React.memo(function Header() {
-  const { user, isLoading } = useIsLoggedIn();
+  const { user, isPending } = useIsLoggedIn();
   const isUserLoggedIn = useAuthStore((state) => state.isUserLoggedIn);
   const setUserLoggedIn = useAuthStore((state) => state.setUserLoggedIn);
 
@@ -16,7 +16,7 @@ const Header = React.memo(function Header() {
     setUserLoggedIn(!!user);
   }, [user, setUserLoggedIn]);
 
-  if (isLoading) return <LoaderIcon />;
+  if (isPending) return <LoaderIcon />;
 
   return (
     <>

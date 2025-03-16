@@ -115,6 +115,11 @@ function CreateBookingForm() {
 
   return (
     <>
+      <BookingInfoModal
+        bookingData={bookingData}
+        isOpen={bookingModal}
+        onClose={closeBookingModal}
+      />
       <Loading mode={modes.all} />
       <div className="sticky top-8 bg-white rounded-xl shadow-lg border border-gray-100 p-6">
         <h3 className="text-2xl font-bold text-gray-900 mb-6">
@@ -249,12 +254,6 @@ function CreateBookingForm() {
           </button>
         </form>
       </div>
-
-      <BookingInfoModal
-        bookingData={bookingData}
-        isOpen={bookingModal}
-        onClose={closeBookingModal}
-      />
     </>
   );
 }
