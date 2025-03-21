@@ -8,6 +8,8 @@ import Signup from "../Auth/Signup";
 import useUIStore from "../../stores/UiStore";
 import useAuthStore from "../../stores/AuthStore";
 import { useEffect } from "react";
+import { EffectFade } from "swiper/modules";
+import { motion } from "framer-motion";
 
 function Dashboard() {
   const IMAGE_URL = "http://localhost:5173";
@@ -33,15 +35,17 @@ function Dashboard() {
   };
 
   return (
-    <section className="relative pt-16 pb-24 bg-cover bg-center h-[50rem]">
+    <section className="relative h-screen min-h-[800px]">
+      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 to-gray-900/30" />
+
       <Swiper
-        modules={[Pagination, Autoplay]}
+        modules={[Pagination, Autoplay, EffectFade]}
+        effect="fade"
+        speed={1000}
         pagination={{ clickable: true }}
         loop={images.length > 1}
-        slidesPerView={Math.min(images.length, 1)}
-        slidesPerGroup={Math.min(images.length, 1)}
-        autoplay={{ delay: 3000, disableOnInteraction: false }}
-        className="absolute inset-0 "
+        autoplay={{ delay: 5000, disableOnInteraction: false }}
+        className="h-full"
       >
         {images.map((image, index) => (
           <SwiperSlide key={index}>
@@ -49,60 +53,74 @@ function Dashboard() {
               src={`${IMAGE_URL}${image}`}
               alt={`Slide ${index + 1}`}
               className="w-full h-full object-cover"
+              loading="lazy"
             />
           </SwiperSlide>
         ))}
       </Swiper>
-      <div className="container mx-auto relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 z-0">
-          <div className="text-center md:text-left xl:px-7 lg:px-7 md:px-7">
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-              HotelIO A Luxury Hotel
+
+      <div className="container mx-auto relative z-10 h-full flex items-center px-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 w-full">
+          {/* Left Content */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center lg:text-left space-y-8 text-white"
+          >
+            <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
+              <span className="bg-gradient-to-r from-[#dfa974] to-[#e8b18d] text-transparent bg-clip-text">
+                HotelIO
+              </span>
+              <br />A New Dimension of Luxury
             </h1>
-            <p className="text-white text-lg mb-6">
-              Experience unparalleled luxury and comfort at HotelIO, your
-              perfect getaway destination. Enjoy world-class amenities,
-              exquisite dining, and breathtaking views.
+
+            <p className="text-xl lg:text-2xl text-gray-200 max-w-2xl">
+              Experience unparalleled elegance with our curated collection of
+              world-class amenities and bespoke services
             </p>
-            <button
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={handleRedirect}
-              className="bg-[#dfa974] text-white px-6 py-3 rounded uppercase font-semibold hover:bg-[#c68a5e]"
+              className="inline-flex items-center px-8 py-4 bg-[#dfa974] hover:bg-[#c68a5e] text-lg font-semibold rounded-lg shadow-lg transition-all duration-300"
             >
-              Discover Now
-            </button>
-          </div>
-          {isUserLoggedIn ? null : (
-            <div className="bg-white p-3 shadow-md text-sm xl:px-7 lg:px-7 md:px-7">
-              <div className="flex justify-center ">
-                <nav className="flex overflow-x-auto items-center p-1 space-x-1 rtl:space-x-reverse text-sm text-gray-600 bg-gray-500/5 rounded-xl dark:bg-gray-500/20">
-                  <button
-                    role="tab"
-                    type="button"
-                    className={`flex whitespace-nowrap items-center h-8 px-5 font-medium rounded-lg outline-none focus:ring-2 focus:ring-[#dfa974] focus:ring-inset ${
-                      authTab === "login"
-                        ? "text-[#dfa974] shadow bg-white"
-                        : "hover:text-[#dfa974] focus:text-[#dfa974]"
-                    }`}
-                    onClick={() => setAuthTab("login")}
-                  >
-                    Login
-                  </button>
-                  <button
-                    role="tab"
-                    type="button"
-                    className={`flex whitespace-nowrap items-center h-8 px-5 font-medium rounded-lg outline-none focus:ring-2 focus:ring-[#dfa974] focus:ring-inset ${
-                      authTab === "signup"
-                        ? "text-[#dfa974] shadow bg-white"
-                        : "hover:text-[#dfa974] focus:text-[#dfa974]"
-                    }`}
-                    onClick={() => setAuthTab("signup")}
-                  >
-                    Signup
-                  </button>
-                </nav>
+              Explore Rooms
+              <i className="fas fa-arrow-right ml-3" />
+            </motion.button>
+          </motion.div>
+
+          {/* Auth Section */}
+          {!isUserLoggedIn && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-white/20"
+            >
+              <div className="flex justify-center mb-8">
+                <div className="inline-flex bg-gray-900/10 rounded-xl p-1">
+                  {["login", "signup"].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setAuthTab(tab)}
+                      className={`px-6 py-3 rounded-lg text-sm font-medium transition-colors ${
+                        authTab === tab
+                          ? "bg-[#dfa974] text-white"
+                          : "text-gray-300 hover:bg-white/5"
+                      }`}
+                    >
+                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    </button>
+                  ))}
+                </div>
               </div>
-              {authTab === "signup" ? <Signup /> : <Login />}
-            </div>
+
+              <div className="space-y-6">
+                {authTab === "signup" ? <Signup /> : <Login />}
+              </div>
+            </motion.div>
           )}
         </div>
       </div>
