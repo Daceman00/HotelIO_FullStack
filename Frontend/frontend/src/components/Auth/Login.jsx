@@ -1,10 +1,11 @@
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { motion, AnimatePresence } from "framer-motion";
 import useFormStore from "../../stores/FormStore";
 import { useLogin } from "./useLogin";
 import { Link } from "react-router-dom";
-import Loading from "../Reusable/Loading"; // Adjust the import path as necessary
-import { modes } from "../../hooks/useServiceConfig"; // Adjust the import path as necessary
+import Loading from "../Reusable/Loading";
+import { modes } from "../../hooks/useServiceConfig";
 
 const queryClient = new QueryClient();
 
@@ -22,73 +23,131 @@ function Login() {
     });
   };
 
+  const inputVariants = {
+    focus: { scale: 1.02, transition: { duration: 0.2 } },
+    blur: { scale: 1, transition: { duration: 0.2 } },
+  };
+
+  const formVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <Loading mode={modes.all} />
-      <section className="flex flex-col items-center pt-6 pb-24">
-        <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0">
-          <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-              Sign in
-            </h1>
-            <form className="space-y-4 md:space-y-6" onSubmit={handleSumbit}>
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block mb-2 text-sm font-medium text-gray-900"
+      <motion.section className="flex flex-col items-center flex-1 justify-center py-1 md:py-0.5 lg:py-2">
+        <motion.div className="w-full bg-white/95 backdrop-blur-sm rounded-lg shadow-xl">
+          <div className="p-4 md:p-2 lg:p-4">
+            <motion.h1 className="text-base md:text-sm lg:text-base font-bold text-gray-900 text-center mb-4 md:mb-2 lg:mb-4">
+              Welcome Back
+            </motion.h1>
+            <form
+              className="space-y-4 md:space-y-2 lg:space-y-4"
+              onSubmit={handleSumbit}
+            >
+              <AnimatePresence>
+                {/* Email Input */}
+                <motion.div
+                  variants={formVariants}
+                  className="space-y-2 md:space-y-1 lg:space-y-2"
                 >
-                  Your email
-                </label>
-                <input
-                  type="text"
-                  name="email"
-                  id="email"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5"
-                  placeholder="Your email"
-                  required
-                  disabled={isPending}
-                  value={formData.email}
-                  onChange={(e) => updateForm("email", e.target.value)}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  id="password"
-                  placeholder="••••••••"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5"
-                  required
-                  disabled={isPending}
-                  value={formData.password}
-                  onChange={(e) => updateForm("password", e.target.value)}
-                />
-              </div>
+                  <motion.label className="text-sm md:text-xs lg:text-sm font-medium text-gray-700">
+                    Email
+                  </motion.label>
+                  <motion.input
+                    variants={inputVariants}
+                    whileFocus="focus"
+                    animate="blur"
+                    type="email"
+                    name="email"
+                    className="w-full px-4 md:px-2 lg:px-4 py-2 md:py-1.5 lg:py-2 text-sm md:text-xs lg:text-sm rounded-lg border border-gray-200 focus:border-[#dfa974] focus:ring-2 focus:ring-[#dfa974]/20 transition-all duration-200 bg-white/50"
+                    placeholder="Enter your email"
+                    required
+                    disabled={isPending}
+                    value={formData.email}
+                    onChange={(e) => updateForm("email", e.target.value)}
+                  />
+                </motion.div>
 
-              <button
-                type="submit"
-                className="w-full text-white bg-[#dfa974] hover:bg-[#c68a5e] focus:ring-4 focus:outline-none focus:ring-[#c68a5e]font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                disabled={isPending}
-              >
-                {isPending ? "Signing in..." : "Sign in"}
-              </button>
-              <p className="text-sm font-light text-gray-500">
-                <Link to="/forgotPassword">
-                  <button className="font-medium text-[#dfa974] hover:underline">
-                    Forgot password?
-                  </button>
-                </Link>
-              </p>
+                {/* Password Input */}
+                <motion.div
+                  variants={formVariants}
+                  className="space-y-2 md:space-y-1 lg:space-y-2"
+                >
+                  <motion.label className="text-sm md:text-xs lg:text-sm font-medium text-gray-700">
+                    Password
+                  </motion.label>
+                  <motion.input
+                    variants={inputVariants}
+                    whileFocus="focus"
+                    animate="blur"
+                    type="password"
+                    name="password"
+                    className="w-full px-4 md:px-2 lg:px-4 py-2 md:py-1.5 lg:py-2 text-sm md:text-xs lg:text-sm rounded-lg border border-gray-200 focus:border-[#dfa974] focus:ring-2 focus:ring-[#dfa974]/20 transition-all duration-200 bg-white/50"
+                    placeholder="••••••••"
+                    required
+                    disabled={isPending}
+                    value={formData.password}
+                    onChange={(e) => updateForm("password", e.target.value)}
+                  />
+                </motion.div>
+
+                {/* Submit Button */}
+                <motion.button
+                  variants={formVariants}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  className="w-full py-3 md:py-2 lg:py-3 px-6 md:px-4 lg:px-6 text-sm md:text-xs lg:text-sm text-white bg-[#dfa974] rounded-lg font-medium
+                           hover:bg-[#c68a5e] transition-colors duration-200 disabled:opacity-50
+                           disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                  disabled={isPending}
+                >
+                  {isPending ? (
+                    <>
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          duration: 1,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                      />
+                      <span>Signing in...</span>
+                    </>
+                  ) : (
+                    "Sign in"
+                  )}
+                </motion.button>
+
+                {/* Forgot Password Link */}
+                <motion.div
+                  variants={formVariants}
+                  className="text-center mt-4 md:mt-2 lg:mt-4"
+                >
+                  <Link to="/forgotPassword">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      className="text-xs text-[#dfa974] hover:text-[#c68a5e] font-medium"
+                    >
+                      Forgot password?
+                    </motion.button>
+                  </Link>
+                </motion.div>
+              </AnimatePresence>
             </form>
           </div>
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
     </QueryClientProvider>
   );
 }

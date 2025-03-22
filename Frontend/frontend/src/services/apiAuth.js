@@ -29,6 +29,7 @@ export async function getUser(token) {
                 Authorization: `Bearer ${token}`
             }
         })
+        console.log(data.data)
         return data.data
     } catch (error) {
         console.error(error);

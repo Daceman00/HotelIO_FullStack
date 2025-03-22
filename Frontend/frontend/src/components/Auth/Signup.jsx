@@ -1,4 +1,5 @@
 import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import useFormStore from "../../stores/FormStore";
 import { useSignup } from "./useSignup";
 import Loading from "../Reusable/Loading";
@@ -11,6 +12,23 @@ function Signup() {
   const { signup, isPending } = useSignup();
   const navigate = useNavigate();
 
+  const inputVariants = {
+    focus: { scale: 1.02, transition: { duration: 0.2 } },
+    blur: { scale: 1, transition: { duration: 0.2 } },
+  };
+
+  const formVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
   const handleSumbit = (e) => {
     e.preventDefault();
 
@@ -21,106 +39,156 @@ function Signup() {
   };
 
   return (
-    <section className="flex flex-col items-center pt-6  pb-6">
+    <motion.section
+      initial="hidden"
+      animate="visible"
+      variants={formVariants}
+      className="flex flex-col items-center py-1 md:py-0.5 lg:py-2"
+    >
       {isPending ? (
         <Loading />
       ) : (
-        <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-          <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+        <motion.div className="w-full bg-white/95 backdrop-blur-sm rounded-lg shadow-xl">
+          <div className="p-4 md:p-2 lg:p-4">
+            <motion.h1
+              variants={formVariants}
+              className="text-base md:text-sm lg:text-base font-bold text-gray-900 text-center mb-4 md:mb-2 lg:mb-4"
+            >
               Create an account
-            </h1>
-            <form className="space-y-4 md:space-y-6" onSubmit={handleSumbit}>
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            </motion.h1>
+            <form
+              className="space-y-4 md:space-y-2 lg:space-y-4"
+              onSubmit={handleSumbit}
+            >
+              <AnimatePresence>
+                {/* Name Input */}
+                <motion.div
+                  variants={formVariants}
+                  className="space-y-2 md:space-y-1 lg:space-y-2"
                 >
-                  Your name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Your name"
-                  required
-                  disabled={isPending}
-                  value={formData.name}
-                  onChange={(e) => updateForm("name", e.target.value)}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="username"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  <motion.label className="text-sm md:text-xs lg:text-sm font-medium text-gray-700">
+                    Your name
+                  </motion.label>
+                  <motion.input
+                    variants={inputVariants}
+                    whileFocus="focus"
+                    animate="blur"
+                    type="text"
+                    name="name"
+                    className="w-full px-4 md:px-2 lg:px-4 py-2 md:py-1.5 lg:py-2 text-sm md:text-xs lg:text-sm rounded-lg border border-gray-200 focus:border-[#dfa974] focus:ring-2 focus:ring-[#dfa974]/20 transition-all duration-200 bg-white/50"
+                    placeholder="Enter your name"
+                    required
+                    disabled={isPending}
+                    value={formData.name}
+                    onChange={(e) => updateForm("name", e.target.value)}
+                  />
+                </motion.div>
+
+                {/* Email Input */}
+                <motion.div
+                  variants={formVariants}
+                  className="space-y-2 md:space-y-1 lg:space-y-2"
                 >
-                  Email
-                </label>
-                <input
-                  type="text"
-                  name="username"
-                  id="username"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Your email"
-                  required
-                  disabled={isPending}
-                  value={formData.email}
-                  onChange={(e) => updateForm("email", e.target.value)}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  <motion.label className="text-sm md:text-xs lg:text-sm font-medium text-gray-700">
+                    Email
+                  </motion.label>
+                  <motion.input
+                    variants={inputVariants}
+                    whileFocus="focus"
+                    animate="blur"
+                    type="email"
+                    name="email"
+                    className="w-full px-4 md:px-2 lg:px-4 py-2 md:py-1.5 lg:py-2 text-sm md:text-xs lg:text-sm rounded-lg border border-gray-200 focus:border-[#dfa974] focus:ring-2 focus:ring-[#dfa974]/20 transition-all duration-200 bg-white/50"
+                    placeholder="Enter your email"
+                    required
+                    disabled={isPending}
+                    value={formData.email}
+                    onChange={(e) => updateForm("email", e.target.value)}
+                  />
+                </motion.div>
+
+                {/* Password Input */}
+                <motion.div
+                  variants={formVariants}
+                  className="space-y-2 md:space-y-1 lg:space-y-2"
                 >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  id="password"
-                  placeholder="••••••••"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  required
-                  disabled={isPending}
-                  value={formData.password}
-                  onChange={(e) => updateForm("password", e.target.value)}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  <motion.label className="text-sm md:text-xs lg:text-sm font-medium text-gray-700">
+                    Password
+                  </motion.label>
+                  <motion.input
+                    variants={inputVariants}
+                    whileFocus="focus"
+                    animate="blur"
+                    type="password"
+                    name="password"
+                    className="w-full px-4 md:px-2 lg:px-4 py-2 md:py-1.5 lg:py-2 text-sm md:text-xs lg:text-sm rounded-lg border border-gray-200 focus:border-[#dfa974] focus:ring-2 focus:ring-[#dfa974]/20 transition-all duration-200 bg-white/50"
+                    placeholder="••••••••"
+                    required
+                    disabled={isPending}
+                    value={formData.password}
+                    onChange={(e) => updateForm("password", e.target.value)}
+                  />
+                </motion.div>
+
+                {/* Confirm Password Input */}
+                <motion.div
+                  variants={formVariants}
+                  className="space-y-2 md:space-y-1 lg:space-y-2"
                 >
-                  Confirm Password
-                </label>
-                <input
-                  type="password"
-                  name="passwordConfirm"
-                  id="passwordConfirm"
-                  placeholder="••••••••"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  required
+                  <motion.label className="text-sm md:text-xs lg:text-sm font-medium text-gray-700">
+                    Confirm Password
+                  </motion.label>
+                  <motion.input
+                    variants={inputVariants}
+                    whileFocus="focus"
+                    animate="blur"
+                    type="password"
+                    name="passwordConfirm"
+                    className="w-full px-4 md:px-2 lg:px-4 py-2 md:py-1.5 lg:py-2 text-sm md:text-xs lg:text-sm rounded-lg border border-gray-200 focus:border-[#dfa974] focus:ring-2 focus:ring-[#dfa974]/20 transition-all duration-200 bg-white/50"
+                    placeholder="••••••••"
+                    required
+                    disabled={isPending}
+                    value={formData.passwordConfirm}
+                    onChange={(e) =>
+                      updateForm("passwordConfirm", e.target.value)
+                    }
+                  />
+                </motion.div>
+
+                {/* Submit Button */}
+                <motion.button
+                  variants={formVariants}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  className="w-full py-3 md:py-2 lg:py-3 px-6 md:px-4 lg:px-6 text-sm md:text-xs lg:text-sm text-white bg-[#dfa974] rounded-lg font-medium
+                           hover:bg-[#c68a5e] transition-colors duration-200 disabled:opacity-50
+                           disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                   disabled={isPending}
-                  value={formData.passwordConfirm}
-                  onChange={(e) =>
-                    updateForm("passwordConfirm", e.target.value)
-                  }
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full text-white bg-[#dfa974] hover:bg-[#c68a5e] focus:ring-4 focus:outline-none focus:ring-[#dfa974] font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-[#dfa974] dark:hover:bg-[#dfa974] dark:focus:ring-[#dfa974]"
-                disabled={isPending}
-              >
-                {isPending ? "Creating account..." : "Create an account"}
-              </button>
+                >
+                  {isPending ? (
+                    <>
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          duration: 1,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                      />
+                      <span>Creating account...</span>
+                    </>
+                  ) : (
+                    "Create account"
+                  )}
+                </motion.button>
+              </AnimatePresence>
             </form>
           </div>
-        </div>
+        </motion.div>
       )}
-    </section>
+    </motion.section>
   );
 }
 

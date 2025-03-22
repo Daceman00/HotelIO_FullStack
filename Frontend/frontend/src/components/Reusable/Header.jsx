@@ -16,14 +16,14 @@ const Header = React.memo(function Header() {
     setUserLoggedIn(!!user);
   }, [user, setUserLoggedIn]);
 
-  if (isPending) return <LoaderIcon />;
+  if (isPending) return <Loading mode={modes.all} />;
 
   return (
     <>
       <Loading mode={modes.all} />
       <div>
         <header
-          className="header-section"
+          className=" sticky top-0 z-0 bg-white shadow-sm"
           style={{
             boxShadow: "0px 12px 15px rgba(36, 11, 12, 0.05)",
           }}

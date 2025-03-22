@@ -20,6 +20,7 @@ import UpdateAccount from "./components/Auth/UpdateAccount";
 import UpdatePassword from "./components/Auth/UpdatePassword";
 import RestrictedRoute from "./components/Reusable/RestrictedRoute";
 import Users from "./components/Auth/AdminAuth/Users";
+import useAuthStore from "./stores/AuthStore";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,6 +36,7 @@ const Header = memo(HeaderComponent);
 const Sidebar = memo(SidebarComponent);
 
 function App() {
+  const { isUserLoggedIn } = useAuthStore();
   return (
     <QueryClientProvider client={queryClient} contextSharing={true}>
       <ReactQueryDevtools initialIsOpen={false} />
@@ -42,7 +44,8 @@ function App() {
         <div className="flex min-h-screen">
           <Sidebar />
           <div className="flex flex-col flex-1 ml-1 overflow-y-auto">
-            <Header />
+            {isUserLoggedIn && <Header />}
+            {/* Render Header if user is logged in */}
             <Routes>
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/rooms" element={<RoomsPage />} />
@@ -67,7 +70,7 @@ function App() {
               <Route
                 path="/updatePassword"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiredRole="user">
                     <UpdatePassword />
                   </ProtectedRoute>
                 }
@@ -75,10 +78,8 @@ function App() {
               <Route
                 path="/users"
                 element={
-                  <ProtectedRoute>
-                    <RestrictedRoute allowedRoles={["admin"]}>
-                      <Users />
-                    </RestrictedRoute>
+                  <ProtectedRoute requiredRole="admin">
+                    <Users />
                   </ProtectedRoute>
                 }
               />

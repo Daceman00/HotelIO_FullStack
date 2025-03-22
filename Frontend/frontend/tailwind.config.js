@@ -89,4 +89,7 @@ export default {
     },
   },
   plugins: [],
+  corePlugins: {
+    backdropFilter: true, // Ensure backdrop filters are enabled
+  }
 }

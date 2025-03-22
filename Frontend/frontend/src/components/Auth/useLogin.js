@@ -13,25 +13,31 @@ export function useLogin() {
 
     const { mutate: login, isPending, error } = useMutation({
         mutationFn: loginApi,
-        onMutate: async () => {
-            setUserLoggedIn(true);
-        },
         onSuccess: (data) => {
-            queryClient.setQueryData(['user'], data?.user);
-            const token = data.token;
-            if (token) {
-                localStorage.setItem("token", token);
-                axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-                toast.success("You are logged in!");
-                setRole(data?.data.user.role);
+            const token = data?.token;
+            const user = data?.data?.user;
+
+            if (!token || !user) {
+                toast.error("Invalid login response");
+                return;
             }
 
+            localStorage.setItem("token", token);
+            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+            //Sync state with auth store
+            setUserLoggedIn(true);
+            setRole(data?.data.user.role);
+
+            //Update React Query cache
+            queryClient.setQueryData(['user'], user);
+            toast.success("Successfully logged in");
             navigate("/dashboard");
         },
         onError: (error) => {
-            console.error(error);
-            toast.error("Incorrect email or password");
-            setUserLoggedIn(false);
+            console.error("Login error:", error);
+            toast.error("Login failed: Invalid credentials");
+            useAuthStore.getState().logout();
         }
     });
 

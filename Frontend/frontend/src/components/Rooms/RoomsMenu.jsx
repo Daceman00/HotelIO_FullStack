@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useGetAllRooms } from "./useGetAllRooms";
 import SingleRoomMenu from "./SingleRoomMenu";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Loading from "../Reusable/Loading";
 import { modes } from "../../hooks/useServiceConfig";
@@ -16,6 +16,11 @@ function RoomsMenu() {
   const { isRoomModalOpen } = useUIStore();
   const onRoomModalOpen = useUIStore((state) => state.onRoomModalOpen);
   const onRoomModalClose = useUIStore((state) => state.onRoomModalClose);
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [location]);
 
   if (isPending) return <Loading mode={modes.all} />;
 

@@ -24,8 +24,6 @@ function SingleRoomMenu({ room }) {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   };
 
-  console.log(room);
-
   return (
     <div
       className={`relative flex flex-col rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl ${

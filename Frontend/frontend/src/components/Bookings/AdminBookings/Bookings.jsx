@@ -7,6 +7,7 @@ import SingleBooking from "../SingleBooking";
 import { useInView } from "react-intersection-observer";
 import { useGetBookingsCount } from "../AdminBookings/useGetBookingsCount";
 import { useGetAllBookings } from "./useGetAllBookings";
+import { useLocation } from "react-router-dom";
 
 function Bookings() {
   const { bookingActiveTab, setBookingActiveTab } = useUIStore();
