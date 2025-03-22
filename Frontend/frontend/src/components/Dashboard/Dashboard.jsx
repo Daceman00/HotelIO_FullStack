@@ -58,6 +58,7 @@ function Dashboard() {
               alt={`Slide ${index + 1}`}
               className="w-full h-full object-cover"
               loading="lazy"
+              loading="lazy"
             />
           </SwiperSlide>
         ))}
@@ -85,6 +86,10 @@ function Dashboard() {
               Experience unparalleled elegance with our curated collection of
               world-class amenities and bespoke services
             </p>
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
 
             <motion.button
               whileHover={{ scale: 1.05 }}
