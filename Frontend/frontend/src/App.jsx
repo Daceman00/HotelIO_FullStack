@@ -21,6 +21,7 @@ import UpdatePassword from "./components/Auth/UpdatePassword";
 import RestrictedRoute from "./components/Reusable/RestrictedRoute";
 import Users from "./components/Auth/AdminAuth/Users";
 import useAuthStore from "./stores/AuthStore";
+import ReviewsForSingleRoom from "./components/Reviews/ReviewsForSingleRoom";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,6 +51,10 @@ function App() {
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/rooms" element={<RoomsPage />} />
               <Route path="/rooms/:roomId" element={<RoomDetails />} />
+              <Route
+                path="/rooms/:roomId/reviews"
+                element={<ReviewsForSingleRoom />}
+              />
 
               <Route
                 path="/bookings"

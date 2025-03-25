@@ -1,6 +1,7 @@
 const Review = require('./../models/reviewModel');
 const factory = require('./handlerFactory');
 const catchAsync = require('./../utils/catchAsync');
+const APIFeatures = require('./../utils/apiFeatures');
 
 exports.setRoomUserIds = (req, res, next) => {
     // Allow nested routes
@@ -30,23 +31,30 @@ exports.getReviewsByUser = catchAsync(async (req, res, next) => {
 });
 
 exports.getReviewsByRoom = catchAsync(async (req, res, next) => {
-    const reviews = await Review.find({ room: req.params.id }); // Find all reviews by room ID
+    let filter = { room: req.params.id };
 
-    if (!reviews || reviews.length === 0) {
-        return res.status(404).json({
-            status: 'fail',
-            message: 'No reviews found for this room'
-        });
-    }
+    const features = new APIFeatures(Review.find(filter), req.query)
+        .filter()
+        .search(['review', 'rating'])
+        .applyFilters()
+        .sort()
+        .limitFields()
+        .paginate();
+
+    // Clone the query to get the filter without pagination/sorting/field limits
+    const countQuery = Review.find(features.query.getFilter());
+    const total = await countQuery.countDocuments();
+
+    const reviews = await features.query;
 
     res.status(200).json({
         status: 'success',
         results: reviews.length,
+        total,
         data: {
             reviews
         }
     });
-
 });
 
 exports.getAllReviews = catchAsync(async (req, res, next) => {
