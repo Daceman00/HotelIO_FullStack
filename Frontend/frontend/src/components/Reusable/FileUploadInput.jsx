@@ -49,7 +49,7 @@ const FileUploadInput = () => {
           <div className="relative w-32 h-32 rounded-full border-4 border-blue-100 overflow-hidden">
             <img
               src={previewUrl}
-              alt="Preview"
+              alt=""
               className="w-full h-full object-cover"
             />
           </div>

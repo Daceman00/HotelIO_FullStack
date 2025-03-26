@@ -212,7 +212,7 @@ const RoomDetails = () => {
 
           {/* Booking Form */}
           <div className="lg:col-span-1">
-            <div className="sticky top-4 space-y-8">
+            <div className="pt-10 top-4 space-y-8">
               <CreateBookingForm />
             </div>
           </div>
