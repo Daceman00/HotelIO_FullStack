@@ -44,6 +44,15 @@ const RoomDetails = () => {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   };
 
+  if (isPending) return <Loading mode={modes.all} />;
+
+  const newestReviews = room?.data.room.reviews.sort((a, b) => {
+    return b.createdAt - a.createdAt;
+  });
+
+  const fiveLatestReviews = newestReviews.slice(0, 5);
+  console.log(room);
+
   return (
     <>
       <Loading mode={modes.all} />
@@ -197,11 +206,20 @@ const RoomDetails = () => {
 
               {/* Reviews */}
               <div className="pt-8 border-t border-gray-200">
-                <h3 className="text-xl font-semibold text-gray-900 mb-6">
-                  Guest Reviews
-                </h3>
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    Guest Reviews
+                  </h3>
+                  <Link
+                    to={`/rooms/${room?.data.room.id}/reviews`}
+                    className="px-4 py-2 bg-[#dfa379] text-white rounded-lg hover:bg-[#c68a5e] transition-colors shadow-sm text-sm"
+                  >
+                    <i className="fas fa-eye mr-2"></i>
+                    See All Reviews
+                  </Link>
+                </div>
                 <div className="space-y-6">
-                  {room?.data.room.reviews.map((review) => (
+                  {fiveLatestReviews.map((review) => (
                     <SingleReview key={review.id} review={review} />
                   ))}
                 </div>
