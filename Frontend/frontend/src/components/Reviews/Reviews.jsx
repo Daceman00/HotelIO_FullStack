@@ -7,9 +7,11 @@ import "swiper/css/navigation";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { useGetAllReviews } from "./useGetAllReviews";
 import StarRatingDisplay from "../Reusable/StarRatingDisplay";
+import Loading from "../Reusable/Loading";
+import { modes } from "../../hooks/useServiceConfig";
 
 function Reviews() {
-  const { reviews } = useGetAllReviews();
+  const { reviews, isPending } = useGetAllReviews();
 
   const latestReviews = (reviews, count = 3) => {
     if (!reviews?.data?.data) return [];
@@ -17,6 +19,8 @@ function Reviews() {
       ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, count);
   };
+
+  if (isPending) return <Loading mode={modes.all} />;
 
   return (
     <section className="py-16 bg-white">

@@ -31,22 +31,16 @@ export async function deleteReview(reviewId) {
 
 }
 
-export async function getReviewsForSingleRoom({ limit, page, status, roomId }) {
+export async function getReviewsForSingleRoom({ limit = 5, page = 1, roomId }) {
     try {
-        const params = {
-            limit,
-            page,
-            status
-        };
-        const { data } = await axios.get(`/reviews/room/${roomId}`, { params })
+        const { data } = await axios.get(`/reviews/room/${roomId}`, {
+            params: { limit, page }
+        })
         const total = data.total;
         const nextPage = data.results < limit ? undefined : page + 1;
-        console.log(data)
-        console.log(data.data.data)
-        console.log(total)
-        console.log(nextPage)
+
         return {
-            data: data.data.data,
+            data: data.data,
             total,
             nextPage
         }
