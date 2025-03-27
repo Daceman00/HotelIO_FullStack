@@ -5,7 +5,7 @@ import { getReviewsForSingleRoom } from "../../services/apiReviews";
 export function useReviewsForSingleRoom(roomId) {
     const { data: reviews, isPending, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
         queryKey: ["reviews", roomId],
-        queryFn: ({ pageParam = 1 }) => getReviewsForSingleRoom({ limit: 5, page: pageParam, roomId }),
+        queryFn: ({ pageParam = 1 }) => getReviewsForSingleRoom({ limit: 10, page: pageParam, roomId }),
         getNextPageParam: (lastPage) => lastPage.nextPage,
         initialPageParam: 1
     })

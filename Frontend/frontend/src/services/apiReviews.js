@@ -31,7 +31,7 @@ export async function deleteReview(reviewId) {
 
 }
 
-export async function getReviewsForSingleRoom({ limit = 5, page = 1, roomId }) {
+export async function getReviewsForSingleRoom({ limit, page = 1, roomId }) {
     try {
         const { data } = await axios.get(`/reviews/room/${roomId}`, {
             params: { limit, page }

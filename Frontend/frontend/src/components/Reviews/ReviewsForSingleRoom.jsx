@@ -74,11 +74,7 @@ function ReviewsForSingleRoom() {
         </div>
 
         {/* Loading More Indicator */}
-        {isFetchingNextPage && (
-          <div className="text-center py-4">
-            <Loading mode={modes.all} />
-          </div>
-        )}
+        {isFetchingNextPage && <Loading mode={modes.all} />}
 
         {/* Empty State */}
         {reviews.length === 0 && (
@@ -104,6 +100,7 @@ function ReviewsForSingleRoom() {
             <p className="text-gray-600 max-w-md mx-auto">
               Be the first to share your experience about this room.
             </p>
+            <div ref={ref} className="h-2" />
           </div>
         )}
       </div>

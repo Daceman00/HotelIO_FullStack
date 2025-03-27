@@ -13,7 +13,7 @@ export function useIsLoggedIn() {
         retry: false,
 
         onSuccess: (userData) => {
-            console.log("User data:", userData)
+
             if (!userData) {
                 logout()
                 return

@@ -46,12 +46,11 @@ const RoomDetails = () => {
 
   if (isPending) return <Loading mode={modes.all} />;
 
-  const newestReviews = room?.data.room.reviews.sort((a, b) => {
-    return b.createdAt - a.createdAt;
+  const newestReviews = [...(room?.data.room.reviews || [])].sort((a, b) => {
+    return new Date(b.createdAt) - new Date(a.createdAt);
   });
 
   const fiveLatestReviews = newestReviews.slice(0, 5);
-  console.log(room);
 
   return (
     <>
