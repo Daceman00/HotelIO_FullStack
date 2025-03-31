@@ -74,14 +74,14 @@ function Dashboard() {
             transition={{ duration: 0.8 }}
             className="text-center lg:text-left space-y-3 md:space-y-2 lg:space-y-6 text-white"
           >
-            <h1 className="text-3xl md:text-2xl lg:text-5xl font-bold leading-tight">
+            <h1 className="text-3xl md:text-4xl lg:text-7xl font-bold leading-tight">
               <span className="bg-gradient-to-r from-[#dfa974] to-[#e8b18d] text-transparent bg-clip-text">
                 HotelIO
               </span>
               <br />A New Dimension of Luxury
             </h1>
 
-            <p className="text-base md:text-sm lg:text-lg text-gray-200 max-w-lg">
+            <p className="text-base md:text-2xl lg:text-lg text-gray-200 max-w-lg">
               Experience unparalleled elegance with our curated collection of
               world-class amenities and bespoke services
             </p>

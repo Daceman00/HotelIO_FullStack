@@ -2,6 +2,7 @@ class APIFeatures {
     constructor(query, queryString) {
         this.query = query;
         this.queryString = queryString;
+        this.filters = {};
     }
 
     // Merge filter conditions (e.g., ?role=user)
@@ -40,6 +41,11 @@ class APIFeatures {
             // Merge $or into this.filters
             this.filters.$or = orConditions;
         }
+        return this;
+    }
+
+    mergeFilters(additionalFilters) {
+        this.filters = { ...this.filters, ...additionalFilters };
         return this;
     }
 
