@@ -43,6 +43,9 @@ const useUIStore = create((set) => ({
     bookingActiveTab: 'upcoming',
     setBookingActiveTab: (tab) => set({ bookingActiveTab: tab }),
 
+    selectedSortOption: null,
+    setSelectedSortOption: (option) => set({ selectedSortOption: option }),
+
 }))
 
 export default useUIStore

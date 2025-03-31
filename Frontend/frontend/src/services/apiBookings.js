@@ -1,11 +1,12 @@
 import axios from "./../helpers/axios"
 
-export async function getAllBookings({ limit = 10, page = 1, status }) {
+export async function getAllBookings({ limit = 10, page = 1, status, sort }) {
     try {
         const params = {
             limit,
             page,
-            status
+            status,
+            sort
         };
         const { data } = await axios.get('/bookings', { params });
         const total = data.total;
