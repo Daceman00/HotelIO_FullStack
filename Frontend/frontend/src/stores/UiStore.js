@@ -43,8 +43,10 @@ const useUIStore = create((set) => ({
     bookingActiveTab: 'upcoming',
     setBookingActiveTab: (tab) => set({ bookingActiveTab: tab }),
 
-    selectedSortOption: null,
+    selectedSortOption: 'created',
+    sortOrder: '-', // initial value stays as '-'
     setSelectedSortOption: (option) => set({ selectedSortOption: option }),
+    toggleSortOrder: () => set(state => ({ sortOrder: state.sortOrder === '' ? '-' : '' })),
 
 }))
 

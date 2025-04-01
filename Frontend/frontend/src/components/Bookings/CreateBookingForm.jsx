@@ -227,7 +227,7 @@ function CreateBookingForm() {
                           className={`px-4 py-3 cursor-pointer transition-colors ${
                             bookingFormData.numOfGuests === value
                               ? "bg-[#dfa974] text-white"
-                              : "hover:bg-[#dfa974]/10"
+                              : "hover:bg-[#dfa974]/50"
                           }`}
                           onClick={() => {
                             handleGuestChange({

@@ -3,7 +3,7 @@ import { getAllBookings } from "../../../services/apiBookings";
 
 export function useGetAllBookings(status, sort) {
     const { data: bookings, isPending, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-        queryKey: ["bookings", status],
+        queryKey: ["bookings", status, sort],
         queryFn: ({ pageParam = 1 }) => getAllBookings({ limit: 10, page: pageParam, status: status, sort: sort }),
         getNextPageParam: (lastPage) => lastPage.nextPage,
         initialPageParam: 1

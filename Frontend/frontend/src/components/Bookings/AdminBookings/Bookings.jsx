@@ -10,6 +10,24 @@ import { useGetAllBookings } from "./useGetAllBookings";
 
 function Bookings() {
   const { bookingActiveTab, setBookingActiveTab } = useUIStore();
+  const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+  const { selectedSortOption, sortOrder } = useUIStore();
+  const setSelectedSortOption = useUIStore(
+    (state) => state.setSelectedSortOption
+  );
+  const toggleSortOrder = useUIStore((state) => state.toggleSortOrder);
+
+  const sortingOptions = {
+    created: "createdAt",
+    checkIn: "checkIn",
+    checkOut: "checkOut",
+  };
+  // this function to combine sort order with field
+  const getSortString = () => {
+    const sortField = sortingOptions[selectedSortOption];
+    return `${sortOrder}${sortField}`;
+  };
+
   const {
     bookings,
     isPending,
@@ -18,13 +36,7 @@ function Bookings() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useGetAllBookings(bookingActiveTab);
-
-  const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
-  const { selectedSortOption } = useUIStore();
-  const setSelectedSortOption = useUIStore(
-    (state) => state.setSelectedSortOption
-  );
+  } = useGetAllBookings(bookingActiveTab, getSortString());
 
   const { bookings_counts, error_count, isPending_count } =
     useGetBookingsCount();
@@ -43,7 +55,7 @@ function Bookings() {
     <>
       <div className=" my-6 mx-6 px-4 sm:px-6 lg:px-8 py-8">
         <div className="border-b border-gray-200 mb-8">
-          <nav className="flex space-x-8 justify-start">
+          <nav className="flex  space-x-8 justify-start">
             {["upcoming", "current", "past"].map((tab) => (
               <button
                 key={tab}
@@ -60,13 +72,12 @@ function Bookings() {
             ))}
 
             {/* Date Sorting Dropdown */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Sort By
-              </label>
-              <div className="relative">
+            {/* Sorting Controls */}
+            <div className="flex items-center gap-4">
+              {/* Sort Field Dropdown */}
+              <div className="relative pb-2">
                 <div
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg cursor-pointer hover:border-[#dfa379] transition-colors flex items-center justify-between"
+                  className="w-40 px-4 py-2 border border-gray-200 rounded-lg cursor-pointer hover:border-[#dfa379] transition-colors flex items-center justify-between"
                   onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
                   role="button"
                 >
@@ -92,16 +103,16 @@ function Bookings() {
 
                 {isSortDropdownOpen && (
                   <ul className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-                    {["checkInDate", "checkOutDate"].map((option) => (
+                    {Object.keys(sortingOptions).map((option) => (
                       <li
                         key={option}
-                        className={`px-4 py-3 cursor-pointer transition-colors ${
+                        className={`capitalize px-4 py-3 cursor-pointer transition-colors ${
                           selectedSortOption === option
-                            ? "bg-[#dfa379] text-white"
+                            ? "bg-[#dfa379]/20"
                             : "hover:bg-[#dfa379]/10"
                         }`}
                         onClick={() => {
-                          setBookingSortOption(option);
+                          setSelectedSortOption(option);
                           setIsSortDropdownOpen(false);
                         }}
                       >
@@ -111,6 +122,29 @@ function Bookings() {
                   </ul>
                 )}
               </div>
+
+              {/* Sort Direction Toggle */}
+              <button
+                onClick={toggleSortOrder}
+                className="p-2 border border-gray-200 rounded-lg hover:border-[#dfa379] transition-colors group"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`w-5 h-5 transition-transform ${
+                    sortOrder === "" ? "rotate-180" : ""
+                  }`}
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="#dfa379"
+                  fill="none"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-3-3m3 3l3-3"
+                  />
+                </svg>
+              </button>
             </div>
           </nav>
         </div>
