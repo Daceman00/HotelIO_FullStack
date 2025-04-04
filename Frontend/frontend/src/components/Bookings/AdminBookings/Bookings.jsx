@@ -21,6 +21,7 @@ function Bookings() {
     created: "createdAt",
     checkIn: "checkIn",
     checkOut: "checkOut",
+    numOfGuests: "numOfGuests",
   };
   // this function to combine sort order with field
   const getSortString = () => {
@@ -49,7 +50,8 @@ function Bookings() {
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  if (isPending || isPending_count) return <Loading mode={modes.all} />;
+  if (isPending || isPending_count || error_count)
+    return <Loading mode={modes.fetching} />;
 
   return (
     <>

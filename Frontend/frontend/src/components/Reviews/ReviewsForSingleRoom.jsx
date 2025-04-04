@@ -23,7 +23,9 @@ function ReviewsForSingleRoom() {
 
   const { room, isPending: isPendingRoom } = useGetRoom(roomId);
 
-  const { ref, inView } = useInView();
+  const { ref, inView } = useInView({
+    rootMargin: "200px",
+  });
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
@@ -62,10 +64,11 @@ function ReviewsForSingleRoom() {
 
         {/* Reviews Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {reviews[0].reviews.map((review, index) => (
+          {reviews.map((review, index) => (
             <div
               key={review.id}
-              ref={ref}
+              // Attach ref to the last element to trigger next page fetch
+              ref={index === reviews.length - 1 && hasNextPage ? ref : null}
               className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow"
             >
               <SingleReview review={review} />
@@ -73,8 +76,12 @@ function ReviewsForSingleRoom() {
           ))}
         </div>
 
-        {/* Loading More Indicator */}
-        {isFetchingNextPage && <Loading mode={modes.all} />}
+        {/* After the reviews grid */}
+        {hasNextPage && (
+          <div ref={ref} className="flex justify-center py-6">
+            <Loading mode={modes.fetching} />
+          </div>
+        )}
 
         {/* Empty State */}
         {reviews.length === 0 && (
@@ -100,7 +107,6 @@ function ReviewsForSingleRoom() {
             <p className="text-gray-600 max-w-md mx-auto">
               Be the first to share your experience about this room.
             </p>
-            <div ref={ref} className="h-2" />
           </div>
         )}
       </div>

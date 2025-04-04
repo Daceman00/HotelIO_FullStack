@@ -1,6 +1,6 @@
 import React from "react";
 import { PuffLoader } from "react-spinners";
-import useServiceConfig, { modes } from "../../hooks/useServiceConfig"; // Adjust the import path as necessary
+import useServiceConfig, { modes } from "../../hooks/useServiceConfig";
 
 function Loading({ mode = modes.all }) {
   const [isPending] = useServiceConfig(mode);
@@ -10,8 +10,21 @@ function Loading({ mode = modes.all }) {
   }
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center bg-white bg-opacity-90 z-50">
-      <PuffLoader color="#dfa974" />
+    <div
+      className={`
+      ${
+        mode === modes.all
+          ? "fixed inset-0 bg-white bg-opacity-90 z-50"
+          : "inline-block"
+      } 
+      flex justify-center items-center
+    `}
+    >
+      <PuffLoader
+        color="#dfa974"
+        size={mode === modes.all ? 80 : 40}
+        css={mode === modes.small ? "display: inline-block" : ""}
+      />
     </div>
   );
 }
