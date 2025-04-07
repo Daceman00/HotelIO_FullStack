@@ -11,22 +11,36 @@ import { useGetAllBookings } from "./useGetAllBookings";
 function Bookings() {
   const { bookingActiveTab, setBookingActiveTab } = useUIStore();
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
-  const { selectedSortOption, sortOrder } = useUIStore();
+  const { selectedSortOption, sortOrder, selectedFilterOption } = useUIStore();
   const setSelectedSortOption = useUIStore(
     (state) => state.setSelectedSortOption
   );
   const toggleSortOrder = useUIStore((state) => state.toggleSortOrder);
+  const setSelectedFilterOption = useUIStore(
+    (state) => state.setSelectedFilterOption
+  );
 
   const sortingOptions = {
     created: "createdAt",
     checkIn: "checkIn",
     checkOut: "checkOut",
     numOfGuests: "numOfGuests",
+    price: "price",
+  };
+
+  const filteringOptions = {
+    roomNumber: "room.roomNumber",
+    guests: "user.name",
   };
   // this function to combine sort order with field
   const getSortString = () => {
     const sortField = sortingOptions[selectedSortOption];
     return `${sortOrder}${sortField}`;
+  };
+
+  const getFilterString = () => {
+    const filterField = filteringOptions[selectedFilterOption];
+    return `${filterField}`;
   };
 
   const {

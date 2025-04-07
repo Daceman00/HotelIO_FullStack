@@ -48,6 +48,10 @@ const useUIStore = create((set) => ({
     setSelectedSortOption: (option) => set({ selectedSortOption: option }),
     toggleSortOrder: () => set(state => ({ sortOrder: state.sortOrder === '' ? '-' : '' })),
 
+    selectedFilterOption: '',
+    setSelectedFilterOption: (options) => set({ selectedFilterOptions: options }),
+
+
 }))
 
 export default useUIStore

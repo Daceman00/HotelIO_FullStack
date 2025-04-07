@@ -8,7 +8,7 @@ class APIFeatures {
     // Merge filter conditions (e.g., ?role=user)
     filter() {
         const queryObj = { ...this.queryString };
-        const excludedFields = ['page', 'sort', 'limit', 'fields', 'search'];
+        const excludedFields = ['page', 'sort', 'limit', 'fields', 'search', 'status'];
         excludedFields.forEach(el => delete queryObj[el]);
 
         let queryStr = JSON.stringify(queryObj);

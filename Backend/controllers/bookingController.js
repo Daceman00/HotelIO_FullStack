@@ -4,6 +4,7 @@ const Review = require('./../models/reviewModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
+const APIFeatures = require('../utils/apiFeatures');
 
 
 exports.setRoomUserIds = (req, res, next) => {
@@ -123,53 +124,58 @@ exports.createBooking = catchAsync(async (req, res, next) => {
 
 exports.getAllBookings = catchAsync(async (req, res, next) => {
     const currentDate = new Date();
-    let filter = {};
+    let statusFilter = {};
 
     // Handle status filtering
     if (req.query.status) {
         switch (req.query.status) {
             case 'upcoming':
-                filter.checkIn = { $gt: currentDate };
+                statusFilter.checkIn = { $gt: currentDate };
                 break;
             case 'current':
-                filter.$and = [
+                statusFilter.$and = [
                     { checkIn: { $lte: currentDate } },
                     { checkOut: { $gt: currentDate } }
                 ];
                 break;
             case 'past':
-                filter.checkOut = { $lte: currentDate };
+                statusFilter.checkOut = { $lte: currentDate };
                 break;
         }
     }
 
-    // Clone query and remove special parameters
-    const queryCopy = { ...req.query };
-    ['status', 'page', 'limit', 'sort', 'fields'].forEach(el => delete queryCopy[el]);
+    // Initialize APIFeatures and apply filters
+    const features = new APIFeatures(Booking.find(), req.query)
+        .mergeFilters(statusFilter) // Merge status-based filters
+        .filter() // Exclude 'status' from regular filtering
+        .applyFilters(); // Apply accumulated filters
 
-    // Count total documents WITH FILTERS
-    const total = await Booking.countDocuments(filter);
+    // Clone query for counting total documents
+    const countQuery = Booking.find(features.filters);
+    const total = await countQuery.countDocuments();
 
-    // Get pagination values
+    // Apply sorting, field limiting, and pagination
+    features
+        .sort()
+        .limitFields()
+        .paginate();
+
+    // Execute query and populate user details
+    const bookings = await features.query.populate({
+        path: 'user',
+        select: 'username email'
+    });
+
+    // Calculate pagination details
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 10;
-    const skip = (page - 1) * limit;
-
-    // Get paginated results
-    const bookings = await Booking.find(filter)
-        .skip(skip)
-        .limit(limit)
-        .sort(req.query.sort || '-createdAt')
-        .populate({
-            path: 'user',
-            select: 'username email'
-        });
+    const totalPages = Math.ceil(total / limit);
 
     res.status(200).json({
         status: 'success',
         results: bookings.length,
         total,
-        totalPages: Math.ceil(total / limit),
+        totalPages,
         currentPage: page,
         data: {
             data: bookings
