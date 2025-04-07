@@ -11,6 +11,7 @@ import { useGetAllBookings } from "./useGetAllBookings";
 function Bookings() {
   const { bookingActiveTab, setBookingActiveTab } = useUIStore();
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const { selectedSortOption, sortOrder, selectedFilterOption } = useUIStore();
   const setSelectedSortOption = useUIStore(
     (state) => state.setSelectedSortOption
@@ -28,10 +29,6 @@ function Bookings() {
     price: "price",
   };
 
-  const filteringOptions = {
-    roomNumber: "room.roomNumber",
-    guests: "user.name",
-  };
   // this function to combine sort order with field
   const getSortString = () => {
     const sortField = sortingOptions[selectedSortOption];
@@ -63,6 +60,26 @@ function Bookings() {
       fetchNextPage();
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  // Get unique room numbers from bookings
+  const uniqueRoomNumbers = [
+    ...new Set(bookings?.map((booking) => booking.room.roomNumber)),
+  ].sort((a, b) => a - b);
+
+  // Get unique guest names from bookings
+  const uniqueGuestNames = [
+    ...new Set(bookings?.map((booking) => booking.user.name)),
+  ].sort();
+
+  console.log("Bookings:", bookings); // Log raw bookings data
+  console.log("Unique Room Numbers:", uniqueRoomNumbers);
+  console.log("Unique Guest Names:", uniqueGuestNames);
+  console.log("Selected Filter Option:", selectedFilterOption);
+
+  const filteringOptions = {
+    roomNumber: uniqueRoomNumbers,
+    guestName: uniqueGuestNames,
+  };
 
   if (isPending || isPending_count || error_count)
     return <Loading mode={modes.fetching} />;
@@ -161,6 +178,82 @@ function Bookings() {
                   />
                 </svg>
               </button>
+
+              {/* Filter Controls */}
+              <div className="relative pb-2 ml-4">
+                <div
+                  className="w-48 px-4 py-2 border border-gray-200 rounded-lg cursor-pointer hover:border-[#dfa379] transition-colors flex items-center justify-between"
+                  onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
+                  role="button"
+                >
+                  <span className="capitalize">
+                    {selectedFilterOption || "Filter By"}
+                  </span>
+                  <svg
+                    className={`w-5 h-5 text-gray-400 transform transition-transform ${
+                      isFilterDropdownOpen ? "rotate-180" : ""
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+
+                {isFilterDropdownOpen && (
+                  <div className="absolute z-10 w-48 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+                    <div className="px-4 py-2 bg-gray-50 border-b border-gray-200">
+                      <p className="font-medium text-sm text-gray-700">
+                        Room Numbers
+                      </p>
+                    </div>
+                    {filteringOptions.roomNumber.map((room) => (
+                      <button
+                        key={`room-${room}`}
+                        className={`w-full text-left px-4 py-2 text-sm hover:bg-[#dfa379]/10 ${
+                          selectedFilterOption === `room-${room}`
+                            ? "bg-[#dfa379]/20"
+                            : ""
+                        }`}
+                        onClick={() => {
+                          setSelectedFilterOption(`room-${room}`);
+                          setIsFilterDropdownOpen(false);
+                        }}
+                      >
+                        Room {room}
+                      </button>
+                    ))}
+
+                    <div className="px-4 py-2 bg-gray-50 border-b border-gray-200">
+                      <p className="font-medium text-sm text-gray-700">
+                        Guest Names
+                      </p>
+                    </div>
+                    {filteringOptions.guestName.map((name) => (
+                      <button
+                        key={`guest-${name}`}
+                        className={`w-full text-left px-4 py-2 text-sm hover:bg-[#dfa379]/10 ${
+                          selectedFilterOption === `guest-${name}`
+                            ? "bg-[#dfa379]/20"
+                            : ""
+                        }`}
+                        onClick={() => {
+                          setSelectedFilterOption(`guest-${name}`);
+                          setIsFilterDropdownOpen(false);
+                        }}
+                      >
+                        {name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </nav>
         </div>
