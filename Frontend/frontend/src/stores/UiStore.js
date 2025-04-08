@@ -33,9 +33,13 @@ const useUIStore = create((set) => ({
     showDatePicker: false,
     setShowDatePicker: () => set((state) => ({ showDatePicker: !state.showDatePicker })),
 
-    searchQuery: '',
-    setSearchQuery: (query) => set({ searchQuery: query }),
-    setResetSearchQuery: () => set(() => ({ searchQuery: '' })),
+    userSearchQuery: '',
+    setUserSearchQuery: (query) => set({ userSearchQuery: query }),
+    setResetUserSearchQuery: () => set(() => ({ userSearchQuery: '' })),
+
+    bookingsSearchQuery: '',
+    setBookingsSearchQuery: (query) => set({ bookingsSearchQuery: query }),
+    setResetBookingsSearchQuery: () => set(() => ({ bookingsSearchQuery: '' })),
 
     currentPage: 1,
     setCurrentPage: (page) => set({ currentPage: page }),

@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 
 export function useUsers() {
     const { currentPage } = useUIStore();
-    const { searchQuery } = useUIStore();
-    const debouncedSearchTerm = useDebounce(searchQuery, 500);
+    const { userSearchQuery } = useUIStore();
+    const debouncedSearchTerm = useDebounce(userSearchQuery, 500);
     const [effectiveSearch, setEffectiveSearch] = useState('')
     const queryClient = useQueryClient();
 
@@ -21,7 +21,7 @@ export function useUsers() {
 
     const { data: users, isPending, error } = useQuery({
         queryKey: ['users', currentPage, effectiveSearch],
-        queryFn: ({ signal }) => getAllUsers(currentPage, 10, debouncedSearchTerm, signal),
+        queryFn: ({ signal }) => getAllUsers(currentPage, 10, effectiveSearch, signal),
         keepPreviousData: true,
     });
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useUsers } from "./useUsers";
 import Loading from "../../Reusable/Loading";
 import User from "./User";
@@ -7,10 +7,15 @@ import { useMoveBack } from "../../../hooks/useMoveBack";
 import { modes } from "../../../hooks/useServiceConfig";
 import Pagination from "../../Reusable/Pagination"; // Import the new Pagination component
 import SearchInput from "../../Reusable/SearchInput";
+import { useLocation } from "react-router-dom";
 
 function Users() {
+  const location = useLocation();
   const { isLoader } = useUIStore();
   const moveBack = useMoveBack();
+
+  const { userSearchQuery } = useUIStore();
+  const setUserSearchQuery = useUIStore((state) => state.setUserSearchQuery);
 
   const { currentPage } = useUIStore();
   const setCurrentPage = useUIStore((state) => state.setCurrentPage);
@@ -32,10 +37,18 @@ function Users() {
     setCurrentPage(pageNumber);
   };
 
+  useEffect(() => {
+    setUserSearchQuery("");
+  }, [setUserSearchQuery, location.pathname]);
+
   return (
     <>
       <div className="p-6 relative overflow-x-auto shadow-md sm:rounded-lg bg-white dark:bg-gray-800">
-        <SearchInput placeholder="Search..." />
+        <SearchInput
+          placeholder="Search users..."
+          searchQuery={userSearchQuery}
+          setSearchQuery={setUserSearchQuery}
+        />
         <button
           onClick={moveBack}
           type="button"

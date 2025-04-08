@@ -5,6 +5,8 @@ const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
 const APIFeatures = require('../utils/apiFeatures');
+const Room = require('../models/roomModel');
+const User = require('../models/userModel');
 
 
 exports.setRoomUserIds = (req, res, next) => {
@@ -124,47 +126,97 @@ exports.createBooking = catchAsync(async (req, res, next) => {
 
 exports.getAllBookings = catchAsync(async (req, res, next) => {
     const currentDate = new Date();
-    let statusFilter = {};
+    let filters = {};
 
     // Handle status filtering
     if (req.query.status) {
         switch (req.query.status) {
             case 'upcoming':
-                statusFilter.checkIn = { $gt: currentDate };
+                filters.checkIn = { $gt: currentDate };
                 break;
             case 'current':
-                statusFilter.$and = [
+                filters.$and = [
                     { checkIn: { $lte: currentDate } },
                     { checkOut: { $gt: currentDate } }
                 ];
                 break;
             case 'past':
-                statusFilter.checkOut = { $lte: currentDate };
+                filters.checkOut = { $lte: currentDate };
                 break;
+        }
+    }
+
+    // Handle search for room.roomNumber, room.roomType, and user fields
+    if (req.query.search) {
+        const searchTerm = req.query.search.trim();
+        if (searchTerm) {
+            const roomSearchConditions = [
+                { roomType: { $regex: searchTerm, $options: 'i' } },
+                { roomNumber: { $regex: searchTerm, $options: 'i' } }
+            ];
+
+            const userSearchConditions = [
+                { name: { $regex: searchTerm, $options: 'i' } },
+                { email: { $regex: searchTerm, $options: 'i' } }
+            ];
+
+            // Exact match if searchTerm is numeric
+            if (!isNaN(searchTerm)) {
+                roomSearchConditions.push({ roomNumber: parseInt(searchTerm) });
+            }
+
+            const rooms = await Room.find({
+                $or: roomSearchConditions
+            }).select('_id');
+
+            const users = await User.find({
+                $or: userSearchConditions
+            }).select('_id');
+
+            const roomIds = rooms.map(room => room._id);
+            const userIds = users.map(user => user._id);
+
+            // Combine room and user conditions with OR
+            if (roomIds.length > 0 || userIds.length > 0) {
+                filters.$or = [];
+                if (roomIds.length > 0) {
+                    filters.$or.push({ room: { $in: roomIds } });
+                }
+                if (userIds.length > 0) {
+                    filters.$or.push({ user: { $in: userIds } });
+                }
+            } else {
+                // If no matches found, return no results
+                filters._id = null;
+            }
         }
     }
 
     // Initialize APIFeatures and apply filters
     const features = new APIFeatures(Booking.find(), req.query)
-        .mergeFilters(statusFilter) // Merge status-based filters
-        .filter() // Exclude 'status' from regular filtering
+        .mergeFilters(filters) // Merge status-based filters
+        .filter()
         .applyFilters(); // Apply accumulated filters
 
-    // Clone query for counting total documents
-    const countQuery = Booking.find(features.filters);
-    const total = await countQuery.countDocuments();
+    // Get total count before pagination
+    const total = await Booking.countDocuments(features.filters);
 
-    // Apply sorting, field limiting, and pagination
+    // Apply remaining operations
     features
         .sort()
         .limitFields()
         .paginate();
 
-    // Execute query and populate user details
-    const bookings = await features.query.populate({
-        path: 'user',
-        select: 'username email'
-    });
+    // Execute query with explicit population
+    const bookings = await features.query
+        .populate({
+            path: 'user',
+            select: 'name email'
+        })
+        .populate({
+            path: 'room',
+            select: 'roomNumber price roomType'
+        });
 
     // Calculate pagination details
     const page = parseInt(req.query.page, 10) || 1;

@@ -25,7 +25,7 @@ class APIFeatures {
             const searchTerm = this.queryString.search.trim();
 
             if (searchTerm.length < 3) {
-                throw new Error('Search term must be at least 3 characters.');
+                throw new Error('Search term must be at least 3 characters long.');
             }
 
             const escapedSearchTerm = searchTerm.replace(
@@ -33,12 +33,26 @@ class APIFeatures {
                 "\\$&"
             );
 
-            const regex = new RegExp(escapedSearchTerm, "i"); // Case-insensitive regex
-            const orConditions = searchFields.map(field => ({
-                [field]: { $regex: regex }
-            }));
+            const regex = new RegExp(escapedSearchTerm, "i");
+            const orConditions = [];
 
-            // Merge $or into this.filters
+            searchFields.forEach(field => {
+                if (field.includes('.')) {
+                    const [populatedField, searchField] = field.split('.');
+                    // Add both string and number matching conditions
+                    orConditions.push({
+                        [`${populatedField}.${searchField}`]: { $regex: regex }
+                    });
+                    if (!isNaN(searchTerm)) {
+                        orConditions.push({
+                            [`${populatedField}.${searchField}`]: parseInt(searchTerm)
+                        });
+                    }
+                } else {
+                    orConditions.push({ [field]: { $regex: regex } });
+                }
+            });
+
             this.filters.$or = orConditions;
         }
         return this;

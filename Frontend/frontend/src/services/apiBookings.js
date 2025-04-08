@@ -1,20 +1,24 @@
 import axios from "./../helpers/axios"
 
-export async function getAllBookings({ limit = 10, page = 1, status, sort }) {
+export async function getAllBookings({ limit = 10, page = 1, status, sort, searchTerm = '' }) {
     try {
         const params = {
             limit,
             page,
             status,
-            sort
+            sort,
         };
+
+        // Only add search param if 3+ characters
+        if (searchTerm.length >= 3) {
+            params.search = searchTerm;
+        }
+
         const { data } = await axios.get('/bookings', { params });
-        const total = data.total;
-        const nextPage = data.results < limit ? undefined : page + 1;
         return {
             data: data.data.data,
-            total,
-            nextPage
+            total: data.total,
+            nextPage: data.results < limit ? undefined : page + 1
         }
     } catch (error) {
         console.error(error);

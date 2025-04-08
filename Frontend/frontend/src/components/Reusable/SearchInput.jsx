@@ -1,11 +1,13 @@
 import React, { useEffect } from "react";
 import useUIStore from "../../stores/UiStore";
-import { useDebounce } from "../../hooks/useDebounce";
+import { useLocation } from "react-router-dom";
 
-function SearchInput({ placeholder = "Search..." }) {
-  const { searchQuery } = useUIStore();
-  const setSearchQuery = useUIStore((state) => state.setSearchQuery);
-
+function SearchInput({
+  placeholder = "Search...",
+  searchQuery,
+  setSearchQuery,
+  resetSearchQuery,
+}) {
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchQuery(value);

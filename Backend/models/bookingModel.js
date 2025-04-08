@@ -76,7 +76,7 @@ bookingSchema.pre('save', async function (next) {
 
     // Check if check-in date is today and current time is before 14:00
     if (this.checkIn.toDateString() === currentDate.toDateString() && currentHour < 12) {
-        // Allow booking for today if current time is before 14:00
+        // Allow booking for today if current time is before 12:00
     } else if (this.checkIn < currentDate) {
         return next(new AppError('Booking dates cannot be in the past.'));
     }
@@ -140,7 +140,7 @@ bookingSchema.pre(/^find/, function (next) {
     });
     this.populate({
         path: 'room',
-        select: 'roomNumber price'
+        select: 'roomNumber price roomType' // Added more fields
     })
     next();
 });
