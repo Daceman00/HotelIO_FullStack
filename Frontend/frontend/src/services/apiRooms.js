@@ -54,3 +54,13 @@ export async function updateRoomPhotos(roomId, formData) {
         throw new Error(error.response?.data?.message || 'Error updating photo');
     }
 }
+
+export async function updateRoomStatus(roomId, status) {
+    try {
+        const { data } = await axios.patch(`/rooms/${roomId}`, { status })
+        return data
+    } catch (error) {
+        console.error(error.response);
+        throw new Error(error.response.data.message);
+    }
+}

@@ -14,7 +14,7 @@ function Bookings() {
   const location = useLocation();
   const { bookingActiveTab, setBookingActiveTab } = useUIStore();
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
-  const { selectedSortOption, sortOrder, selectedFilterOption } = useUIStore();
+  const { selectedSortOption, sortOrder } = useUIStore();
   const setSelectedSortOption = useUIStore(
     (state) => state.setSelectedSortOption
   );
@@ -65,7 +65,7 @@ function Bookings() {
   }, [location.pathname, setBookingsSearchQuery, setSelectedSortOption]);
 
   if (isPending || isPending_count || error_count)
-    return <Loading mode={modes.fetching} />;
+    return <Loading mode={modes.all} />;
 
   return (
     <>
@@ -166,7 +166,7 @@ function Bookings() {
         </div>
 
         <SearchInput
-          placeholder="Search bookings..."
+          placeholder="Search bookings (room, user)..."
           searchQuery={bookingsSearchQuery}
           setSearchQuery={setBookingsSearchQuery}
         />

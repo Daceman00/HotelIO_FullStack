@@ -74,7 +74,7 @@ bookingSchema.pre('save', async function (next) {
     const currentDate = new Date();
     const currentHour = currentDate.getHours();
 
-    // Check if check-in date is today and current time is before 14:00
+    // Check if check-in date is today and current time is before 12:00
     if (this.checkIn.toDateString() === currentDate.toDateString() && currentHour < 12) {
         // Allow booking for today if current time is before 12:00
     } else if (this.checkIn < currentDate) {
@@ -87,7 +87,7 @@ bookingSchema.pre('save', async function (next) {
     }
 
     // Set default check-in and check-out times
-    this.checkIn.setHours(14, 0, 0, 0); // Set default check-in time to 14:00
+    this.checkIn.setHours(12, 0, 0, 0); // Set default check-in time to 14:00
     this.checkOut.setHours(11, 0, 0, 0); // Set default check-out time to 11:00
 
     // Skip overlapping booking check if only the 'paid' property is being updated

@@ -1,4 +1,3 @@
-
 import { useIsFetching, useIsMutating, useIsRestoring } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
@@ -7,6 +6,7 @@ export const modes = {
     mutating: 'mutating',
     restoring: 'restoring',
     all: 'all',
+    small: 'small'  // Add new mode
 };
 
 const useServiceConfig = (mode = modes.all) => {

@@ -9,21 +9,24 @@ function Loading({ mode = modes.all }) {
     return null;
   }
 
+  const isFullScreen = mode === modes.all;
+  const isSmall = mode === modes.small;
+
   return (
     <div
       className={`
-      ${
-        mode === modes.all
-          ? "fixed inset-0 bg-white bg-opacity-90 z-50"
-          : "inline-block"
-      } 
-      flex justify-center items-center
-    `}
+        ${
+          isFullScreen
+            ? "fixed inset-0 bg-white bg-opacity-90 z-50"
+            : "inline-block"
+        } 
+        flex justify-center items-center
+        ${isSmall ? "p-2" : ""}
+      `}
     >
       <PuffLoader
         color="#dfa974"
-        size={mode === modes.all ? 80 : 40}
-        css={mode === modes.small ? "display: inline-block" : ""}
+        size={isFullScreen ? 80 : isSmall ? 20 : 40}
       />
     </div>
   );
