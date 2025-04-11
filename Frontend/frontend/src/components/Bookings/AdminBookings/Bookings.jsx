@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { modes } from "../../../hooks/useServiceConfig";
 import useUIStore from "../../../stores/UiStore";
 import Loading from "../../Reusable/Loading";
@@ -30,6 +30,7 @@ function Bookings() {
     checkOut: "checkOut",
     numOfGuests: "numOfGuests",
     price: "price",
+    paid: "paid",
   };
 
   // this function to combine sort order with field
@@ -52,6 +53,21 @@ function Bookings() {
     useGetBookingsCount();
 
   const { ref, inView } = useInView();
+
+  const dropdownRef = useRef(null);
+
+  const handleClickOutside = useCallback((event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setIsSortDropdownOpen(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [handleClickOutside]);
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
@@ -91,7 +107,7 @@ function Bookings() {
             {/* Sorting Controls */}
             <div className="flex items-center gap-4">
               {/* Sort Field Dropdown */}
-              <div className="relative pb-2">
+              <div className="relative pb-2" ref={dropdownRef}>
                 <div
                   className="w-40 px-4 py-2 border border-gray-200 rounded-lg cursor-pointer hover:border-[#dfa379] transition-colors flex items-center justify-between"
                   onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
@@ -166,7 +182,7 @@ function Bookings() {
         </div>
 
         <SearchInput
-          placeholder="Search bookings (room, user)..."
+          placeholder="Search bookings (room, user)"
           searchQuery={bookingsSearchQuery}
           setSearchQuery={setBookingsSearchQuery}
         />

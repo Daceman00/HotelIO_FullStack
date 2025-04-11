@@ -92,6 +92,10 @@ function UpdateRoom({ isOpen, onClose, opacity }) {
     );
   };
 
+  if (isPendingRoom || isUpdatePending) {
+    return <Loading mode={modes.all} />;
+  }
+
   return (
     <section
       id="popup-modal"

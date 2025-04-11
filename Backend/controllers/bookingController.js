@@ -37,6 +37,11 @@ exports.getBookingsByUser = catchAsync(async (req, res, next) => {
         }
     }
 
+    // Handle paid filter
+    if (req.query.paid !== undefined) {
+        filter.paid = req.query.paid === 'true';
+    }
+
     // Clone query and remove special parameters
     const queryCopy = { ...req.query };
     ['status', 'page', 'limit', 'sort', 'fields'].forEach(el => delete queryCopy[el]);
@@ -144,6 +149,11 @@ exports.getAllBookings = catchAsync(async (req, res, next) => {
                 filters.checkOut = { $lte: currentDate };
                 break;
         }
+    }
+
+    // Handle paid filter
+    if (req.query.paid !== undefined) {
+        filters.paid = req.query.paid === 'true';
     }
 
     // Handle search for room.roomNumber, room.roomType, and user fields
