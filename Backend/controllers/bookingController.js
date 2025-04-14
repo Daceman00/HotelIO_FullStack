@@ -318,6 +318,138 @@ exports.deleteBooking = catchAsync(async (req, res, next) => {
     }
 });
 
+exports.getRoomBookingCounts = catchAsync(async (req, res, next) => {
+    const bookingCounts = await Booking.aggregate([
+        {
+            $group: {
+                _id: '$room',
+                totalBookings: { $sum: 1 }
+            }
+        },
+        {
+            $lookup: {
+                from: 'rooms',
+                localField: '_id',
+                foreignField: '_id',
+                as: 'roomDetails'
+            }
+        },
+        {
+            $unwind: '$roomDetails'
+        },
+        {
+            $project: {
+                _id: 0,
+                roomId: '$_id',
+                roomNumber: '$roomDetails.roomNumber',
+                roomType: '$roomDetails.roomType',
+                totalBookings: 1
+            }
+        }
+    ]);
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            bookingCounts
+        }
+    });
+});
+
+exports.getTopBookers = catchAsync(async (req, res, next) => {
+    const topBookers = await Booking.aggregate([
+        {
+            $group: {
+                _id: '$user',
+                totalBookings: { $sum: 1 },
+                totalSpent: { $sum: '$price' }
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: '_id',
+                foreignField: '_id',
+                as: 'userDetails'
+            }
+        },
+        {
+            $unwind: '$userDetails'
+        },
+        {
+            $project: {
+                _id: 0,
+                userId: '$_id',
+                name: '$userDetails.name',
+                email: '$userDetails.email',
+                totalBookings: 1,
+                totalSpent: 1
+            }
+        },
+        {
+            $sort: { totalBookings: -1 }
+        },
+        {
+            $limit: 10
+        }
+    ]);
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            topBookers
+        }
+    });
+});
+
+exports.getTopSpenders = catchAsync(async (req, res, next) => {
+    const topSpenders = await Booking.aggregate([
+        {
+            $group: {
+                _id: '$user',
+                totalSpent: { $sum: '$price' },
+                totalBookings: { $sum: 1 },
+                averageSpent: { $avg: '$price' }
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: '_id',
+                foreignField: '_id',
+                as: 'userDetails'
+            }
+        },
+        {
+            $unwind: '$userDetails'
+        },
+        {
+            $project: {
+                _id: 0,
+                userId: '$_id',
+                name: '$userDetails.name',
+                email: '$userDetails.email',
+                totalSpent: { $round: ['$totalSpent', 2] },
+                averageSpent: { $round: ['$averageSpent', 2] },
+                totalBookings: 1
+            }
+        },
+        {
+            $sort: { totalSpent: -1 }
+        },
+        {
+            $limit: 10
+        }
+    ]);
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            topSpenders
+        }
+    });
+});
+
 exports.getBooking = factory.getOne(Booking);
 exports.updateBooking = factory.updateOne(Booking);
 

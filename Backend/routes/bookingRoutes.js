@@ -28,6 +28,18 @@ router
     .get(bookingController.getBookingCounts);
 
 router
+    .route('/room-booking-counts')
+    .get(bookingController.getRoomBookingCounts);
+
+router
+    .route('/top-bookers')
+    .get(authController.restrictTo("admin"), bookingController.getTopBookers);
+
+router
+    .route('/top-spenders')
+    .get(authController.restrictTo("admin"), bookingController.getTopSpenders);
+
+router
     .route('/:id')
     .get(bookingController.getBooking)
     .patch(bookingController.updateBooking)

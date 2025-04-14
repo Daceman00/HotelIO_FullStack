@@ -22,6 +22,7 @@ import RestrictedRoute from "./components/Reusable/RestrictedRoute";
 import Users from "./components/Auth/AdminAuth/Users";
 import useAuthStore from "./stores/AuthStore";
 import ReviewsForSingleRoom from "./components/Reviews/ReviewsForSingleRoom";
+import StatsPage from "./pages/StatsPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -89,6 +90,14 @@ function App() {
                 }
               />
               <Route path="/login" element={<Login />} />
+              <Route
+                path="/stats"
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <StatsPage />
+                  </ProtectedRoute>
+                }
+              />
 
               {/*
             <Route path="/reports" element={<div>Reports Page</div>} />
