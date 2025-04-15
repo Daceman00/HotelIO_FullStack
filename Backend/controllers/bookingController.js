@@ -256,9 +256,11 @@ exports.getBookingCounts = catchAsync(async (req, res, next) => {
         ]
     });
     const pastCount = await Booking.countDocuments({ checkOut: { $lte: currentDate } });
+    const totalCount = await Booking.countDocuments();
 
     res.status(200).json({
         status: 'success',
+        total: totalCount,
         data: {
             upcoming: upcomingCount,
             current: currentCount,

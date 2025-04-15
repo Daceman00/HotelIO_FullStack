@@ -41,9 +41,17 @@ function TopSendersPieChart() {
       title: {
         display: true,
         text: "Top Spenders Distribution",
+        color: "#333",
         font: {
           size: 18,
+          weight: "bold",
+          family: "Arial",
         },
+        padding: {
+          top: 10,
+          bottom: 20,
+        },
+        fullSize: true,
       },
       tooltip: {
         callbacks: {
@@ -66,11 +74,31 @@ function TopSendersPieChart() {
   };
 
   if (isPending) {
-    return <Loading mode={modes.all} />; // Fixed: Added return statement
+    return <Loading mode={modes.all} />;
   }
 
   return (
-    <div style={{ height: "500px", maxWidth: "800px", margin: "0 auto" }}>
+    <div
+      style={{
+        height: "40vh",
+        minHeight: "300px",
+        padding: "20px 20px 40px 20px",
+        margin: "20px 0",
+        backgroundColor: "#fff",
+        borderRadius: "8px",
+        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+      }}
+    >
+      <h3
+        style={{
+          marginBottom: "1rem",
+          color: "#333",
+          fontWeight: "bold",
+          textAlign: "center",
+        }}
+      >
+        Top Spenders Distribution
+      </h3>
       <Pie data={chartData} options={options} />
     </div>
   );
