@@ -452,6 +452,38 @@ exports.getTopSpenders = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.getTotalRevenue = catchAsync(async (req, res, next) => {
+    const result = await Booking.aggregate([
+        {
+            $group: {
+                _id: null,
+                totalRevenue: { $sum: '$price' },
+                totalBookings: { $sum: 1 },
+                averageBookingPrice: { $avg: '$price' }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                totalRevenue: { $round: ['$totalRevenue', 2] },
+                totalBookings: 1,
+                averageBookingPrice: { $round: ['$averageBookingPrice', 2] }
+            }
+        }
+    ]);
+
+    const stats = result.length > 0 ? result[0] : {
+        totalRevenue: 0,
+        totalBookings: 0,
+        averageBookingPrice: 0
+    };
+
+    res.status(200).json({
+        status: 'success',
+        data: stats
+    });
+});
+
 exports.getBooking = factory.getOne(Booking);
 exports.updateBooking = factory.updateOne(Booking);
 

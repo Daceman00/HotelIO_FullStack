@@ -2,12 +2,11 @@ import { BookOpenIcon } from "@heroicons/react/24/outline";
 import React from "react";
 
 function BookingsStatsCard({ bookings }) {
-  c;
   return (
-    <div className="max-w-sm rounded-xl bg-white p-6 shadow-md">
-      <div className="flex gap-6">
+    <div className="w-full min-w-[12rem] max-w-sm rounded-xl bg-white p-4 sm:p-6 shadow-md">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
         {/* Left section */}
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex sm:flex-col items-center gap-4">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
             <BookOpenIcon className="h-5 w-5 text-gray-600" />
           </div>
@@ -18,7 +17,7 @@ function BookingsStatsCard({ bookings }) {
         </div>
 
         {/* Vertical divider */}
-        <div className="border-l border-gray-200"></div>
+        <div className="hidden sm:block border-l border-gray-200"></div>
 
         {/* Right section */}
         <div className="flex flex-col justify-center gap-2 text-sm text-gray-500">

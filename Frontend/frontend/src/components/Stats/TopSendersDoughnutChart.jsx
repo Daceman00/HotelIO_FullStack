@@ -1,13 +1,13 @@
 import React from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Pie } from "react-chartjs-2";
+import { Doughnut } from "react-chartjs-2";
 import { useGetTopSpenders } from "./useTopSenders";
 import Loading from "../Reusable/Loading";
 import { modes } from "../../hooks/useServiceConfig";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-function TopSendersPieChart() {
+function TopSendersDoguhnutChart() {
   const { topSpenders, error, isPending } = useGetTopSpenders();
 
   const topSpendersData = topSpenders?.data?.topSpenders || [];
@@ -20,10 +20,10 @@ function TopSendersPieChart() {
         label: "Total Spent",
         data: topSpendersData.map((user) => user.totalSpent),
         backgroundColor: topSpendersData.map((user, index) =>
-          index === 0 ? "rgba(255, 99, 132, 0.8)" : "rgba(54, 162, 235, 0.8)"
+          index === 0 ? "rgba(223, 163, 121, 1)" : "rgba(54, 162, 235, 0.8)"
         ),
         borderColor: topSpendersData.map((user, index) =>
-          index === 0 ? "rgba(255, 99, 132, 1)" : "rgba(54, 162, 235, 1)"
+          index === 0 ? "rgba(223, 163, 121, 2)" : "rgba(54, 162, 235, 1)"
         ),
         borderWidth: 1,
       },
@@ -34,6 +34,7 @@ function TopSendersPieChart() {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    cutout: "50%",
     plugins: {
       legend: {
         position: "top",
@@ -86,7 +87,8 @@ function TopSendersPieChart() {
         margin: "20px 0",
         backgroundColor: "#fff",
         borderRadius: "8px",
-        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+        boxShadow:
+          "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)",
       }}
     >
       <h3
@@ -99,9 +101,9 @@ function TopSendersPieChart() {
       >
         Top Spenders Distribution
       </h3>
-      <Pie data={chartData} options={options} />
+      <Doughnut className="p-1" data={chartData} options={options} />
     </div>
   );
 }
 
-export default TopSendersPieChart;
+export default TopSendersDoguhnutChart;

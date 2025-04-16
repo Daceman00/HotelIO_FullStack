@@ -40,6 +40,10 @@ router
     .get(authController.restrictTo("admin"), bookingController.getTopSpenders);
 
 router
+    .route('/total-revenue',)
+    .get(authController.restrictTo("admin"), bookingController.getTotalRevenue);
+
+router
     .route('/:id')
     .get(bookingController.getBooking)
     .patch(bookingController.updateBooking)
