@@ -32,7 +32,7 @@ export async function getTotalRevenue() {
 
 export async function getTopReviewers() {
     try {
-        const { data } = await axios.get("/bookings/top-reviewers")
+        const { data } = await axios.get("/reviews/top-reviewers")
         return data
     } catch (error) {
         console.error(error.response);

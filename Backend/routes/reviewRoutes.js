@@ -24,6 +24,7 @@ router
     .route('/top-reviewers')
     .get(authController.protect, reviewController.getTopReviewers);
 
+
 router
     .route('/:id')
     .get(reviewController.getReview)
@@ -41,5 +42,6 @@ router
 router
     .route('/room/:id')
     .get(reviewController.getReviewsByRoom);
+
 
 module.exports = router;

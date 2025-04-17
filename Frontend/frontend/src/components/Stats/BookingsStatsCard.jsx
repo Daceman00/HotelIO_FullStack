@@ -3,7 +3,7 @@ import React from "react";
 
 function BookingsStatsCard({ bookings }) {
   return (
-    <div className="w-full min-w-[12rem] max-w-sm rounded-xl bg-white p-4 sm:p-6 shadow-md">
+    <div className="w-full rounded-xl bg-white p-4 sm:p-6 shadow-md hover:shadow-lg transition-shadow">
       <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
         {/* Left section */}
         <div className="flex sm:flex-col items-center gap-4">
