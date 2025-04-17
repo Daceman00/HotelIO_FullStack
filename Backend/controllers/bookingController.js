@@ -484,6 +484,7 @@ exports.getTotalRevenue = catchAsync(async (req, res, next) => {
     });
 });
 
+
 exports.getBooking = factory.getOne(Booking);
 exports.updateBooking = factory.updateOne(Booking);
 

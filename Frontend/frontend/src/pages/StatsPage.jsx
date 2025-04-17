@@ -10,6 +10,8 @@ import TopSendersDoguhnutChart from "../components/Stats/TopSendersDoughnutChart
 import TopBookersDoguhnutChart from "../components/Stats/topBookersDoughnutChart";
 import TotalSpentStatsCard from "../components/Stats/TotalSpentStatsCard";
 import { usetotalRevenue } from "../components/Stats/useTotalRevenue";
+import { useTopReviewers } from "../components/Stats/useTopReviewers";
+import TopReviewersStatsCard from "../components/Stats/TopReviewersStatsCard";
 
 function StatsPage() {
   const {
@@ -25,7 +27,18 @@ function StatsPage() {
     error,
   } = usetotalRevenue();
 
-  if (usersIsPending || isPending_count || isPendingRevenue) {
+  const {
+    topReviewers,
+    isPending: isPendingReviewers,
+    error: reviewersError,
+  } = useTopReviewers();
+
+  if (
+    usersIsPending ||
+    isPending_count ||
+    isPendingRevenue ||
+    isPendingReviewers
+  ) {
     return <Loading mode={modes.all} />;
   }
 
@@ -39,6 +52,9 @@ function StatsPage() {
       </div>
       <div className="w-full md:w-[20%]">
         <TotalSpentStatsCard totalRevenue={totalRevenue} />
+      </div>
+      <div className="w-full md:w-[20%]">
+        <TopReviewersStatsCard reviewers={topReviewers} />
       </div>
       <div className="w-full md:w-[49%]">
         <TopSendersDoguhnutChart />

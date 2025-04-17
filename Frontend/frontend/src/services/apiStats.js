@@ -23,7 +23,6 @@ export async function getTopBookers() {
 export async function getTotalRevenue() {
     try {
         const { data } = await axios.get("/bookings/total-revenue")
-        console.log(data);
         return data
     } catch (error) {
         console.error(error.response);
@@ -31,3 +30,12 @@ export async function getTotalRevenue() {
     }
 }
 
+export async function getTopReviewers() {
+    try {
+        const { data } = await axios.get("/bookings/top-reviewers")
+        return data
+    } catch (error) {
+        console.error(error.response);
+        throw new Error(error.response.data.message);
+    }
+}

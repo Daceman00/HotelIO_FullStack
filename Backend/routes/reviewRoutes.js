@@ -21,6 +21,10 @@ router
     .get(authController.protect, reviewController.getReviewsByUser);
 
 router
+    .route('/top-reviewers')
+    .get(authController.protect, reviewController.getTopReviewers);
+
+router
     .route('/:id')
     .get(reviewController.getReview)
     .patch(
@@ -33,8 +37,6 @@ router
         authController.restrictTo('admin'),
         reviewController.deleteReview
     );
-
-
 
 router
     .route('/room/:id')

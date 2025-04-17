@@ -76,6 +76,68 @@ exports.getAllReviews = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.getTopReviewers = catchAsync(async (req, res, next) => {
+    const [totalsStats] = await Review.aggregate([
+        {
+            $group: {
+                _id: null,
+                total: { $sum: 1 },
+                avgRating: { $avg: '$rating' }
+            }
+        },
+        {
+            $project: {
+                total: 1,
+                avgRating: { $round: ['$avgRating', 1] }
+            }
+        }
+    ]);
+
+    const topReviewers = await Review.aggregate([
+        {
+            $group: {
+                _id: '$user',
+                totalReviews: { $sum: 1 },
+                averageRating: { $avg: '$rating' }
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: '_id',
+                foreignField: '_id',
+                as: 'userDetails'
+            }
+        },
+        {
+            $unwind: '$userDetails'
+        },
+        {
+            $project: {
+                _id: 1,
+                name: '$userDetails.name',
+                email: '$userDetails.email',
+                totalReviews: 1,
+                averageRating: { $round: ['$averageRating', 1] }
+            }
+        },
+        {
+            $sort: { totalReviews: -1 }
+        },
+        {
+            $limit: 10
+        }
+    ]);
+
+    res.status(200).json({
+        status: 'success',
+        totalReviews: totalsStats.total || 0,
+        averageRating: totalsStats.avgRating || 0,
+        data: {
+            topReviewers
+        }
+    });
+});
 
 exports.getReview = factory.getOne(Review);
 exports.createReview = factory.createOne(Review);

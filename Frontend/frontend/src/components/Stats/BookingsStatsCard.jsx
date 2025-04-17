@@ -8,7 +8,7 @@ function BookingsStatsCard({ bookings }) {
         {/* Left section */}
         <div className="flex sm:flex-col items-center gap-4">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
-            <BookOpenIcon className="h-5 w-5 text-gray-600" />
+            <BookOpenIcon className="h-5 w-5 text-[#dfa379]" />
           </div>
           <div className="text-sm text-gray-500">Bookings</div>
           <div className="text-3xl font-bold text-gray-900">
