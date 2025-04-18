@@ -23,7 +23,7 @@ function TopReviewersStatsCard({ reviewers }) {
         <div className="flex flex-col justify-center gap-2 text-sm text-gray-500">
           <div className="flex items-center justify-between">
             <span>Avg. Rating:</span>
-            <span className="font-medium text-blue-600">
+            <span className="font-medium text-blue-600 p-1">
               {reviewers.averageRating.toFixed(1)}
             </span>
           </div>

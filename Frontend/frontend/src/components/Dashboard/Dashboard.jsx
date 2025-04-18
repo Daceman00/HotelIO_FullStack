@@ -11,9 +11,9 @@ import useUIStore from "../../stores/UiStore";
 import useAuthStore from "../../stores/AuthStore";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { IMAGE_URL_MENU } from "../../helpers/imageURL";
 
 function Dashboard() {
-  const IMAGE_URL = "http://localhost:5173";
   const images = [
     "/images/hero-1.jpg",
     "/images/hero-2.jpg",
@@ -54,7 +54,7 @@ function Dashboard() {
         {images.map((image, index) => (
           <SwiperSlide key={index}>
             <img
-              src={`${IMAGE_URL}${image}`}
+              src={`${IMAGE_URL_MENU}${image}`}
               alt={`Slide ${index + 1}`}
               className="w-full h-full object-cover"
               loading="lazy"

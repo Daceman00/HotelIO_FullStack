@@ -39,3 +39,13 @@ export async function getTopReviewers() {
         throw new Error(error.response.data.message);
     }
 }
+
+export async function getMonthlyBookings(year) {
+    try {
+        const { data } = await axios.get(`/bookings/monthly-bookings/${year}`)
+        return data
+    } catch (error) {
+        console.error(error.response);
+        throw new Error(error.response.data.message);
+    }
+}

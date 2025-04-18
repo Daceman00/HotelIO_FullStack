@@ -86,16 +86,6 @@ function TopBookersDoughnutChart() {
           "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)",
       }}
     >
-      <h3
-        style={{
-          marginBottom: "1rem",
-          color: "#333",
-          fontWeight: "bold",
-          textAlign: "center",
-        }}
-      >
-        Top Bookers Distribution
-      </h3>
       <Doughnut className="p-1" data={chartData} options={options} />
     </div>
   );

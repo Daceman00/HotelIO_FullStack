@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import SingleRoom from "./SingleRoom";
 import { useGetAllRooms } from "./useGetAllRooms";
 import Loading from "../Reusable/Loading";
@@ -7,11 +7,15 @@ import { modes } from "../../hooks/useServiceConfig";
 function Rooms() {
   const { rooms, isPending } = useGetAllRooms("-averageRating");
 
-  if (isPending) return <Loading mode={modes.all} />;
+  const top4ratedRooms = useMemo(
+    () =>
+      rooms?.data?.data
+        ?.filter((room) => room.status === "available")
+        ?.slice(0, 4) || [],
+    [rooms]
+  );
 
-  const top4ratedRooms = rooms?.data.data
-    .filter((room) => room.status === "available")
-    .slice(0, 4);
+  if (isPending) return <Loading mode={modes.all} />;
 
   return (
     <div id="rooms" className="w-full flex flex-col py-24 dark:bg-gray-800">

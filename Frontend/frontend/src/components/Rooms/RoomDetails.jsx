@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
@@ -44,13 +44,14 @@ const RoomDetails = () => {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   };
 
+  const latestReviews = useMemo(() => {
+    const sorted = [...(room?.data.room.reviews || [])].sort((a, b) => {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+    return sorted.slice(0, 5);
+  }, [room?.data.room.reviews]);
+
   if (isPending) return <Loading mode={modes.all} />;
-
-  const newestReviews = [...(room?.data.room.reviews || [])].sort((a, b) => {
-    return new Date(b.createdAt) - new Date(a.createdAt);
-  });
-
-  const fiveLatestReviews = newestReviews.slice(0, 5);
 
   return (
     <>
@@ -218,7 +219,7 @@ const RoomDetails = () => {
                   </Link>
                 </div>
                 <div className="space-y-6">
-                  {fiveLatestReviews.map((review) => (
+                  {latestReviews.map((review) => (
                     <SingleReview key={review.id} review={review} />
                   ))}
                 </div>

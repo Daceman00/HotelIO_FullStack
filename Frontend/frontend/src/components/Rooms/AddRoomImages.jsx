@@ -7,7 +7,6 @@ import ImageGrid from "../Reusable/ImageGrid";
 import CreateButton from "../Reusable/CreateButton";
 import CoverImageUpload from "../Reusable/ImageCover";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import WarningButton from "../Reusable/WarningButton";
 
 function AddRoomImages({ roomId, isOpen, onClose, opacity }) {
   const { updateRoomPhotos, isPending } = useUpdateRoomPhotos();

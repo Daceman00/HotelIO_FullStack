@@ -7,6 +7,6 @@ export function useTopReviewers() {
         queryKey: ["topReviewers"],
         queryFn: getTopReviewers
     })
-    console.log("topReviewers", topReviewers);
+
     return { topReviewers, isLoading, error };
 }

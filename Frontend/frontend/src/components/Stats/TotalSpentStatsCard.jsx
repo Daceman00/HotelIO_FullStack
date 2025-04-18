@@ -4,7 +4,7 @@ import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
 function TotalSpentStatsCard({ totalRevenue }) {
   return (
     <div className="w-full rounded-xl bg-white p-4 sm:p-6 shadow-md hover:shadow-lg transition-shadow">
-      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-4">
         {/* Left section */}
         <div className="flex sm:flex-col items-center gap-4">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-50">

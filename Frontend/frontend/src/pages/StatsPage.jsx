@@ -12,6 +12,8 @@ import TotalSpentStatsCard from "../components/Stats/TotalSpentStatsCard";
 import { usetotalRevenue } from "../components/Stats/useTotalRevenue";
 import { useTopReviewers } from "../components/Stats/useTopReviewers";
 import TopReviewersStatsCard from "../components/Stats/TopReviewersStatsCard";
+import MonthlyBookingsBarChart from "../components/Stats/MonthlyBookingsBarChart";
+import { useGetMonthlyBookings } from "../components/Stats/useMonthlyBookings";
 
 function StatsPage() {
   const {
@@ -56,6 +58,9 @@ function StatsPage() {
         </div>
         <div className="w-full">
           <TopBookersDoguhnutChart />
+        </div>
+        <div className="w-full">
+          <MonthlyBookingsBarChart />
         </div>
       </div>
     </>

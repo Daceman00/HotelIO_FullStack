@@ -484,6 +484,59 @@ exports.getTotalRevenue = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.getMonthlyBookings = catchAsync(async (req, res, next) => {
+    const year = parseInt(req.params.year);
+
+    // Validate year parameter
+    if (!year || isNaN(year) || year < 2000 || year > 2100) {
+        return next(new AppError('Please provide a valid year between 2000 and 2100', 400));
+    }
+
+    const bookingsByMonth = await Booking.aggregate([
+        {
+            $match: {
+                checkIn: {
+                    $gte: new Date(`${year}-01-01`),
+                    $lte: new Date(`${year}-12-31`)
+                }
+            }
+        },
+        {
+            $group: {
+                _id: { $month: '$checkIn' },
+                count: { $sum: 1 }
+            }
+        },
+        {
+            $sort: { _id: 1 }
+        }
+    ]);
+
+    const monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    // Create an array with all months initialized to 0
+    const allMonths = Array.from({ length: 12 }, (_, i) => ({
+
+        monthName: monthNames[i],
+        count: 0
+    }));
+
+    // Update counts for months that have bookings
+    bookingsByMonth.forEach(booking => {
+        allMonths[booking._id - 1].count = booking.count;
+    });
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            year,
+            months: allMonths
+        }
+    });
+});
 
 exports.getBooking = factory.getOne(Booking);
 exports.updateBooking = factory.updateOne(Booking);

@@ -44,6 +44,10 @@ router
     .get(authController.restrictTo("admin"), bookingController.getTotalRevenue);
 
 router
+    .route('/monthly-bookings/:year')
+    .get(bookingController.getMonthlyBookings);
+
+router
     .route('/:id')
     .get(bookingController.getBooking)
     .patch(bookingController.updateBooking)
