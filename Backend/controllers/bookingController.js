@@ -538,6 +538,53 @@ exports.getMonthlyBookings = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.getMostBookedRooms = catchAsync(async (req, res, next) => {
+    const mostBookedRooms = await Booking.aggregate([
+        {
+            $group: {
+                _id: '$room',
+                bookingCount: { $sum: 1 },
+                totalRevenue: { $sum: '$price' }
+            }
+        },
+        {
+            $lookup: {
+                from: 'rooms',
+                localField: '_id',
+                foreignField: '_id',
+                as: 'roomDetails'
+            }
+        },
+        {
+            $unwind: '$roomDetails'
+        },
+        {
+            $project: {
+                _id: 0,
+                roomId: '$_id',
+                roomNumber: '$roomDetails.roomNumber',
+                roomType: '$roomDetails.roomType',
+                bookingCount: 1,
+                totalRevenue: { $round: ['$totalRevenue', 2] },
+                averageRevenue: {
+                    $round: [{ $divide: ['$totalRevenue', '$bookingCount'] }, 2]
+                }
+            }
+        },
+        {
+            $sort: { bookingCount: -1 }
+        }
+    ]);
+
+    res.status(200).json({
+        status: 'success',
+        results: mostBookedRooms.length,
+        data: {
+            rooms: mostBookedRooms
+        }
+    });
+});
+
 exports.getBooking = factory.getOne(Booking);
 exports.updateBooking = factory.updateOne(Booking);
 

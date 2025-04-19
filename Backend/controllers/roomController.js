@@ -112,7 +112,8 @@ exports.getRoomWithReviewsAndBookings = catchAsync(async (req, res, next) => {
         .populate({
             path: 'bookings',
             select: 'checkIn checkOut user price paid'
-        });
+        })
+        .populate('bookingsCount');
 
     if (!room) {
         return next(new AppError('No room found with that ID', 404));
@@ -137,7 +138,8 @@ exports.getRoomWithActiveBookings = catchAsync(async (req, res, next) => {
                 ]
             },
             select: 'checkIn checkOut user price paid'
-        });
+        })
+        .populate('bookingsCount');
 
     if (!room) {
         return next(new AppError('No room found with that ID', 404));
@@ -151,7 +153,7 @@ exports.getRoomWithActiveBookings = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.getAllRooms = factory.getAll(Room);
+exports.getAllRooms = factory.getAll(Room, "bookingsCount");
 exports.getRoom = factory.getOne(Room);
 exports.createRoom = factory.createOne(Room);
 exports.updateRoom = factory.updateOne(Room);

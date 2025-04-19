@@ -65,7 +65,7 @@ exports.getOne = (Model, popOptions) =>
         });
     });
 
-exports.getAll = Model =>
+exports.getAll = (Model, popOptions) =>
     catchAsync(async (req, res, next) => {
         let filter = {};
         // If a roomId parameter is present in the request, filter by roomId
@@ -74,16 +74,15 @@ exports.getAll = Model =>
         // Count total documents
         const total = await Model.countDocuments(filter);
 
-        // Debugging: Log the total count to ensure it's correctly calculated
-        console.log('Total documents:', total);
-
-        const features = new APIFeatures(Model.find(filter), req.query)
+        let features = new APIFeatures(Model.find(filter), req.query)
             .filter()
             .sort()
             .limitFields()
             .paginate();
-        // const doc = await features.query.explain();
-        const doc = await features.query;
+
+        let query = features.query;
+        if (popOptions) query = query.populate(popOptions);
+        const doc = await query;
 
         // SEND RESPONSE
         res.status(200).json({

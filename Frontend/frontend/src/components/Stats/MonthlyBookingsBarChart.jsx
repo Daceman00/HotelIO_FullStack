@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -25,8 +25,23 @@ ChartJS.register(
 
 function MonthlyBookingsBarChart() {
   const [selectedYear, setSelectedYear] = useState("2025");
+  const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const { monthlyBookings, error, isPending } =
     useGetMonthlyBookings(selectedYear);
+
+  const years = ["2023", "2024", "2025", "2026", "2027"];
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsYearDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const data = {
     labels: monthlyBookings?.data.months.map((m) => m.monthName),
@@ -34,8 +49,18 @@ function MonthlyBookingsBarChart() {
       {
         label: `Monthly Counts (${monthlyBookings?.data.year})`,
         data: monthlyBookings?.data.months.map((m) => m.count),
-        backgroundColor: "rgba(54, 162, 235, 0.8)",
-        borderColor: "rgba(54, 162, 235, 1)",
+        backgroundColor: monthlyBookings?.data.months.map((m) =>
+          m.count ===
+          Math.max(...monthlyBookings.data.months.map((month) => month.count))
+            ? "rgba(223, 163, 121, 1)"
+            : "rgba(54, 162, 235, 0.8)"
+        ),
+        borderColor: monthlyBookings?.data.months.map((m) =>
+          m.count ===
+          Math.max(...monthlyBookings.data.months.map((month) => month.count))
+            ? "rgba(223, 163, 121, 1)"
+            : "rgba(54, 162, 235, 0.8)"
+        ),
         borderWidth: 1,
       },
     ],
@@ -76,17 +101,47 @@ function MonthlyBookingsBarChart() {
 
   return (
     <div>
-      <select
-        value={selectedYear}
-        onChange={(e) => setSelectedYear(e.target.value)}
-        style={{ margin: "10px", padding: "5px" }}
-      >
-        {[2020, 2021, 2022, 2023, 2024, 2025].map((year) => (
-          <option key={year} value={year.toString()}>
-            {year}
-          </option>
-        ))}
-      </select>
+      <div className="space-y-2">
+        <div className="relative w-32" ref={dropdownRef}>
+          <div
+            className="px-4 py-3 border border-gray-200 rounded-lg cursor-pointer hover:border-[#dfa974] transition-colors flex items-center justify-between"
+            onClick={() => setIsYearDropdownOpen(!isYearDropdownOpen)}
+          >
+            <span>{selectedYear}</span>
+            <svg
+              className={`w-5 h-5 text-gray-400 transform transition-transform ${
+                isYearDropdownOpen ? "rotate-180" : ""
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </div>
+          {isYearDropdownOpen && (
+            <div className="absolute z-10 w-32 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
+              {years.map((year) => (
+                <div
+                  key={year}
+                  className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                  onClick={() => {
+                    setSelectedYear(year);
+                    setIsYearDropdownOpen(false);
+                  }}
+                >
+                  {year}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
       <div
         style={{
           height: "40vh",

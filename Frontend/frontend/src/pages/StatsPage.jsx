@@ -14,6 +14,7 @@ import { useTopReviewers } from "../components/Stats/useTopReviewers";
 import TopReviewersStatsCard from "../components/Stats/TopReviewersStatsCard";
 import MonthlyBookingsBarChart from "../components/Stats/MonthlyBookingsBarChart";
 import { useGetMonthlyBookings } from "../components/Stats/useMonthlyBookings";
+import TopRoomsBarChart from "../components/Stats/TopRoomsBarChart";
 
 function StatsPage() {
   const {
@@ -61,6 +62,9 @@ function StatsPage() {
         </div>
         <div className="w-full">
           <MonthlyBookingsBarChart />
+        </div>
+        <div className="w-full">
+          <TopRoomsBarChart />
         </div>
       </div>
     </>
