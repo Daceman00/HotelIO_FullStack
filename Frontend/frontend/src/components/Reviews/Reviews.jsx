@@ -20,7 +20,7 @@ function Reviews() {
       .slice(0, count);
   };
 
-  if (isPending) return <Loading mode={modes.all} />;
+  /*  if (isPending) return <Loading mode={modes.all} />; */
 
   return (
     <section className="py-16 bg-white">

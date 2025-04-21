@@ -8,6 +8,7 @@ import { modes } from "../../../hooks/useServiceConfig";
 import Pagination from "../../Reusable/Pagination"; // Import the new Pagination component
 import SearchInput from "../../Reusable/SearchInput";
 import { useLocation } from "react-router-dom";
+import LoadingSpinner from "../../Reusable/LoadingSpinner";
 
 function Users() {
   const location = useLocation();
@@ -20,7 +21,7 @@ function Users() {
   const { currentPage } = useUIStore();
   const setCurrentPage = useUIStore((state) => state.setCurrentPage);
 
-  const { users, total, error } = useUsers();
+  const { users, total, error, isPending } = useUsers();
 
   const itemsPerPage = 10; // Should match your default limit
   const totalPages = Math.ceil(total / itemsPerPage);
@@ -88,10 +89,10 @@ function Users() {
               </th>
             </tr>
           </thead>
-          {isLoader ? (
+          {isPending ? (
             <tr>
               <td colSpan="5" className="px-6 py-4 text-center">
-                <Loading mode={modes.all} />
+                <LoadingSpinner />
               </td>
             </tr>
           ) : users?.data?.length > 0 ? (

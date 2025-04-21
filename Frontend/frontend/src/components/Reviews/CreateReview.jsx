@@ -40,7 +40,6 @@ function CreateReview() {
 
   return (
     <>
-      <Loading mode={modes.all} />
       <div className="mt-12 pt-8 border-t border-gray-200">
         <h3 className="text-xl font-semibold text-gray-900 mb-6">
           Write a Review

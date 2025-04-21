@@ -4,7 +4,7 @@ import { getTopReviewers } from "../../services/apiStats";
 
 export function useTopReviewers() {
     const { data: topReviewers, isLoading, error } = useQuery({
-        queryKey: ["topReviewers"],
+        queryKey: ["topReviewers",],
         queryFn: getTopReviewers
     })
 

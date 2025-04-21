@@ -9,6 +9,7 @@ import { useGetBookingsCount } from "../AdminBookings/useGetBookingsCount";
 import { useGetAllBookings } from "./useGetAllBookings";
 import SearchInput from "../../Reusable/SearchInput";
 import { useLocation } from "react-router-dom";
+import LoadingSpinner from "../../Reusable/LoadingSpinner";
 
 function Bookings() {
   const location = useLocation();
@@ -80,28 +81,35 @@ function Bookings() {
     setSelectedSortOption("created");
   }, [location.pathname, setBookingsSearchQuery, setSelectedSortOption]);
 
-  if (isPending || isPending_count || error_count)
-    return <Loading mode={modes.all} />;
-
   return (
     <>
-      <div className=" my-6 mx-6 px-4 sm:px-6 lg:px-8 py-8">
+      <div className="my-6 mx-6 px-4 sm:px-6 lg:px-8 py-8">
         <div className="border-b border-gray-200 mb-8">
-          <nav className="flex  space-x-8 justify-start">
-            {["upcoming", "current", "past"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setBookingActiveTab(tab)}
-                className={`pb-4 px-1 border-b-2 font-medium text-sm ${
-                  bookingActiveTab === tab
-                    ? "border-[#dfa379] text-[#dfa379]"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
-              >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)} (
-                {bookings_counts?.data[tab] || 0})
-              </button>
-            ))}
+          <nav className="flex space-x-8 justify-start">
+            {isPending_count ? (
+              <div className="flex space-x-8">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="animate-pulse flex space-x-4">
+                    <div className="h-8 w-24 bg-gray-200 rounded"></div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              ["upcoming", "current", "past"].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setBookingActiveTab(tab)}
+                  className={`pb-4 px-1 border-b-2 font-medium text-sm ${
+                    bookingActiveTab === tab
+                      ? "border-[#dfa379] text-[#dfa379]"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)} (
+                  {bookings_counts?.data[tab] || 0})
+                </button>
+              ))
+            )}
 
             {/* Date Sorting Dropdown */}
             {/* Sorting Controls */}
@@ -187,21 +195,32 @@ function Bookings() {
           setSearchQuery={setBookingsSearchQuery}
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {bookings.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500">
-                No {bookingActiveTab} bookings found
-              </p>
-            </div>
-          ) : (
-            bookings?.map((booking) => (
-              <SingleBooking key={booking.id} booking={booking} />
-            ))
-          )}
-          <div ref={ref} className="h-2" />
-        </div>
-        {isFetchingNextPage && <Loading mode={modes.all} />}
+        {isPending ? (
+          <div className="flex justify-center py-12">
+            <LoadingSpinner />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {bookings.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500">
+                  No {bookingActiveTab} bookings found
+                </p>
+              </div>
+            ) : (
+              bookings?.map((booking) => (
+                <SingleBooking key={booking.id} booking={booking} />
+              ))
+            )}
+          </div>
+        )}
+
+        {/* Modified loading section */}
+        {(hasNextPage || isFetchingNextPage) && (
+          <div ref={ref} className="w-full">
+            {isFetchingNextPage && <LoadingSpinner />}
+          </div>
+        )}
       </div>
     </>
   );

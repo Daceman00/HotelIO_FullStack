@@ -11,6 +11,7 @@ import useFileStore from "../../stores/FileStore";
 import { useUpdateAccountPhoto } from "./useUpdateAccountPhoto";
 import FileUploadInput from "../Reusable/FileUploadInput";
 import WarningButton from "../Reusable/WarningButton";
+import LoadingSpinner from "../Reusable/LoadingSpinner";
 
 function UpdateAccount() {
   const { user, isPending } = useIsLoggedIn();
@@ -60,8 +61,8 @@ function UpdateAccount() {
 
   return (
     <section className="flex flex-col items-center pt-6 pb-6">
-      {false ? (
-        <Loading mode={modes.all} />
+      {isPending ? (
+        <LoadingSpinner />
       ) : (
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">

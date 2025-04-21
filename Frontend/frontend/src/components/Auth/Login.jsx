@@ -42,7 +42,6 @@ function Login() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Loading mode={modes.all} />
       <motion.section className="flex flex-col items-center flex-1 justify-center py-1 md:py-0.5 lg:py-2">
         <motion.div className="w-full bg-white/95 backdrop-blur-sm rounded-lg shadow-xl">
           <div className="p-4 md:p-2 lg:p-4">

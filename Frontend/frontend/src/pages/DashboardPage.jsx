@@ -7,7 +7,6 @@ import { modes } from "../hooks/useServiceConfig";
 function DashboardPage() {
   return (
     <>
-      <Loading mode={modes.all} />
       <Dashboard />
       <Rooms />
       <Reviews />

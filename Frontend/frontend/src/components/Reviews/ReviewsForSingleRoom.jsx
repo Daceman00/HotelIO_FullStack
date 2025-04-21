@@ -33,7 +33,7 @@ function ReviewsForSingleRoom() {
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  if (isPendingReview || isPendingRoom) return <Loading mode={modes.all} />;
+  /* if (isPendingReview || isPendingRoom) return <Loading mode={modes.all} />; */
 
   return (
     <section className="relative py-16 px-4 sm:px-6 lg:px-8">

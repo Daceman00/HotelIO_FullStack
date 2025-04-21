@@ -9,6 +9,7 @@ import CreateButton from "../Reusable/CreateButton";
 import useUIStore from "../../stores/UiStore";
 import CreateRoom from "./CreateRoom";
 import useAuthStore from "../../stores/AuthStore";
+import LoadingSpinner from "../Reusable/LoadingSpinner";
 
 function RoomsMenu() {
   const { isAdmin } = useAuthStore();
@@ -21,8 +22,6 @@ function RoomsMenu() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [location]);
-
-  if (isPending) return <Loading mode={modes.all} />;
 
   return (
     <>
@@ -67,15 +66,21 @@ function RoomsMenu() {
         </div>
       </div>
 
-      <section className="pt-[0px] pb-[80px] flex justify-center lg:pt-[20px] lg:pb-[100px] md:pt-[10px] md:pb-[90px]">
-        <div className="container lg:max-w-screen-lg md:max-w-screen-md">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
-            {rooms?.data.data.map((room) => (
-              <SingleRoomMenu room={room} key={room._id} />
-            ))}
-          </div>
+      {isPending ? (
+        <div>
+          <LoadingSpinner />
         </div>
-      </section>
+      ) : (
+        <section className="pt-[0px] pb-[80px] flex justify-center lg:pt-[20px] lg:pb-[100px] md:pt-[10px] md:pb-[90px]">
+          <div className="container lg:max-w-screen-lg md:max-w-screen-md">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
+              {rooms?.data.data.map((room) => (
+                <SingleRoomMenu room={room} key={room._id} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </>
   );
 }

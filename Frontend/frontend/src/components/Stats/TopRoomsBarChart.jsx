@@ -31,7 +31,7 @@ function TopRoomsBarChart() {
   const maxBookings = Math.max(...bookingCounts);
 
   const chartData = {
-    labels: rooms?.data.data.map((room) => `Room ${room.roomNumber}`),
+    labels: rooms?.data.data.map((room) => `${room.roomNumber}`),
     datasets: [
       {
         label: "Number of Bookings Per Room",

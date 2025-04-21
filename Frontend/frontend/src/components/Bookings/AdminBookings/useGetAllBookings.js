@@ -20,7 +20,7 @@ export function useGetAllBookings(status, sort) {
     const { data: bookings, isPending, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
         queryKey: ["bookings", status, sort, effectiveSearch],
         queryFn: ({ pageParam = 1 }) => getAllBookings({
-            limit: 10,
+            limit: 12,
             page: pageParam,
             status,
             sort,
@@ -36,7 +36,7 @@ export function useGetAllBookings(status, sort) {
             queryClient.prefetchInfiniteQuery({
                 queryKey: ["bookings", status, sort, effectiveSearch],
                 queryFn: ({ pageParam = currentData.nextPage }) => getAllBookings({
-                    limit: 10,
+                    limit: 12,
                     page: pageParam,
                     status,
                     sort,

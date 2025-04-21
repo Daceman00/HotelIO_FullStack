@@ -3,8 +3,7 @@ import { useUpdateRoom } from "./useUpdateRoom";
 import useFormStore from "../../stores/FormStore";
 import { useGetRoom } from "./useGetRoom";
 import { useParams } from "react-router-dom";
-import Loading from "../Reusable/Loading";
-import { modes } from "../../hooks/useServiceConfig";
+import LoadingSpinner from "../Reusable/LoadingSpinner";
 
 function UpdateRoom({ isOpen, onClose, opacity }) {
   const { roomId } = useParams();
@@ -92,10 +91,6 @@ function UpdateRoom({ isOpen, onClose, opacity }) {
     );
   };
 
-  if (isPendingRoom || isUpdatePending) {
-    return <Loading mode={modes.all} />;
-  }
-
   return (
     <section
       id="popup-modal"
@@ -103,8 +98,10 @@ function UpdateRoom({ isOpen, onClose, opacity }) {
       style={{ backgroundColor: `rgba(0, 0, 0, ${opacity / 100})` }}
     >
       <div className="w-full max-w-xl bg-white dark:bg-gray-800 rounded-2xl shadow-2xl dark:shadow-gray-900/30 transition-all duration-300 flex flex-col max-h-[90vh]">
-        {false ? (
-          <Loading mode={modes.all} />
+        {isPendingRoom || isUpdatePending ? (
+          <div className="flex items-center justify-center min-h-[400px]">
+            <LoadingSpinner />
+          </div>
         ) : (
           <div className="flex-1 overflow-y-auto p-8">
             <div className="space-y-6">

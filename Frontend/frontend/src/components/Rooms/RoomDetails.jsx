@@ -51,7 +51,7 @@ const RoomDetails = () => {
     return sorted.slice(0, 5);
   }, [room?.data.room.reviews]);
 
-  if (isPending) return <Loading mode={modes.all} />;
+  /* if (isPending) return <Loading mode={modes.all} />; */
 
   return (
     <>

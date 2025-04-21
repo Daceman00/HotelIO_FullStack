@@ -2,7 +2,7 @@ import React from "react";
 import { PuffLoader } from "react-spinners";
 import useServiceConfig, { modes } from "../../hooks/useServiceConfig";
 
-function Loading({ mode = modes.all }) {
+function Loading({ mode = modes.all, className = "" }) {
   const [isPending] = useServiceConfig(mode);
 
   if (!isPending) {
@@ -18,10 +18,11 @@ function Loading({ mode = modes.all }) {
         ${
           isFullScreen
             ? "fixed inset-0 bg-white bg-opacity-90 z-50"
-            : "inline-block"
+            : "relative flex justify-center"
         } 
         flex justify-center items-center
-        ${isSmall ? "p-2" : ""}
+        ${isSmall ? "p-2" : "py-4"}
+        ${className}
       `}
     >
       <PuffLoader

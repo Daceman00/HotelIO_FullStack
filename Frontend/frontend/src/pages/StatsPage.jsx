@@ -36,14 +36,14 @@ function StatsPage() {
     error: reviewersError,
   } = useTopReviewers();
 
-  if (
+  /*  if (
     usersIsPending ||
     isPending_count ||
     isPendingRevenue ||
     isPendingReviewers
   ) {
     return <Loading mode={modes.all} />;
-  }
+  } */
 
   return (
     <>

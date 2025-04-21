@@ -1,6 +1,6 @@
 import axios from "./../helpers/axios"
 
-export async function getAllBookings({ limit = 10, page = 1, status, sort, searchTerm = '' }) {
+export async function getAllBookings({ limit = 12, page = 1, status, sort, searchTerm = '' }) {
     try {
         const params = {
             limit,

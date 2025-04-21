@@ -4,6 +4,7 @@ import useFormStore from "../../stores/FormStore";
 import { useSignup } from "./useSignup";
 import Loading from "../Reusable/Loading";
 import { Link, useNavigate } from "react-router-dom";
+import LoadingSpinner from "../Reusable/LoadingSpinner";
 
 function Signup() {
   const { formData } = useFormStore();
@@ -46,7 +47,7 @@ function Signup() {
       className="flex flex-col items-center py-1 md:py-0.5 lg:py-2"
     >
       {isPending ? (
-        <Loading />
+        <LoadingSpinner />
       ) : (
         <motion.div className="w-full bg-white/95 backdrop-blur-sm rounded-lg shadow-xl">
           <div className="p-4 md:p-2 lg:p-4">

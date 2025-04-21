@@ -3,6 +3,7 @@ import SingleRoom from "./SingleRoom";
 import { useGetAllRooms } from "./useGetAllRooms";
 import Loading from "../Reusable/Loading";
 import { modes } from "../../hooks/useServiceConfig";
+import LoadingSpinner from "../Reusable/LoadingSpinner";
 
 function Rooms() {
   const { rooms, isPending } = useGetAllRooms("-averageRating");
@@ -14,8 +15,6 @@ function Rooms() {
         ?.slice(0, 4) || [],
     [rooms]
   );
-
-  if (isPending) return <Loading mode={modes.all} />;
 
   return (
     <div id="rooms" className="w-full flex flex-col py-24 dark:bg-gray-800">
@@ -31,11 +30,17 @@ function Rooms() {
         </div>
         <section className="flex justify-center py-16 bg-gray-50">
           <div className="container">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {top4ratedRooms.map((room, idx) => (
-                <SingleRoom room={room} key={room._id} />
-              ))}
-            </div>
+            {isPending ? (
+              <div className="min-h-[400px] flex items-center justify-center">
+                <LoadingSpinner />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {top4ratedRooms.map((room, idx) => (
+                  <SingleRoom room={room} key={room._id} />
+                ))}
+              </div>
+            )}
           </div>
         </section>
       </div>

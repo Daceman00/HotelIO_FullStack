@@ -4,6 +4,7 @@ import Loading from "../Reusable/Loading";
 import { modes } from "../../hooks/useServiceConfig";
 import { useCreateRoom } from "./useCreateRoom";
 import useFormStore from "../../stores/FormStore";
+import LoadingSpinner from "../Reusable/LoadingSpinner";
 
 function CreateRoom({ isOpen, onClose, opacity }) {
   const { createRoom, isPending, error } = useCreateRoom();
@@ -72,8 +73,6 @@ function CreateRoom({ isOpen, onClose, opacity }) {
     });
   };
 
-  if (isPending) return <Loading mode={modes.all} />;
-
   return (
     <section
       id="popup-modal"
@@ -81,8 +80,8 @@ function CreateRoom({ isOpen, onClose, opacity }) {
       style={{ backgroundColor: `rgba(0, 0, 0, ${opacity / 100})` }}
     >
       <div className="w-full max-w-xl bg-white dark:bg-gray-800 rounded-2xl shadow-2xl dark:shadow-gray-900/30 transition-all duration-300 flex flex-col max-h-[90vh]">
-        {false ? (
-          <Loading mode={modes.all} />
+        {isPending ? (
+          <LoadingSpinner />
         ) : (
           <div className="flex-1 overflow-y-auto p-8">
             <div className="space-y-6">

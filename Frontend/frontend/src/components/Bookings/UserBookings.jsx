@@ -30,7 +30,7 @@ function UserBookings() {
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  if (isPending || isPending_count) return <Loading mode={modes.all} />;
+  /*   if (isPending || isPending_count) return <Loading mode="half" />; */
 
   return (
     <>
@@ -68,7 +68,12 @@ function UserBookings() {
           )}
           <div ref={ref} className="h-2" />
         </div>
-        {isFetchingNextPage && <Loading mode={modes.all} />}
+        {/* Modified loading section */}
+        {(hasNextPage || isFetchingNextPage) && (
+          <div ref={ref} className="w-full">
+            {isFetchingNextPage && <LoadingSpinner />}
+          </div>
+        )}
       </div>
     </>
   );

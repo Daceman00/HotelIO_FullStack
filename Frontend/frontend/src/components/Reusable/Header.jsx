@@ -16,11 +16,11 @@ const Header = React.memo(function Header() {
     setUserLoggedIn(!!user);
   }, [user, setUserLoggedIn]);
 
-  if (isPending) return <Loading mode={modes.all} />;
+  /* if (isPending) return <Loading mode={modes.all} />; */
 
   return (
     <>
-      <Loading mode={modes.all} />
+      {/* <Loading mode={modes.all} /> */}
       <div>
         <header
           className=" sticky top-0 z-0 bg-white shadow-sm"
