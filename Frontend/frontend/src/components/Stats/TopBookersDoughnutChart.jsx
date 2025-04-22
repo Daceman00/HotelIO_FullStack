@@ -2,8 +2,6 @@ import React from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { useTopBookers } from "./useTopBookers";
-import Loading from "../Reusable/Loading";
-import { modes } from "../../hooks/useServiceConfig";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -11,10 +9,6 @@ function TopBookersDoughnutChart() {
   const { topBookers, error, isPending } = useTopBookers();
 
   const topBookersData = topBookers?.data?.topBookers || [];
-
-  if (isPending) {
-    return <Loading mode={modes.all} />;
-  }
 
   const chartData = {
     labels: topBookersData.map((user) => user.name),

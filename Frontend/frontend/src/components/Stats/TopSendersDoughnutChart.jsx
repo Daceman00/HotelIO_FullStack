@@ -2,8 +2,6 @@ import React from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import { useGetTopSpenders } from "./useTopSenders";
-import Loading from "../Reusable/Loading";
-import { modes } from "../../hooks/useServiceConfig";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -73,10 +71,6 @@ function TopSendersDoguhnutChart() {
       },
     },
   };
-
-  if (isPending) {
-    return <Loading mode={modes.all} />;
-  }
 
   return (
     <div

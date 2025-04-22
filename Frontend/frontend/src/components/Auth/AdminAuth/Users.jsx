@@ -1,10 +1,8 @@
 import React, { useEffect } from "react";
 import { useUsers } from "./useUsers";
-import Loading from "../../Reusable/Loading";
 import User from "./User";
 import useUIStore from "../../../stores/UiStore";
 import { useMoveBack } from "../../../hooks/useMoveBack";
-import { modes } from "../../../hooks/useServiceConfig";
 import Pagination from "../../Reusable/Pagination"; // Import the new Pagination component
 import SearchInput from "../../Reusable/SearchInput";
 import { useLocation } from "react-router-dom";

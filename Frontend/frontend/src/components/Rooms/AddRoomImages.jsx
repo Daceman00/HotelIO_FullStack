@@ -1,12 +1,11 @@
 import React, { useEffect } from "react";
 import { useUpdateRoomPhotos } from "./useUpdateRoomPhotos";
 import useFileStore from "../../stores/FileStore";
-import Loading from "../Reusable/Loading";
-import { modes } from "../../hooks/useServiceConfig";
 import ImageGrid from "../Reusable/ImageGrid";
 import CreateButton from "../Reusable/CreateButton";
 import CoverImageUpload from "../Reusable/ImageCover";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import LoadingSpinner from "../Reusable/LoadingSpinner";
 
 function AddRoomImages({ roomId, isOpen, onClose, opacity }) {
   const { updateRoomPhotos, isPending } = useUpdateRoomPhotos();
@@ -75,7 +74,7 @@ function AddRoomImages({ roomId, isOpen, onClose, opacity }) {
         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl md:max-w-xl lg:max-w-2xl xl:max-w-3xl max-h-[95vh] overflow-y-auto border border-gray-100 transform transition-all">
           {isPending ? (
             <div className="flex items-center justify-center min-h-[400px]">
-              <Loading mode="half" />
+              <LoadingSpinner />
             </div>
           ) : (
             <>

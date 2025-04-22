@@ -16,8 +16,6 @@ import { useIsLoggedIn } from "../Auth/useAuth";
 import useAuthStore from "../../stores/AuthStore";
 import { useLogout } from "../Auth/useLogout";
 import { IMAGE_URL_USERS } from "../../helpers/imageURL";
-import Loading from "./Loading";
-import { modes } from "../../hooks/useServiceConfig";
 
 const Sidebar = React.memo(function Sidebar() {
   const location = useLocation();

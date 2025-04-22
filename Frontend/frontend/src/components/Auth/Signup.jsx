@@ -2,7 +2,6 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import useFormStore from "../../stores/FormStore";
 import { useSignup } from "./useSignup";
-import Loading from "../Reusable/Loading";
 import { Link, useNavigate } from "react-router-dom";
 import LoadingSpinner from "../Reusable/LoadingSpinner";
 

@@ -1,7 +1,6 @@
 import React from "react";
 import { useUpdatePassword } from "./useUpdatePassword";
 import useFormStore from "../../stores/FormStore";
-import Loading from "../Reusable/Loading";
 
 function UpdatePassword() {
   const { updatePassword, isPending, error } = useUpdatePassword();
@@ -12,8 +11,6 @@ function UpdatePassword() {
   const resetUpdatePasswordData = useFormStore(
     (state) => state.resetUpdatePasswordData
   );
-
-  if (isPending) return <Loading />;
 
   const handleSubmit = (e) => {
     e.preventDefault();

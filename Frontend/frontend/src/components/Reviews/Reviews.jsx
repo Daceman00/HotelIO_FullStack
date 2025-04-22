@@ -7,8 +7,6 @@ import "swiper/css/navigation";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { useGetAllReviews } from "./useGetAllReviews";
 import StarRatingDisplay from "../Reusable/StarRatingDisplay";
-import Loading from "../Reusable/Loading";
-import { modes } from "../../hooks/useServiceConfig";
 
 function Reviews() {
   const { reviews, isPending } = useGetAllReviews();

@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Loading from "../Reusable/Loading";
 import { useIsLoggedIn } from "./useAuth";
 import useFormStore from "../../stores/FormStore";
 import { Link } from "react-router-dom";
 import Modal from "../Reusable/Modal";
 import useUIStore from "../../stores/UiStore";
 import { useDeleteAccount } from "./useDeleteAccount";
-import { modes } from "../../hooks/useServiceConfig";
 import useFileStore from "../../stores/FileStore";
 import { useUpdateAccountPhoto } from "./useUpdateAccountPhoto";
 import FileUploadInput from "../Reusable/FileUploadInput";

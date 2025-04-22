@@ -1,8 +1,6 @@
 import React, { useMemo } from "react";
 import SingleRoom from "./SingleRoom";
 import { useGetAllRooms } from "./useGetAllRooms";
-import Loading from "../Reusable/Loading";
-import { modes } from "../../hooks/useServiceConfig";
 import LoadingSpinner from "../Reusable/LoadingSpinner";
 
 function Rooms() {

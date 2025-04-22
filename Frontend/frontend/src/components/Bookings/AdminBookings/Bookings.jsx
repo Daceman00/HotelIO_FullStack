@@ -1,9 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import { modes } from "../../../hooks/useServiceConfig";
 import useUIStore from "../../../stores/UiStore";
-import Loading from "../../Reusable/Loading";
 import SingleBooking from "../SingleBooking";
-
 import { useInView } from "react-intersection-observer";
 import { useGetBookingsCount } from "../AdminBookings/useGetBookingsCount";
 import { useGetAllBookings } from "./useGetAllBookings";

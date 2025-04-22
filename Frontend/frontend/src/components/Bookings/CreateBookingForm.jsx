@@ -11,8 +11,6 @@ import {
   subDays,
 } from "date-fns"; // Add isAfter and setHours
 import { useGetRoom } from "../Rooms/useGetRoom";
-import Loading from "../Reusable/Loading";
-import { modes } from "../../hooks/useServiceConfig";
 import { useCreateBooking } from "./useCreateBooking";
 import { useGetAllBookingsByRoom } from "./useGetAllBookingsByRoom";
 import BookingInfoModal from "./BookingInfoModal";

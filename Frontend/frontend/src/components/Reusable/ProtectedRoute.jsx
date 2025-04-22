@@ -1,10 +1,9 @@
 import React from "react";
 import { useIsLoggedIn } from "../Auth/useAuth";
 import { Navigate, useLocation } from "react-router-dom";
-import Loading from "./Loading";
-import { modes } from "../../hooks/useServiceConfig";
 import PropTypes from "prop-types";
 import useAuthStore from "../../stores/AuthStore";
+import LoadingSpinner from "./LoadingSpinner";
 
 function ProtectedRoute({ children, requiredRole }) {
   const location = useLocation();
@@ -14,7 +13,7 @@ function ProtectedRoute({ children, requiredRole }) {
 
   // Show loading state while checking auth status
   if (isPending || isAuthenticated === undefined) {
-    return <Loading mode={modes.all} />;
+    return <LoadingSpinner />;
   }
 
   // Redirect conditions

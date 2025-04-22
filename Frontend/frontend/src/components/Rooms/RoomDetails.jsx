@@ -5,11 +5,11 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { IMAGE_URL } from "../../helpers/imageURL";
-import Loading from "../Reusable/Loading";
+
 import { useGetRoom } from "./useGetRoom";
 import { Link } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import { modes } from "../../hooks/useServiceConfig";
+
 import CreateReview from "../Reviews/CreateReview";
 import CreateBookingForm from "../Bookings/CreateBookingForm";
 import SingleReview from "../Reviews/SingleReview";
@@ -55,7 +55,6 @@ const RoomDetails = () => {
 
   return (
     <>
-      <Loading mode={modes.all} />
       {isRoomUpdateModalOpen && (
         <UpdateRoom
           isOpen={isRoomUpdateModalOpen}

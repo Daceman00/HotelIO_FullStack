@@ -3,8 +3,6 @@ import { useGetBookingsByUser } from "./useGetBookingsByUser";
 import { useGetUsersBookingsCount } from "./useGetUsersBookingsCounts";
 import { useInView } from "react-intersection-observer";
 import useUIStore from "../../stores/UiStore";
-import Loading from "../Reusable/Loading";
-import { modes } from "../../hooks/useServiceConfig";
 import SingleBooking from "./SingleBooking";
 
 function UserBookings() {
@@ -29,8 +27,6 @@ function UserBookings() {
       fetchNextPage();
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
-
-  /*   if (isPending || isPending_count) return <Loading mode="half" />; */
 
   return (
     <>

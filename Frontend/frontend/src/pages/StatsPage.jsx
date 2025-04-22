@@ -1,8 +1,6 @@
 import React from "react";
 import CustomerStatsCard from "../components/Stats/CustomerStatsCard";
 import { useUsers } from "../components/Auth/AdminAuth/useUsers";
-import { modes } from "../hooks/useServiceConfig";
-import Loading from "../components/Reusable/Loading";
 import BookingsStatsCard from "../components/Stats/BookingsStatsCard";
 import { useGetAllBookings } from "../components/Bookings/AdminBookings/useGetAllBookings";
 import { useGetBookingsCount } from "../components/Bookings/AdminBookings/useGetBookingsCount";
@@ -15,6 +13,7 @@ import TopReviewersStatsCard from "../components/Stats/TopReviewersStatsCard";
 import MonthlyBookingsBarChart from "../components/Stats/MonthlyBookingsBarChart";
 import { useGetMonthlyBookings } from "../components/Stats/useMonthlyBookings";
 import TopRoomsBarChart from "../components/Stats/TopRoomsBarChart";
+import LoadingSpinner from "../components/Reusable/LoadingSpinner";
 
 function StatsPage() {
   const {
@@ -36,38 +35,39 @@ function StatsPage() {
     error: reviewersError,
   } = useTopReviewers();
 
-  /*  if (
-    usersIsPending ||
-    isPending_count ||
-    isPendingRevenue ||
-    isPendingReviewers
-  ) {
-    return <Loading mode={modes.all} />;
-  } */
-
   return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 sm:p-6">
-        <CustomerStatsCard users={totalUsers} />
-        <BookingsStatsCard bookings={bookings_counts} />
-        <TotalSpentStatsCard totalRevenue={totalRevenue} />
-        <TopReviewersStatsCard reviewers={topReviewers} />
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="w-full">
-          <TopSendersDoguhnutChart />
-        </div>
-        <div className="w-full">
-          <TopBookersDoguhnutChart />
-        </div>
-        <div className="w-full">
-          <MonthlyBookingsBarChart />
-        </div>
-        <div className="w-full">
-          <TopRoomsBarChart />
-        </div>
-      </div>
-    </>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 sm:p-6">
+      {usersIsPending ||
+      isPending_count ||
+      isPendingRevenue ||
+      isPendingReviewers ? (
+        <LoadingSpinner />
+      ) : (
+        <>
+          <CustomerStatsCard users={totalUsers} />
+          <BookingsStatsCard bookings={bookings_counts} />
+          <TotalSpentStatsCard totalRevenue={totalRevenue} />
+          <TopReviewersStatsCard reviewers={topReviewers} />
+
+          <div className="col-span-full">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="w-full">
+                <TopSendersDoguhnutChart />
+              </div>
+              <div className="w-full">
+                <TopBookersDoguhnutChart />
+              </div>
+              <div className="w-full">
+                <MonthlyBookingsBarChart />
+              </div>
+              <div className="w-full">
+                <TopRoomsBarChart />
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 

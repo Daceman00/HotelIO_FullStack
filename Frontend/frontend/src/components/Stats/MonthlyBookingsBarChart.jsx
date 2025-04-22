@@ -10,8 +10,6 @@ import {
   Legend,
 } from "chart.js";
 import { useGetMonthlyBookings } from "./useMonthlyBookings";
-import Loading from "../Reusable/Loading";
-import { modes } from "../../hooks/useServiceConfig";
 
 // Register Chart.js components
 ChartJS.register(
@@ -94,10 +92,6 @@ function MonthlyBookingsBarChart() {
       },
     },
   };
-
-  if (isPending) {
-    return <Loading mode={modes.all} />;
-  }
 
   return (
     <div>

@@ -3,11 +3,10 @@ import React, { useEffect } from "react";
 import StarRatingDisplay from "../Reusable/StarRatingDisplay";
 import SingleReview from "./SingleReview";
 import { Link, useParams } from "react-router-dom";
-import Loading from "../Reusable/Loading";
-import { modes } from "../../hooks/useServiceConfig";
 import { useReviewsForSingleRoom } from "./useGetAllReviewsForRoom";
 import { useGetRoom } from "../Rooms/useGetRoom";
 import { useInView } from "react-intersection-observer";
+import LoadingSpinner from "../Reusable/LoadingSpinner";
 
 function ReviewsForSingleRoom() {
   const { roomId } = useParams();
@@ -32,8 +31,6 @@ function ReviewsForSingleRoom() {
       fetchNextPage();
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
-
-  /* if (isPendingReview || isPendingRoom) return <Loading mode={modes.all} />; */
 
   return (
     <section className="relative py-16 px-4 sm:px-6 lg:px-8">
@@ -79,7 +76,7 @@ function ReviewsForSingleRoom() {
         {/* After the reviews grid */}
         {hasNextPage && (
           <div ref={ref} className="flex justify-center py-6">
-            <Loading mode={modes.fetching} />
+            <LoadingSpinner />
           </div>
         )}
 

@@ -10,8 +10,6 @@ import {
   Legend,
 } from "chart.js";
 import { useTopRooms } from "./useTopRooms";
-import Loading from "../Reusable/Loading";
-import { modes } from "../../hooks/useServiceConfig";
 
 // Register Chart.js components
 ChartJS.register(
@@ -92,10 +90,6 @@ function TopRoomsBarChart() {
       },
     },
   };
-
-  if (isPending) {
-    return <Loading mode={modes.all} />;
-  }
 
   return (
     <div

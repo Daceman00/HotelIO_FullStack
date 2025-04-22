@@ -1,11 +1,8 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useIsLoggedIn } from "../Auth/useAuth";
-import { LoaderIcon } from "react-hot-toast";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import useAuthStore from "../../stores/AuthStore";
-import Loading from "./Loading";
-import { modes } from "../../hooks/useServiceConfig";
 
 const Header = React.memo(function Header() {
   const { user, isPending } = useIsLoggedIn();
@@ -16,11 +13,8 @@ const Header = React.memo(function Header() {
     setUserLoggedIn(!!user);
   }, [user, setUserLoggedIn]);
 
-  /* if (isPending) return <Loading mode={modes.all} />; */
-
   return (
     <>
-      {/* <Loading mode={modes.all} /> */}
       <div>
         <header
           className=" sticky top-0 z-0 bg-white shadow-sm"
