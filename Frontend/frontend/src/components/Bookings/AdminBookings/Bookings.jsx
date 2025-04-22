@@ -7,6 +7,7 @@ import { useGetAllBookings } from "./useGetAllBookings";
 import SearchInput from "../../Reusable/SearchInput";
 import { useLocation } from "react-router-dom";
 import LoadingSpinner from "../../Reusable/LoadingSpinner";
+import Error from "../../Reusable/Error";
 
 function Bookings() {
   const location = useLocation();
@@ -77,6 +78,8 @@ function Bookings() {
     setBookingsSearchQuery("");
     setSelectedSortOption("created");
   }, [location.pathname, setBookingsSearchQuery, setSelectedSortOption]);
+
+  if (error) return <Error message={error.message} />;
 
   return (
     <>
@@ -199,10 +202,8 @@ function Bookings() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {bookings.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-gray-500">
-                  No {bookingActiveTab} bookings found
-                </p>
+              <div className="col-span-full">
+                <Error message={`No ${bookingActiveTab} bookings found`} />
               </div>
             ) : (
               bookings?.map((booking) => (

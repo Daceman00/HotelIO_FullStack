@@ -12,7 +12,7 @@ function TopReviewersStatsCard({ reviewers }) {
           </div>
           <div className="text-sm text-gray-500">Top Reviewers</div>
           <div className="text-3xl font-bold text-gray-900">
-            {reviewers.totalReviews}
+            {reviewers?.totalReviews}
           </div>
         </div>
 
@@ -24,7 +24,7 @@ function TopReviewersStatsCard({ reviewers }) {
           <div className="flex items-center justify-between">
             <span>Avg. Rating:</span>
             <span className="font-medium text-blue-600 p-1">
-              {reviewers.averageRating.toFixed(1)}
+              {reviewers?.averageRating.toFixed(1)}
             </span>
           </div>
         </div>

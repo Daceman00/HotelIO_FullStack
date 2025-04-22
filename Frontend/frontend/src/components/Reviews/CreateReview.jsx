@@ -3,6 +3,7 @@ import StarRating from "../Reusable/StarRating";
 import useStarRatingStore from "../../stores/StarRatingStore";
 import useFormStore from "../../stores/FormStore";
 import { useCreateReview } from "./useCreateReview";
+import LoadingSpinner from "../Reusable/LoadingSpinner";
 
 import { useParams } from "react-router-dom";
 
@@ -16,7 +17,7 @@ function CreateReview() {
   const setReviewData = useFormStore((state) => state.setReviewData);
   const resetReviewData = useFormStore((state) => state.resetReviewData);
 
-  const { createReview } = useCreateReview();
+  const { createReview, isPending } = useCreateReview();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -67,9 +68,10 @@ function CreateReview() {
 
           <button
             type="submit"
-            className="px-6 py-3 bg-[#dfa974] text-white font-semibold rounded-lg hover:bg-[#c79162] transition-colors duration-200"
+            disabled={isPending}
+            className="px-6 py-3 bg-[#dfa974] text-white font-semibold rounded-lg hover:bg-[#c79162] transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
           >
-            Submit Review
+            {isPending ? <LoadingSpinner size="sm" /> : "Submit Review"}
           </button>
         </form>
       </div>

@@ -41,7 +41,9 @@ function StatsPage() {
       isPending_count ||
       isPendingRevenue ||
       isPendingReviewers ? (
-        <LoadingSpinner />
+        <div className="col-span-full min-h-screen flex items-center justify-center">
+          <LoadingSpinner />
+        </div>
       ) : (
         <>
           <CustomerStatsCard users={totalUsers} />

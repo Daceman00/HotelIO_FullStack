@@ -4,6 +4,7 @@ import { memo } from "react";
 import FooterComponent from "./components/Reusable/Footer";
 import HeaderComponent from "./components/Reusable/Header";
 import SidebarComponent from "./components/Reusable/Sidebar";
+import Error from "./components/Reusable/Error";
 import DashboardPage from "./pages/DashboardPage";
 import RoomsPage from "./pages/RoomsPage";
 import RoomDetails from "./components/Rooms/RoomDetails";
