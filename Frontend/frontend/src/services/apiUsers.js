@@ -7,7 +7,6 @@ export async function getAllUsers(page = 1, limit = 10, searchTerm = '') {
             limit,
         };
 
-        // Only add search param if 3+ characters
         if (searchTerm.length >= 3) {
             params.search = searchTerm;
         }
@@ -16,9 +15,12 @@ export async function getAllUsers(page = 1, limit = 10, searchTerm = '') {
         return {
             data: data.data,
             total: data.total,
+            currentPage: page,
+            totalPages: Math.ceil(data.total / limit),
+            hasNextPage: page < Math.ceil(data.total / limit),
+            hasPrevPage: page > 1
         };
     } catch (error) {
-        console.error('API Error:', error.response);
         throw new Error(error.response?.data?.message || 'Failed to fetch users');
     }
 }

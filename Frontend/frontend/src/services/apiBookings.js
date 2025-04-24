@@ -9,7 +9,6 @@ export async function getAllBookings({ limit = 12, page = 1, status, sort, searc
             sort,
         };
 
-        // Only add search param if 3+ characters
         if (searchTerm.length >= 3) {
             params.search = searchTerm;
         }
@@ -18,7 +17,9 @@ export async function getAllBookings({ limit = 12, page = 1, status, sort, searc
         return {
             data: data.data.data,
             total: data.total,
-            nextPage: data.results < limit ? undefined : page + 1
+            currentPage: page,
+            hasMore: data.results >= limit,
+            nextPage: data.results < limit ? null : page + 1
         }
     } catch (error) {
         console.error(error);

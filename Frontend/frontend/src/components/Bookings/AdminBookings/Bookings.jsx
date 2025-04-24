@@ -51,7 +51,16 @@ function Bookings() {
   const { bookings_counts, error_count, isPending_count } =
     useGetBookingsCount();
 
-  const { ref, inView } = useInView();
+  // Replace the existing useInView implementation with this one
+  const { ref: loadMoreRef, inView } = useInView({
+    threshold: 0,
+    rootMargin: "200px",
+    onChange: (inView) => {
+      if (inView && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+  });
 
   const dropdownRef = useRef(null);
 
@@ -67,12 +76,6 @@ function Bookings() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [handleClickOutside]);
-
-  useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   useEffect(() => {
     setBookingsSearchQuery("");
@@ -213,10 +216,17 @@ function Bookings() {
           </div>
         )}
 
-        {/* Modified loading section */}
-        {(hasNextPage || isFetchingNextPage) && (
-          <div ref={ref} className="w-full">
-            {isFetchingNextPage && <LoadingSpinner />}
+        {/* Update the loading section */}
+        {hasNextPage && (
+          <div
+            ref={loadMoreRef}
+            className="w-full flex justify-center py-4 mt-4"
+          >
+            {isFetchingNextPage ? (
+              <LoadingSpinner />
+            ) : (
+              <div className="h-10" /> // Spacer for intersection observer
+            )}
           </div>
         )}
       </div>

@@ -23,23 +23,28 @@ export function useUsers() {
         queryKey: ['users', currentPage, effectiveSearch],
         queryFn: ({ signal }) => getAllUsers(currentPage, 10, effectiveSearch, signal),
         keepPreviousData: true,
+        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     });
 
 
 
     useEffect(() => {
-        if (currentPage < (users?.totalPages || 0)) {
-            queryClient.prefetchQuery(
-                ['users', currentPage + 1, effectiveSearch],
-                ({ signal }) => getAllUsers(currentPage + 1, 10, debouncedSearchTerm, signal)
-            );
+        if (users?.hasNextPage) {
+            queryClient.prefetchQuery({
+                queryKey: ['users', currentPage + 1, effectiveSearch],
+                queryFn: ({ signal }) => getAllUsers(currentPage + 1, 10, effectiveSearch, signal),
+            });
         }
-    }, [currentPage, effectiveSearch, users?.totalPages, queryClient]);
+    }, [currentPage, effectiveSearch, users?.hasNextPage, queryClient]);
 
 
     return {
         users: users?.data || [],
         total: users?.total || 0,
+        currentPage: users?.currentPage || 1,
+        totalPages: users?.totalPages || 0,
+        hasNextPage: users?.hasNextPage || false,
+        hasPrevPage: users?.hasPrevPage || false,
         isPending,
         error
     }
