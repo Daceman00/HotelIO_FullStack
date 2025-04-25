@@ -8,22 +8,27 @@ export function useCreateBooking() {
     const setBookingModal = useDataStore((state) => state.setBookingModal);
     const queryClient = useQueryClient();
 
-    const { mutate: createBooking, isPending, error } = useMutation({
+    const { mutate: createBooking, isPending, isError } = useMutation({
         mutationFn: ({ roomId, bookingData }) => createBookingApi(roomId, bookingData),
+
+        onMutate: () => {
+            setBookingModal(true);
+        },
 
         onSuccess: (responseData) => {
             const booking = responseData.data.booking;
             toast.success("Booking created successfully");
             queryClient.invalidateQueries(["bookings"]);
+            setBookingData(booking);
             setBookingModal(true);
-            setBookingData(booking)
         },
 
         onError: (error) => {
             console.error(error);
-            toast.error("Booking not created")
+            toast.error(error.message);
+            setBookingModal(false);
         }
     })
 
-    return { createBooking, isPending, error }
+    return { createBooking, isPending, isError }
 }

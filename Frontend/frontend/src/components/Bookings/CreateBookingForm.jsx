@@ -27,7 +27,7 @@ function CreateBookingForm() {
   const { bookingFormData } = useFormStore();
   const updateBookingForm = useFormStore((state) => state.updateBookingForm);
   const resetBookingForm = useFormStore((state) => state.resetBookingForm);
-  const { createBooking } = useCreateBooking();
+  const { createBooking, isPending, isError } = useCreateBooking();
   const [isGuestDropdownOpen, setIsGuestDropdownOpen] = useState(false);
 
   useEffect(() => {
@@ -111,12 +111,45 @@ function CreateBookingForm() {
     };
   }, []);
 
+  const isFormValid = useMemo(() => {
+    const checkIn = parseDate(bookingFormData.checkIn);
+    const checkOut = parseDate(bookingFormData.checkOut);
+
+    return (
+      bookingFormData.checkIn &&
+      bookingFormData.checkOut &&
+      bookingFormData.numOfGuests > 0 &&
+      (!checkIn || !checkOut || checkIn < checkOut)
+    );
+  }, [bookingFormData]);
+
+  const getValidationMessage = () => {
+    if (
+      !bookingFormData.checkIn ||
+      !bookingFormData.checkOut ||
+      !bookingFormData.numOfGuests
+    ) {
+      return "All fields are required";
+    }
+
+    const checkIn = parseDate(bookingFormData.checkIn);
+    const checkOut = parseDate(bookingFormData.checkOut);
+
+    if (checkIn && checkOut && checkIn >= checkOut) {
+      return "Check-in date must be before check-out date";
+    }
+
+    return "";
+  };
+
   return (
     <>
       <BookingInfoModal
         bookingData={bookingData}
         isOpen={bookingModal}
         onClose={closeBookingModal}
+        isPending={isPending}
+        isError={isError}
       />
 
       <div className="sticky top-8 bg-white rounded-xl shadow-lg border border-gray-100 p-6">
@@ -246,10 +279,22 @@ function CreateBookingForm() {
 
           <button
             type="submit"
-            className="w-full py-3.5 bg-[#dfa974] text-white font-semibold rounded-lg hover:bg-[#c79162] transition-colors duration-200 shadow-sm"
+            disabled={!isFormValid}
+            className={`w-full py-3.5 font-semibold rounded-lg transition-colors duration-200 shadow-sm
+              ${
+                isFormValid
+                  ? "bg-[#dfa974] text-white hover:bg-[#c79162]"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
           >
             Book Now
           </button>
+
+          {!isFormValid && (
+            <p className="text-sm text-gray-500 text-center mt-2">
+              {getValidationMessage()}
+            </p>
+          )}
         </form>
       </div>
     </>
