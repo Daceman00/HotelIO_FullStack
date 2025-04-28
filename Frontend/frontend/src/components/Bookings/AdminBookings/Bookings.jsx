@@ -55,12 +55,13 @@ function Bookings() {
   const { ref: loadMoreRef, inView } = useInView({
     threshold: 0,
     rootMargin: "200px",
-    onChange: (inView) => {
-      if (inView && hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
-      }
-    },
   });
+
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const dropdownRef = useRef(null);
 

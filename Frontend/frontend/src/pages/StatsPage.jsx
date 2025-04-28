@@ -2,7 +2,6 @@ import React from "react";
 import CustomerStatsCard from "../components/Stats/CustomerStatsCard";
 import { useUsers } from "../components/Auth/AdminAuth/useUsers";
 import BookingsStatsCard from "../components/Stats/BookingsStatsCard";
-import { useGetAllBookings } from "../components/Bookings/AdminBookings/useGetAllBookings";
 import { useGetBookingsCount } from "../components/Bookings/AdminBookings/useGetBookingsCount";
 import TopSendersDoguhnutChart from "../components/Stats/TopSendersDoughnutChart";
 import TopBookersDoguhnutChart from "../components/Stats/topBookersDoughnutChart";
@@ -11,9 +10,9 @@ import { usetotalRevenue } from "../components/Stats/useTotalRevenue";
 import { useTopReviewers } from "../components/Stats/useTopReviewers";
 import TopReviewersStatsCard from "../components/Stats/TopReviewersStatsCard";
 import MonthlyBookingsBarChart from "../components/Stats/MonthlyBookingsBarChart";
-import { useGetMonthlyBookings } from "../components/Stats/useMonthlyBookings";
 import TopRoomsBarChart from "../components/Stats/TopRoomsBarChart";
 import LoadingSpinner from "../components/Reusable/LoadingSpinner";
+import LatestBookings from "../components/Stats/LatestBookings";
 
 function StatsPage() {
   const {
@@ -65,6 +64,9 @@ function StatsPage() {
               <div className="w-full">
                 <TopRoomsBarChart />
               </div>
+            </div>
+            <div className="w-full ">
+              <LatestBookings />
             </div>
           </div>
         </>

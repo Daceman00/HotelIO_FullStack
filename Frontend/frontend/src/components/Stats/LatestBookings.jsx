@@ -1,79 +1,163 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useGetAllBookings } from "../Bookings/AdminBookings/useGetAllBookings";
+import LoadingSpinner from "../Reusable/LoadingSpinner";
+import { Link } from "react-router-dom";
 
 function LatestBookings() {
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "Delivered":
-        return "text-green-600 bg-green-100";
-      case "Pending":
-        return "text-amber-600 bg-amber-100";
-      case "Canceled":
-        return "text-red-600 bg-red-100";
-      default:
-        return "text-gray-600 bg-gray-100";
-    }
+  const { bookings, isPending, error } = useGetAllBookings();
+  const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+  const [selectedSortOption, setSelectedSortOption] = useState("newest");
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsSortDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const latestBookings = bookings.slice(0, 5);
+
+  const getStatusColor = (paid) => {
+    return paid ? "text-green-600 bg-green-100" : "text-red-600 bg-red-100";
   };
   return (
     <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-sm border border-gray-100">
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold text-gray-800">Recent Orders</h2>
-          <div className="flex gap-2">
-            <Button variant="outline" className="flex items-center gap-2">
-              <Filter className="h-4 w-4" />
-              Filter
-            </Button>
-            <Button variant="outline">See all</Button>
+          <h2 className="text-xl font-semibold text-gray-800">
+            Recent Bookings
+          </h2>
+          {isPending && <LoadingSpinner />}
+          <div className="flex items-center gap-4">
+            {/* Sort Field Dropdown */}
+            <div className="relative pb-2" ref={dropdownRef}>
+              <div
+                className="w-40 px-4 py-2 border border-gray-200 rounded-lg cursor-pointer hover:border-[#dfa379] transition-colors flex items-center justify-between"
+                onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
+                role="button"
+              >
+                <span className="capitalize">
+                  {selectedSortOption.replace(/([A-Z])/g, " $1").trim()}
+                </span>
+                <svg
+                  className={`w-5 h-5 text-gray-400 transform transition-transform ${
+                    isSortDropdownOpen ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+
+              {isSortDropdownOpen && (
+                <ul className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+                  {Object.keys(sortingOptions).map((option) => (
+                    <li
+                      key={option}
+                      className={`capitalize px-4 py-3 cursor-pointer transition-colors ${
+                        selectedSortOption === option
+                          ? "bg-[#dfa379]/20"
+                          : "hover:bg-[#dfa379]/10"
+                      }`}
+                      onClick={() => {
+                        setSelectedSortOption(option);
+                        setIsSortDropdownOpen(false);
+                      }}
+                    >
+                      {option.replace(/([A-Z])/g, " $1").trim()}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <button variant="outline" className="flex items-center gap-2">
+                <div className="h-4 w-4" />
+                Filter
+              </button>
+              <Link
+                to="/bookings"
+                className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-[#dfa379] hover:text-white hover:border-[#dfa379] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#dfa379] focus:ring-offset-2"
+              >
+                See all
+              </Link>
+            </div>
           </div>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full border-collapse">
             <thead>
-              <tr className="text-left text-gray-500 border-b">
-                <th className="pb-3 font-medium">Products</th>
-                <th className="pb-3 font-medium text-right">Price</th>
-                <th className="pb-3 font-medium">Category</th>
-                <th className="pb-3 font-medium">Status</th>
+              <tr className="text-left bg-gray-50">
+                <th className="px-6 py-4 font-semibold text-sm text-gray-600 border-b">
+                  Booking
+                </th>
+                <th className="px-6 py-4 font-semibold text-sm text-gray-600 text-right border-b">
+                  Price
+                </th>
+                <th className="px-6 py-4 font-semibold text-sm text-gray-600 border-b">
+                  Room
+                </th>
+                <th className="px-6 py-4 font-semibold text-sm text-gray-600 border-b">
+                  Status
+                </th>
               </tr>
             </thead>
             <tbody>
-              {orders.map((order) => (
-                <tr key={order.id} className="border-b last:border-b-0">
-                  <td className="py-4">
+              {latestBookings.map((booking, index) => (
+                <tr
+                  key={booking.id}
+                  className={`
+                    border-b last:border-b-0 
+                    hover:bg-gray-50 transition-colors
+                    ${index % 2 === 0 ? "bg-white" : "bg-gray-50/50"}
+                  `}
+                >
+                  <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 relative rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
-                        <Image
-                          src={order.image || "/placeholder.svg"}
-                          alt={order.product}
-                          width={48}
-                          height={48}
-                          className="object-contain"
-                        />
-                      </div>
                       <div>
-                        <p className="font-medium text-gray-800">
-                          {order.product}
+                        <p className="font-semibold text-gray-900">
+                          #{booking.id}
                         </p>
                         <p className="text-sm text-gray-500">
-                          {order.variants}{" "}
-                          {order.variants === 1 ? "Variant" : "Variants"}
+                          {booking.numOfGuests}{" "}
+                          {booking.numOfGuests === 1 ? "Guest" : "Guests"}
                         </p>
                       </div>
                     </div>
                   </td>
-                  <td className="py-4 text-right font-medium">
-                    ${order.price.toFixed(2)}
+                  <td className="px-6 py-4 text-right font-semibold text-gray-900">
+                    ${booking.price.toFixed(2)}
                   </td>
-                  <td className="py-4 text-gray-600">{order.category}</td>
-                  <td className="py-4">
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                        order.status
-                      )}`}
-                    >
-                      {order.status}
-                    </span>
+                  <td className="px-6 py-4 text-gray-600">
+                    Room {booking.room.roomNumber}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`w-2 h-2 rounded-full ${
+                          booking.paid ? "bg-green-500" : "bg-red-500"
+                        }`}
+                      ></div>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                          booking.paid
+                        )}`}
+                      >
+                        {booking.paid ? "Paid" : "Unpaid"}
+                      </span>
+                    </div>
                   </td>
                 </tr>
               ))}
