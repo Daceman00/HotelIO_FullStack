@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Bar } from "react-chartjs-2";
+import LoadingSpinner from "../Reusable/LoadingSpinner";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -136,20 +137,24 @@ function MonthlyBookingsBarChart() {
           )}
         </div>
       </div>
-      <div
-        style={{
-          height: "40vh",
-          minHeight: "300px",
-          padding: "20px 20px 40px 20px",
-          margin: "20px 0",
-          backgroundColor: "#fff",
-          borderRadius: "8px",
-          boxShadow:
-            "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)",
-        }}
-      >
-        <Bar data={data} options={options} />
-      </div>
+      {isPending ? (
+        <LoadingSpinner />
+      ) : (
+        <div
+          style={{
+            height: "40vh",
+            minHeight: "300px",
+            padding: "20px 20px 40px 20px",
+            margin: "20px 0",
+            backgroundColor: "#fff",
+            borderRadius: "8px",
+            boxShadow:
+              "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)",
+          }}
+        >
+          <Bar data={data} options={options} />
+        </div>
+      )}
     </div>
   );
 }
