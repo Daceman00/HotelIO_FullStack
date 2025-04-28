@@ -24,11 +24,10 @@ export function useSignup() {
                 queryKey: ["users"],
             })
 
-
         },
         onError: (error) => {
             console.error(error);
-            toast.error("User already exist!")
+            toast.error("An error occurred while creating the account. Please try again.");
         }
     })
     return { signup, isPending, error };

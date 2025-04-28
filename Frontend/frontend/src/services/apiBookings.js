@@ -23,7 +23,7 @@ export async function getAllBookings({ limit = 12, page = 1, status, sort, searc
         }
     } catch (error) {
         console.error(error);
-        throw new Error("Bookings not found");
+        throw new Error(error.response?.data?.message || "Bookings not found");
     }
 
 }
@@ -33,7 +33,7 @@ export async function createBooking(roomId, bookingData) {
         return data;
     } catch (error) {
         console.error(error);
-        throw new Error("Booking not created");
+        throw new Error(error.response?.data?.message || "Booking not created");
     }
 
 }
@@ -44,7 +44,7 @@ export async function getAllBookingsByRoom(roomId) {
         return data;
     } catch (error) {
         console.error(error);
-        throw new Error("Bookings not found");
+        throw new Error(error.response?.data?.message || "Bookings not found");
     }
 
 }
@@ -55,7 +55,7 @@ export async function getBookingById(bookingId) {
         return data;
     } catch (error) {
         console.error(error);
-        throw new Error("Booking not found");
+        throw new Error(error.response?.data?.message || "Booking not found");
     }
 }
 
@@ -64,7 +64,7 @@ export async function deleteBooking(bookingId) {
         await axios.delete(`/bookings/${bookingId}`);
     } catch (error) {
         console.error(error);
-        throw new Error("Booking not deleted");
+        throw new Error(error.response?.data?.message || "Booking not deleted");
     }
 }
 
@@ -74,7 +74,7 @@ export async function getBookingsCounts() {
         return data;
     } catch (error) {
         console.error(error)
-        throw new Error("Cannot get Bookings count")
+        throw new Error(error.response?.data?.message || "Cannot get Bookings count")
     }
 }
 
@@ -95,7 +95,7 @@ export async function getBookingsByUser({ limit = 10, page = 1, status }) {
         }
     } catch (error) {
         console.error(error);
-        throw new Error("Bookings not found");
+        throw new Error(error.response?.data?.message || "Bookings not found");
     }
 }
 
@@ -105,6 +105,6 @@ export async function getUsersBookingsCounts() {
         return data;
     } catch (error) {
         console.error(error)
-        throw new Error("Cannot get Bookings count")
+        throw new Error(error.response?.data?.message || "Cannot get Bookings count")
     }
 }

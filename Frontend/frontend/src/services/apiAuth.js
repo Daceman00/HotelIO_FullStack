@@ -5,8 +5,7 @@ export async function signup(userData) {
         const { data } = await axios.post(`http://localhost:3000/api/v1/users/signup`, userData)
         return data;
     } catch (error) {
-        console.error(error)
-        throw new Error("Signup not succesful")
+        throw new Error(error.response?.data)
     }
 }
 
