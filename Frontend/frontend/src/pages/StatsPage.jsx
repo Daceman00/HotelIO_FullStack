@@ -64,9 +64,9 @@ function StatsPage() {
               <div className="w-full">
                 <TopRoomsBarChart />
               </div>
-            </div>
-            <div className="w-full ">
-              <LatestBookings />
+              <div className="w-full ">
+                <LatestBookings />
+              </div>
             </div>
           </div>
         </>
