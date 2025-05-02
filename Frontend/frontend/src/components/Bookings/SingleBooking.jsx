@@ -15,6 +15,23 @@ const statusStyles = {
   unpaid: "bg-red-100 text-red-800",
 };
 
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+};
+
+const PaymentBadge = ({ isPaid }) => (
+  <span
+    className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+    ${isPaid ? statusStyles.paid : statusStyles.unpaid}`}
+  >
+    {isPaid ? "Paid" : "Unpaid"}
+  </span>
+);
+
 function SingleBooking({ booking }) {
   const { deleteBooking, isPending, error } = useDeleteBooking();
   const { isModalOpen } = useUIStore();
@@ -24,9 +41,10 @@ function SingleBooking({ booking }) {
   const handleConfirmModal = () => {
     onModalClose();
   };
+
   return (
     <>
-      {isModalOpen ? (
+      {isModalOpen && (
         <Modal
           action={deleteBooking}
           userId={booking.id}
@@ -38,77 +56,76 @@ function SingleBooking({ booking }) {
           isPending={isPending}
           opacity="10"
         />
-      ) : null}
-      <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 flex-shrink-0 w-full max-w-md mx-auto">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 space-y-2 sm:space-y-0">
+      )}
+      <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 max-w-lg">
+        <div className="bg-[#dfa379] text-white p-4 flex justify-between items-center">
           <div>
-            <h3 className="text-lg md:text-base lg:text-pretty font-semibold text-gray-900">
-              Booking #{booking.id}
+            <h3 className="text-lg font-bold">
+              Room {booking.room.roomNumber}
             </h3>
-            <p className="text-sm md:text-sm lg:text-[11px] text-gray-500">
-              {booking.createdAt.toString().split("T")[0]}
-            </p>
+            <p className="text-indigo-100 capitalize">Standard Room</p>
           </div>
-          <span
-            className={`inline-flex items-center mr-2 px-3 py-1 rounded-full text-sm md:text-sm lg:text-[10px] font-medium ${
-              booking.paid ? statusStyles.paid : statusStyles.unpaid
-            }`}
-          >
-            {booking.paid ? "Paid" : "Unpaid"}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 mb-6">
-          <div className="flex items-center space-x-2">
-            <CalendarIcon className="h-5 w-5 text-gray-400" />
-            <span className="text-gray-600 text-pretty md:text-xs lg:text-[12px]">
-              {booking.checkIn.toString().split("T")[0]} -{" "}
-              {booking.checkOut.toString().split("T")[0]}
-            </span>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <UserIcon className="h-5 w-5 text-gray-400" />
-            <span className="text-gray-600 text-pretty md:text-sm lg:text-[12px]">
-              {booking.numOfGuests}{" "}
-              {booking.numOfGuests > 1 ? "guests" : "guest"}
-            </span>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <CurrencyDollarIcon className="h-5 w-5 text-gray-400" />
-            <span className="text-gray-600 text-pretty md:text-sm lg:text-[12px]">
-              Total: ${booking.price}
-            </span>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <ClockIcon className="h-5 w-5 text-gray-400" />
-            <span className="text-gray-600 text-pretty md:text-sm lg:text-[12px]">
-              {booking.numOfNights}{" "}
-              {booking.numOfNights > 1 ? "nights" : "night"}
-            </span>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <span className="text-gray-600 text-pretty md:text-sm lg:text-[12x]">
-              Room Number: {booking.room.roomNumber}
-            </span>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <span className="text-gray-600 text-pretty md:text-pretty lg:text-[14px]">
-              User: {booking.user.name} ({booking.user.email})
-            </span>
+          <div className="text-right">
+            <div className="text-xl font-bold">${booking.price}</div>
+            <div className="text-indigo-100 text-sm">
+              for {booking.numOfNights} nights
+            </div>
           </div>
         </div>
 
-        <div className="border-t pt-4 flex flex-wrap justify-center gap-3">
-          <div className="w-full sm:w-auto">
-            <UpdateButton>Update</UpdateButton>
+        <div className="p-5">
+          <div className="mb-4">
+            <h4 className="text-sm text-gray-500 font-medium uppercase tracking-wider mb-2">
+              Guest
+            </h4>
+            <div className="flex items-center gap-3">
+              <div className="bg-indigo-100 rounded-full w-10 h-10 flex items-center justify-center text-indigo-600 font-bold">
+                {booking.user.name
+                  .split(" ")
+                  .map((name) => name[0])
+                  .join("")}
+              </div>
+              <div>
+                <div className="font-semibold">{booking.user.name}</div>
+                <div className="text-sm text-gray-500">
+                  {booking.user.email}
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="w-full sm:w-auto">
-            <WarningButton onClick={onModalOpen}>Delete</WarningButton>
+
+          <div className="mb-6 grid grid-cols-2 gap-4">
+            <div>
+              <h4 className="text-sm text-gray-500 font-medium uppercase tracking-wider mb-1">
+                Check In
+              </h4>
+              <p className="font-medium">{formatDate(booking.checkIn)}</p>
+            </div>
+            <div>
+              <h4 className="text-sm text-gray-500 font-medium uppercase tracking-wider mb-1">
+                Check Out
+              </h4>
+              <p className="font-medium">{formatDate(booking.checkOut)}</p>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-100 pt-4">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h4 className="text-sm text-gray-500 font-medium uppercase tracking-wider mb-1">
+                  Payment Status
+                </h4>
+                <PaymentBadge isPaid={booking.paid} />
+              </div>
+              <div className="text-sm text-gray-500">
+                Booked on {formatDate(booking.createdAt)}
+              </div>
+            </div>
+
+            <div className="flex justify-center gap-3 mt-4">
+              <UpdateButton>Update</UpdateButton>
+              <WarningButton onClick={onModalOpen}>Delete</WarningButton>
+            </div>
           </div>
         </div>
       </div>

@@ -3,6 +3,8 @@ import { useDeleteUser } from "./useDeleteUser";
 import WarningButton from "../../Reusable/WarningButton";
 import useUIStore from "../../../stores/UiStore";
 import Modal from "../../Reusable/Modal";
+import { IMAGE_URL_USERS } from "../../../helpers/imageURL";
+import { UserIcon } from "@heroicons/react/24/outline";
 
 function User({ user }) {
   const { deleteUser, error, isPending } = useDeleteUser();
@@ -36,11 +38,15 @@ function User({ user }) {
             scope="row"
             className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
           >
-            <img
-              className="w-10 h-10 rounded-full"
-              src="/docs/images/people/profile-picture-1.jpg"
-              alt="profile-photo"
-            />
+            {user?.photo ? (
+              <img
+                className="w-10 h-10 rounded-full"
+                src={`${IMAGE_URL_USERS}/${user.photo}`}
+                alt="User Avatar"
+              />
+            ) : (
+              <UserIcon className="w-10 h-10 text-gray-500 p-1" />
+            )}
             <div className="ps-3">
               <div className="text-base font-semibold">{user.name}</div>
               <div className="font-normal text-gray-500">{user.email}</div>

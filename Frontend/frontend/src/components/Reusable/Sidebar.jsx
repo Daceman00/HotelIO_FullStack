@@ -55,7 +55,6 @@ const Sidebar = React.memo(function Sidebar() {
   return (
     <>
       <div className="flex">
-        {/* {isAuthPending && <Loading mode={modes.all} />} */}
         {/* Sidebar */}
         <div
           className={`fixed top-0 left-0 h-full bg-gray-900 text-white shadow-lg transition-transform duration-300 ${
