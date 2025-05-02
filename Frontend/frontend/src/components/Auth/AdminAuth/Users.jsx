@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useUsers } from "./useUsers";
 import User from "./User";
 import useUIStore from "../../../stores/UiStore";
@@ -10,7 +10,6 @@ import LoadingSpinner from "../../Reusable/LoadingSpinner";
 
 function Users() {
   const location = useLocation();
-  const { isLoader } = useUIStore();
   const moveBack = useMoveBack();
 
   const { userSearchQuery } = useUIStore();
@@ -19,7 +18,8 @@ function Users() {
   const { currentPage } = useUIStore();
   const setCurrentPage = useUIStore((state) => state.setCurrentPage);
 
-  const { users, total, error, isPending } = useUsers();
+  const { users, total, error, isPending, hasNextPage, hasPrevPage } =
+    useUsers();
 
   const itemsPerPage = 10; // Should match your default limit
   const totalPages = Math.ceil(total / itemsPerPage);
@@ -98,18 +98,20 @@ function Users() {
           ) : (
             <tr>
               <td colSpan="5" className="px-6 py-4 text-center">
-                There are no users.
+                There are no users with that name.
               </td>
             </tr>
           )}
         </table>
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPrevious={handlePrevious}
-          onNext={handleNext}
-          onPageSelect={handlePageSelect}
-        />
+        {(hasNextPage || hasPrevPage) && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPrevious={handlePrevious}
+            onNext={handleNext}
+            onPageSelect={handlePageSelect}
+          />
+        )}
       </div>
     </>
   );

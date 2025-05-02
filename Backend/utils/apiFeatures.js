@@ -74,7 +74,7 @@ class APIFeatures {
             const sortBy = this.queryString.sort.split(',').join(' ');
             this.query = this.query.sort(sortBy);
         } else {
-            this.query = this.query.sort('-createdAt');
+            this.query = this.query.sort('-createdAt _id');
         }
         return this;;
     }
@@ -92,13 +92,11 @@ class APIFeatures {
     }
 
     paginate() {
-
-        const page = this.queryString.page * 1 || 1;
-        const limit = this.queryString.limit * 1 || 10;
-        const skip = (page * limit) - limit;
+        const page = parseInt(this.queryString.page, 10) || 1; // ✅ Use parseInt
+        const limit = parseInt(this.queryString.limit, 10) || 10; // ✅ Correct parsing
+        const skip = (page - 1) * limit; // ✅ Cleaner calculation
 
         this.query = this.query.skip(skip).limit(limit);
-
         return this;
     }
 }

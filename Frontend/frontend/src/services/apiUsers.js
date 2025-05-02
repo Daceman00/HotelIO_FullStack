@@ -16,7 +16,7 @@ export async function getAllUsers(page = 1, limit = 10, searchTerm = '') {
             data: data.data,
             total: data.total,
             currentPage: page,
-            totalPages: Math.ceil(data.total / limit),
+            totalPages: data.totalPages,
             hasNextPage: page < Math.ceil(data.total / limit),
             hasPrevPage: page > 1
         };

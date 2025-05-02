@@ -106,25 +106,51 @@ exports.getUserWithBookings = catchAsync(async (req, res, next) => {
 })
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-    let filter = {};
+    let filters = {};
 
-    const total = await User.countDocuments();
+    // Handle search for name, email, and role fields
+    if (req.query.search) {
+        const searchTerm = req.query.search.trim();
+        if (searchTerm) {
+            filters.$or = [
+                { name: { $regex: searchTerm, $options: 'i' } },
+                { email: { $regex: searchTerm, $options: 'i' } },
+                { role: { $regex: searchTerm, $options: 'i' } }
+            ];
+        }
+    }
 
-    const features = new APIFeatures(User.find(filter), req.query)
-        .filter() // Apply base filters first
-        .search(['name', 'email', 'role']) // Then add search conditions
-        .applyFilters()
+    // Initialize APIFeatures and apply filters
+    const features = new APIFeatures(User.find(), req.query)
+        .mergeFilters(filters)
+        .filter()
+        .applyFilters();
+
+    // Get total count before pagination
+    const total = await User.countDocuments(features.filters);
+
+    // Apply remaining operations
+    features
         .sort()
         .limitFields()
         .paginate();
 
+    // Execute query
     const users = await features.query;
+    // Calculate pagination details
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const totalPages = Math.ceil(total / limit);
 
     res.status(200).json({
         status: 'success',
         results: users.length,
         total,
-        data: { data: users }
+        totalPages,
+        currentPage: page,
+        data: {
+            data: users
+        }
     });
 });
 

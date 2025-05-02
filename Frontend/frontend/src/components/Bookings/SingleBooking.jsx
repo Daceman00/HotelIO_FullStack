@@ -105,7 +105,7 @@ function SingleBooking({ booking }) {
 
         <div className="border-t pt-4 flex flex-wrap justify-center gap-3">
           <div className="w-full sm:w-auto">
-            <UpdateButton />
+            <UpdateButton>Update</UpdateButton>
           </div>
           <div className="w-full sm:w-auto">
             <WarningButton onClick={onModalOpen}>Delete</WarningButton>

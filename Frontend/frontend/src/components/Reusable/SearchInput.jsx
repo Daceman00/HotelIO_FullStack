@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import useUIStore from "../../stores/UiStore";
 import { useLocation } from "react-router-dom";
 
@@ -6,8 +6,9 @@ function SearchInput({
   placeholder = "Search...",
   searchQuery,
   setSearchQuery,
-  resetSearchQuery,
 }) {
+  const inputFocusRef = useRef(null);
+
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
@@ -17,10 +18,17 @@ function SearchInput({
     }
   };
 
+  useEffect(() => {
+    if (inputFocusRef.current) {
+      inputFocusRef.current.focus();
+    }
+  }, []);
+
   return (
     <div className="mb-4">
       <div className="relative w-[200px]">
         <input
+          ref={inputFocusRef}
           type="text"
           placeholder={placeholder}
           value={searchQuery}
