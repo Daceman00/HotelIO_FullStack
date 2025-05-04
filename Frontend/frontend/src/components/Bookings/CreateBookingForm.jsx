@@ -31,15 +31,12 @@ function CreateBookingForm() {
   const [isGuestDropdownOpen, setIsGuestDropdownOpen] = useState(false);
 
   useEffect(() => {
-    const handleReset = () => resetBookingForm();
-    window.addEventListener("resize", handleReset);
-    return () => {
-      window.removeEventListener("resize", handleReset);
-    };
-  }, [resetBookingForm]);
-
-  useEffect(() => {
     resetBookingForm();
+    return () => {
+      useDataStore.getState().setBookingData(null);
+      useDataStore.getState().setBookingModal(false);
+      resetBookingForm(); // Add this to reset form on unmount
+    };
   }, []);
 
   const handleDateChange = (field, date) => {

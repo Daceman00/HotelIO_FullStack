@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import useUIStore from "../../stores/UiStore";
-import { useLocation } from "react-router-dom";
 
 function SearchInput({
   placeholder = "Search...",

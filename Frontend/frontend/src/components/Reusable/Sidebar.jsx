@@ -182,9 +182,7 @@ const Sidebar = React.memo(function Sidebar() {
           className={`flex-1 transition-all duration-300 ${
             sidebarVisible ? "ml-64" : "ml-0"
           }`}
-        >
-          {/* Your main content here */}
-        </div>
+        ></div>
       </div>
     </>
   );

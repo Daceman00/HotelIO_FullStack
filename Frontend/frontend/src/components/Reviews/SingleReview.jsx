@@ -1,5 +1,5 @@
 import React from "react";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { TrashIcon, UserIcon } from "@heroicons/react/24/outline";
 import useAuthStore from "../../stores/AuthStore";
 import { useDeleteReview } from "./AdminReviews/useDeleteReview";
 import useUIStore from "../../stores/UiStore";
@@ -39,11 +39,15 @@ function SingleReview({ review, idx }) {
         <div className="flex items-start gap-4">
           {/* User Avatar */}
           <div className="shrink-0">
-            <img
-              src={`${IMAGE_URL_USERS}/${review?.user.photo}`}
-              alt="User Avatar"
-              className="h-16 w-16 rounded-full border-2 border-white shadow-sm"
-            />
+            {review?.user.photo ? (
+              <img
+                src={`${IMAGE_URL_USERS}/${review?.user.photo}`}
+                alt="User Avatar"
+                className="h-16 w-16 rounded-full border-2 border-white shadow-sm"
+              />
+            ) : (
+              <UserIcon className="w-10 h-10 text-gray-500 p-1" />
+            )}
           </div>
 
           {/* Review Content */}

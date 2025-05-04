@@ -27,43 +27,49 @@ exports.uploadRoomImages = upload.fields([
     { name: 'images', maxCount: 5 }, // Adjust the maxCount as per your requirement
 ]);
 
-// Middleware to resize images
+// Middleware to resize images 
 exports.resizeRoomImages = catchAsync(async (req, res, next) => {
-    if (!req.files) return next()
+    if (!req.files) return next();
+
+    // Enable experimental SIMD optimizations for faster processing
+    sharp.concurrency(1);
+    sharp.simd(true);
 
     if (req.files.imageCover) {
-        // Enable experimental SIMD optimizations for faster processing
-        sharp.concurrency(1);
-        sharp.simd(true);
-
         // 1) Process cover image
         const coverImage = req.files.imageCover[0];
         req.body.imageCover = `room-${req.params.id}-${Date.now()}-cover.webp`;
 
+        /* 
+         * COVER IMAGE DIMENSIONS:
+         * - Width: 1200px (good balance for hero image display)
+         * - Height: 800px (16:9 aspect ratio)
+         * - This creates a consistent landscape orientation that works well
+         *   in the hero section while maintaining a reasonable file size
+         */
         await sharp(coverImage.buffer)
             .resize({
-                width: 320,
-                height: 360,
-                fit: 'inside',        // Maintain aspect ratio without cropping
-                withoutEnlargement: true, // Don't enlarge smaller images
-                kernel: sharp.kernel.lanczos3 // Higher quality interpolation
+                width: 400,
+                height: 400,
+                fit: 'cover',         // Square crop
+                position: 'center',   // Focus on the center of the image
+                withoutEnlargement: true,
+                kernel: sharp.kernel.lanczos3
             })
             .webp({
-                quality: 85,         // Optimal quality/size balance
-                alphaQuality: 90,
+                quality: 80,          // Slightly lower quality for thumbnails
+                alphaQuality: 80,
                 lossless: false,
-                nearLossless: true
+                nearLossless: false   // Less aggressive optimization for thumbnails
             })
-            .sharpen({               // Add subtle sharpening
+            .sharpen({
                 sigma: 0.5,
                 m1: 1,
-                m2: 3
+                m2: 2
             })
-            .withMetadata()          // Preserve EXIF data
+            .withMetadata()
             .toFile(`public/img/rooms/${req.body.imageCover}`);
     }
-
-
 
     // 2) Process additional images
     if (req.files.images) {
@@ -73,11 +79,19 @@ exports.resizeRoomImages = catchAsync(async (req, res, next) => {
             req.files.images.map(async (file, i) => {
                 const filename = `room-${req.params.id}-${Date.now()}-${i + 1}.webp`;
 
+                /* 
+                 * GALLERY IMAGE DIMENSIONS:
+                 * - Width: 1600px (provides good detail on larger screens)
+                 * - Height: 900px (16:9 aspect ratio)
+                 * - These dimensions work well with the Swiper gallery in the
+                 *   modernized UI while maintaining consistent proportions
+                 */
                 await sharp(file.buffer)
                     .resize({
-                        width: 2000,
-                        height: 1333,
-                        fit: 'inside',
+                        width: 1600,
+                        height: 900,
+                        fit: 'cover',        // Ensures consistent dimensions
+                        position: 'center',  // Focus on the center of the image
                         withoutEnlargement: true,
                         kernel: sharp.kernel.lanczos3
                     })
@@ -102,7 +116,6 @@ exports.resizeRoomImages = catchAsync(async (req, res, next) => {
 
     next();
 });
-
 exports.getRoomWithReviewsAndBookings = catchAsync(async (req, res, next) => {
     const room = await Room.findById(req.params.id)
         .populate({
