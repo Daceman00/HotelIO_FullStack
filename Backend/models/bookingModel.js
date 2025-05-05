@@ -39,6 +39,14 @@ const bookingSchema = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: 'User',
         required: [true, "Booking must have a user"]
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['pending', 'processing', 'paid', 'failed', 'refunded'],
+        default: 'pending'
+    },
+    paymentIntentId: {
+        type: String
     }
 },
     {

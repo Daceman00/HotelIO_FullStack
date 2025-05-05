@@ -7,5 +7,6 @@ router.use(authController.protect);
 
 router.post('/create-payment-intent', paymentController.createPaymentIntent);
 router.post('/confirm-payment', paymentController.confirmPayment);
+router.post('/process-payment', paymentController.processPaymentWithDetails);
 
 module.exports = router;
