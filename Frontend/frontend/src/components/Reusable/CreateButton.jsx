@@ -1,38 +1,26 @@
 import React from "react";
 
-function CreateButton({ onClick, color, children }) {
-  const bgColor = color === "primary" ? "bg-[#dfa379]" : "bg-blue-500";
-  const hoverBgColor =
-    color === "primary" ? "hover:bg-[#c68a5e]" : "hover:bg-blue-600";
-  const borderColor =
-    color === "primary" ? "border-[#c68a5e]" : "border-blue-600";
-
+function CreateButton({ onClick, children }) {
   return (
     <button
       onClick={onClick}
-      className={`relative min-w-[120px] h-[40px] flex flex-shrink-0 items-center justify-center cursor-pointer border-none rounded-md shadow-md transition-all duration-200 ${bgColor} ${hoverBgColor} focus:outline-none group overflow-hidden sm:min-w-[100px] sm:h-[35px] lg:min-w-[140px] lg:h-[45px] xl:min-w-[160px] xl:h-[50px] ml-auto`}
+      className="inline-flex items-center px-6 py-3 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-white font-medium shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40 transition-all duration-300 hover:-translate-y-1"
+      type="button"
+      aria-label="Create"
     >
-      <span className="text-white font-bold transition-all duration-200 group-hover:text-transparent pl-4 pr-[40px] sm:pr-[35px] lg:pr-[45px] xl:pr-[50px]">
-        {children}
-      </span>
-      <span
-        className={`absolute border-l ${borderColor} transition-all duration-200 right-0 h-full w-[40px] flex items-center justify-center group-hover:w-full group-hover:border-none sm:w-[35px] lg:w-[45px] xl:w-[50px]`}
+      {children}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5 ml-2"
+        viewBox="0 0 20 20"
+        fill="currentColor"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="text-white fill-white transition-all duration-200 group-active:scale-90 w-[15px] h-[15px] sm:w-[12px] sm:h-[12px] lg:w-[16px] lg:h-[16px] xl:w-[18px] xl:h-[18px]"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 4.5v15m7.5-7.5h-15"
-          />
-        </svg>
-      </span>
+        <path
+          fillRule="evenodd"
+          d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
+          clipRule="evenodd"
+        />
+      </svg>
     </button>
   );
 }

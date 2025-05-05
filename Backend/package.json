@@ -18,15 +18,18 @@
     "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.10.0",
     "mongoose": "^8.8.2",
+    "mongoose-currency": "^0.3.0",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.16",
     "nodemon": "^3.1.7",
     "prettier": "^3.3.3",
     "sharp": "^0.33.5",
+    "stripe": "^18.1.0",
     "validator": "^13.12.0"
   },
   "devDependencies": {

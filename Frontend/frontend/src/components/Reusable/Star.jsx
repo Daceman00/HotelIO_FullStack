@@ -6,7 +6,7 @@ function Star({
   color,
   size,
   starClassName = "w-9 h-9", // Default Tailwind size (32px)
-  activeColor = "text-[#dfa379]", // Default Tailwind color
+  activeColor = "text-[#ffc107]", // Default Tailwind color
   inactiveColor = "text-gray-400",
 }) {
   return (

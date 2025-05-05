@@ -36,17 +36,13 @@ function RoomsMenu() {
 
       <div className="bg-gradient-to-b from-gray-50 to-white min-h-screen">
         <div className="relative bg-indigo-50">
-          <div className="absolute inset-0 bg-cover bg-center opacity-10">
-            <img
-              src={"${IMAGE_URL_MENU}${image}"}
-              alt="background"
-              className="w-full h-full object-cover"
-            />
-          </div>
+          <div className="absolute inset-0 bg-cover bg-center opacity-10"></div>
           <div className="container mx-auto px-4 py-24 relative">
             <div className="max-w-3xl mx-auto text-center">
-              <h1 className="text-5xl font-bold text-gray-800 mb-6 tracking-tight">
-                Our <span className="text-[#dfa379]">Rooms</span>
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-amber-400">
+                  Our Rooms
+                </span>
               </h1>
               <div className="flex items-center justify-center text-lg">
                 <Link
@@ -58,29 +54,13 @@ function RoomsMenu() {
                 <ChevronRightIcon className="mx-2 h-5 w-5 text-gray-400" />
                 <span className="text-[#dfa379] font-medium">Rooms</span>
               </div>
-
-              {isAdmin && (
-                <button
-                  onClick={onRoomModalOpen}
-                  className="mt-8 inline-flex items-center px-6 py-3 bg-[#dfa379] hover:bg-[#c68a5e] text-white font-medium rounded-lg shadow-md transition-all transform hover:scale-105"
-                >
-                  <svg
-                    className="w-5 h-5 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M12 4v16m8-8H4"
-                    ></path>
-                  </svg>
-                  Create New Room
-                </button>
-              )}
+              <div className="mt-8 inline-flex items-center">
+                {isAdmin && (
+                  <CreateButton onClick={onRoomModalOpen}>
+                    Create New Room
+                  </CreateButton>
+                )}
+              </div>
             </div>
           </div>
         </div>

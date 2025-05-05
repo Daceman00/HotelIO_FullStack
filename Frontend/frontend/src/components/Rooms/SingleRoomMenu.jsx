@@ -48,33 +48,48 @@ function SingleRoomMenu({ room }) {
 
   return (
     <div
-      className={`relative flex flex-col rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl ${
+      className={`bg-white rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl ${
         !isAdmin && isMaintenance ? "opacity-50 pointer-events-none" : ""
       }`}
     >
       {isPending || !room ? (
-        <div>
+        <div className="flex justify-center items-center h-64">
           <LoadingSpinner />
         </div>
       ) : (
         <>
           {/* Image Container */}
-          <div className="relative h-60 overflow-hidden">
+          <div className="relative overflow-hidden">
             <img
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               src={`${IMAGE_URL}/${room.imageCover}`}
-              alt={room.roomNumber}
+              alt={`Room ${room.roomNumber}`}
+              className="w-full h-64 object-cover transition-transform duration-700 hover:scale-110"
             />
-            {/* Dropdown Menu - Only show for admins */}
+
+            {/* Price Tag */}
+            <div className="absolute bottom-0 left-0 bg-[#dfa974] text-white py-1 px-3 rounded-tr-lg font-medium">
+              ${room.price}/night
+            </div>
+
+            {/* Status Badge */}
+            <div
+              className={`absolute top-3 right-3 px-3 py-1 text-xs font-semibold text-white rounded-full ${getStatusColor(
+                room.status
+              )}`}
+            >
+              {room.status.toUpperCase()}
+            </div>
+
+            {/* Admin Dropdown Menu */}
             {isAdmin && (
-              <div ref={dropdownRef} className="absolute top-2 left-2">
+              <div ref={dropdownRef} className="absolute top-3 left-3">
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="p-1 text-white hover:bg-black/20 rounded-full transition-colors duration-300"
+                  className="p-2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full transition-all duration-300 shadow-md"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
+                    className="h-5 w-5 text-gray-700"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -89,7 +104,7 @@ function SingleRoomMenu({ room }) {
                 </button>
 
                 {isDropdownOpen && (
-                  <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                  <div className="absolute left-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 overflow-hidden">
                     <div className="py-1">
                       <div className="px-4 py-2 text-sm text-gray-700 border-b">
                         <span className="font-medium">Current Status: </span>
@@ -106,11 +121,11 @@ function SingleRoomMenu({ room }) {
                           key={option.value}
                           onClick={() => handleStatusChange(option.value)}
                           className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 
-                        ${
-                          room.status.toLowerCase() === option.value
-                            ? "bg-gray-50"
-                            : ""
-                        }`}
+                          ${
+                            room.status.toLowerCase() === option.value
+                              ? "bg-gray-50"
+                              : ""
+                          }`}
                         >
                           <span className="flex items-center gap-2">
                             <span
@@ -127,69 +142,82 @@ function SingleRoomMenu({ room }) {
                 )}
               </div>
             )}
-
-            <div
-              className={`absolute top-2 right-2 px-3 py-1 text-xs font-semibold text-white rounded-full ${getStatusColor(
-                room.status
-              )}`}
-            >
-              {room.status.toUpperCase()}
-            </div>
           </div>
 
           {/* Content Container */}
-          <div className="p-5 bg-white flex flex-col flex-1">
-            {/* Room Info */}
-            <div className="mb-4 flex-1">
-              <div className="flex justify-between items-start mb-3">
-                <h3 className="text-2xl font-bold text-gray-800">
-                  #{room.roomNumber}
+          <div className="p-6">
+            {/* Room Info Header */}
+            <div className="flex justify-between items-center mb-3">
+              <div>
+                <h3 className="text-xl font-bold text-gray-800 mb-1">
+                  Room #{room.roomNumber}
                 </h3>
-                <div className="text-right">
-                  <p className="text-xl font-bold text-[#dfa974]">
-                    {room.price}$
-                  </p>
-                  <p className="text-sm text-gray-500">per night</p>
-                </div>
-              </div>
-
-              {/* Details Grid */}
-              <div className="grid grid-cols-2 gap-3 text-gray-600 mb-4">
-                <div>
-                  <p className="text-sm font-medium">Room Type</p>
-                  <p className="capitalize">{room.roomType.toLowerCase()}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Capacity</p>
-                  <p>{room.maxGuests} Guests</p>
-                </div>
-              </div>
-
-              {/* Features */}
-              <div className="mb-4">
-                <p className="text-sm font-medium text-gray-600 mb-2">
-                  Features
+                <p className="text-sm capitalize text-gray-600">
+                  {room.roomType.toLowerCase()} Room
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  {room.features.map((feature) => (
-                    <span
-                      key={feature}
-                      className="px-2 py-1 bg-gray-100 rounded-full text-sm text-gray-600"
-                    >
-                      {feature}
-                    </span>
-                  ))}
-                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-xl font-bold text-[#dfa974]">
+                  ${room.price}
+                </p>
+                <p className="text-xs text-gray-500">per night</p>
               </div>
             </div>
 
-            {/* Button */}
+            {/* Capacity */}
+            <div className="flex items-center text-gray-600 mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              <span>Up to {room.maxGuests} guests</span>
+            </div>
+
+            {/* Features */}
+            <div className="mb-5">
+              <p className="text-sm font-medium text-gray-700 mb-2">Features</p>
+              <div className="flex flex-wrap gap-2">
+                {room.features.map((feature) => (
+                  <span
+                    key={feature}
+                    className="px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-600"
+                  >
+                    {feature}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* View Details Button */}
             <button
               onClick={() => navigate(`/rooms/${room._id}`)}
-              className="w-full mt-auto py-2 px-4 bg-gray-800 text-white rounded-lg font-medium
-          hover:bg-[#dfa974] transition-colors duration-300"
+              className="w-full py-2.5 px-4 bg-[#dfa974] text-white rounded-lg font-medium hover:bg-[#c99764] transition-colors duration-300 flex items-center justify-center"
             >
               View Details
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4 ml-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M14 5l7 7m0 0l-7 7m7-7H3"
+                />
+              </svg>
             </button>
           </div>
         </>

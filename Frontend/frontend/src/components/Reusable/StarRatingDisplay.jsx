@@ -1,6 +1,6 @@
 import React from "react";
 
-function StarRatingDisplay({ rating = 0, color = "#FFEE58", size = 24 }) {
+function StarRatingDisplay({ rating = 0, color = "#ffc107", size = 24 }) {
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 >= 0.5;
 
@@ -10,7 +10,7 @@ function StarRatingDisplay({ rating = 0, color = "#FFEE58", size = 24 }) {
         <svg
           key={index}
           className={`${
-            index < fullStars ? "text-yellow-400" : "text-gray-300"
+            index < fullStars ? `text-[${color}]` : "text-gray-300"
           }`}
           style={{
             width: `${size}px`,

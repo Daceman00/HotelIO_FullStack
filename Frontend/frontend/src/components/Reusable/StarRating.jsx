@@ -3,7 +3,7 @@ import useStarRatingStore from "../../stores/StarRatingStore";
 
 function StarRating({
   maxRating = 5,
-  color = "text-yellow-400",
+  color = "text-[#ffc107]",
   size = 24,
   className = "",
   defaultRating = 0,
@@ -35,7 +35,7 @@ function StarRating({
             <svg
               key={i}
               className={`cursor-pointer transition-colors ${
-                isFull ? "text-yellow-400" : "text-gray-300"
+                isFull ? "text-[#ffc107]" : "text-gray-300"
               }`}
               style={{
                 width: `${size}px`,

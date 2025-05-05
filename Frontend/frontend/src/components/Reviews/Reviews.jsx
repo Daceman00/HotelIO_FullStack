@@ -31,12 +31,20 @@ function Reviews() {
         <div className="container px-4 mx-auto">
           {/* Section Header */}
           <div className="max-w-2xl mx-auto text-center mb-14 lg:mb-16">
-            <span className="inline-block px-4 py-1 mb-4 text-sm font-semibold tracking-wider text-[#dfa974] uppercase rounded-full bg-[#dfa974]/10">
+            <span className="inline-block py-1 px-3 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-100 text-sm font-medium mb-3">
               Testimonials
             </span>
-            <h2 className="text-4xl font-bold text-gray-900 sm:text-5xl">
-              Guest Experiences
-            </h2>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-amber-400">
+                Guest Experience
+              </span>
+            </h1>
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
+              Read authentic experiences from our valued guests. Their stories
+              and feedback help us maintain our commitment to excellence and
+              hospitality.
+            </p>
+            <div className="h-1 w-24 bg-gradient-to-r from-amber-600 to-amber-400 rounded-full mx-auto"></div>
           </div>
 
           {/* Reviews Carousel */}
