@@ -2,6 +2,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Booking = require('../models/bookingModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const axios = require('axios'); // Add axios for external API calls
 
 exports.createPaymentIntent = catchAsync(async (req, res, next) => {
     const { bookingId } = req.body;
@@ -18,10 +19,10 @@ exports.createPaymentIntent = catchAsync(async (req, res, next) => {
         return next(new AppError('No booking found with that ID', 404));
     }
 
-    /* // Verify booking belongs to current user
+    // Verify booking belongs to current user
     if (booking.user.id !== req.user.id) {
         return next(new AppError('You can only pay for your own bookings', 403));
-    } */
+    }
 
     // Check if already paid
     if (booking.paid) {
@@ -50,7 +51,8 @@ exports.createPaymentIntent = catchAsync(async (req, res, next) => {
         metadata: {
             bookingId: booking._id.toString(),
             userId: req.user._id.toString()
-        }
+        },
+        payment_method_types: ['card'] // Explicitly allow only card payments
     });
 
     // Update booking with payment intent ID
@@ -155,5 +157,40 @@ exports.processPaymentWithDetails = catchAsync(async (req, res, next) => {
         status: 'success',
         paymentStatus: paymentIntent.status,
         data: booking
+    });
+});
+
+exports.getPaymentMethodToken = catchAsync(async (req, res, next) => {
+    const { number, exp_month, exp_year, cvc } = req.body;
+
+    console.log('Received card details:', { number, exp_month, exp_year, cvc });
+
+    // Validate card details
+    if (!number || !exp_month || !exp_year || !cvc) {
+        return next(new AppError('Please provide complete card details', 400));
+    }
+
+    // Make a request to Stripe's API to create a payment method
+    const response = await axios.post(
+        'https://api.stripe.com/v1/payment_methods',
+        new URLSearchParams({
+            type: 'card',
+            'card[number]': number,
+            'card[exp_month]': exp_month,
+            'card[exp_year]': exp_year,
+            'card[cvc]': cvc
+        }),
+        {
+            headers: {
+                Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }
+    );
+
+    // Return the payment method token
+    res.status(200).json({
+        status: 'success',
+        paymentMethodId: response.data.id // Return the payment method token (pm_xxx)
     });
 });
