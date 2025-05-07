@@ -10,6 +10,7 @@ import RoomsPage from "./pages/RoomsPage";
 import RoomDetails from "./components/Rooms/RoomDetails";
 import BookingsPage from "./pages/BookingsPage";
 import Signup from "./components/Auth/Signup";
+import Payments from "./components/Payments/Payments";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -49,6 +50,7 @@ function App() {
           <div className="flex flex-col flex-1 ml-1 overflow-y-auto">
             {isUserLoggedIn && <Header />}
             {/* Render Header if user is logged in */}
+            <Payments />
             <Routes>
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/rooms" element={<RoomsPage />} />
