@@ -21,3 +21,17 @@ export async function createPaymentIntent(bookingId) {
         throw new Error(error.response?.data?.message || "Payment intent not created");
     }
 }
+
+export async function processPayment(paymentIntentId, paymentMethod) {
+    try {
+        const { data } = await axios.post('payments/process-payment', {
+            paymentIntentId: paymentIntentId,
+            paymentMethod: paymentMethod
+        })
+        return data;
+    } catch (error) {
+        console.error(error);
+        throw new Error(error.response?.data?.message || "Payment not processed");
+    }
+
+}

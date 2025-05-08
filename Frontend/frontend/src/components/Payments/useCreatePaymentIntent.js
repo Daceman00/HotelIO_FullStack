@@ -1,15 +1,22 @@
 import { useMutation } from "@tanstack/react-query";
 import { createPaymentIntent } from "../../services/apiPayments";
+import usePaymentStore from "../../stores/PaymentStore";
+import toast from "react-hot-toast";
 
-export function useCreatePaymentIntent(bookingId) {
+export function useCreatePaymentIntent() {
     const setClientSecret = usePaymentStore((state) => state.setClientSecret);
-    const { data: paymentIntent, error, isPending } = useMutation({
+
+    const { mutate: paymentIntent, error, isPending } = useMutation({
         mutationKey: ['paymentIntent'],
-        mutationFn: () => createPaymentIntent(bookingId),
+        mutationFn: (bookingId) => {
+            return createPaymentIntent(bookingId);
+        },
         onSuccess: (data) => {
-            setClientSecret(data.clientSecret);
+            setClientSecret({ clientSecret: data.clientSecret });
+        },
+        onError: (err) => {
+            toast.error("Error creating payment intent:");
         },
     });
-
     return { paymentIntent, error, isPending };
 }

@@ -1,41 +1,47 @@
 import React, { useEffect } from "react";
-import { useGetPublishableKey } from "./useGetPublishableKey";
 import usePaymentStore from "../../stores/PaymentStore";
 import { loadStripe } from "@stripe/stripe-js";
 import LoadingSpinner from "../Reusable/LoadingSpinner";
 import { Elements } from "@stripe/react-stripe-js";
 import { useCreatePaymentIntent } from "./useCreatePaymentIntent";
+import CheckOutForm from "./CheckOutForm";
 
-function Payments({ bookingId }) {
+const pk =
+  "pk_test_51NYpWcDQYXmxwuNk08FZtOQ8ftYlHxl2tDEmi9ieSMpZysSDwMICIxGX2PykJvtegXLwYwy0iE0Cf1iz6FRkQ6iR00E3pJaRVU";
+
+function Payments({ bookingId = "681c639f87604016c1603533" }) {
+  const stripePromise = loadStripe(pk);
   const {
-    publishableKey,
-    error: errorKey,
-    isPending: isPendingKey,
-  } = useGetPublishableKey();
-  const {
-    createPaymentIntent,
+    paymentIntent,
     error: errorPaymentIntent,
     isPending: isPendingPaymentIntent,
-  } = useCreatePaymentIntent;
-  const setStripePromise = usePaymentStore((state) => state.setStripePromise);
-  const stripePromise = usePaymentStore((state) => state.stripePromise);
+  } = useCreatePaymentIntent();
+
   const clientSecret = usePaymentStore((state) => state.clientSecret);
 
   useEffect(() => {
-    if (publishableKey) {
-      setStripePromise(loadStripe(publishableKey));
-    }
+    paymentIntent(bookingId);
   }, []);
 
   return (
     <>
       <h1>React Stripe and the Payment Element</h1>
-      {isPendingKey ? (
+      {isPendingPaymentIntent ? (
         <LoadingSpinner />
       ) : (
-        stripePromise &&
         clientSecret && (
-          <Elements stripe={stripePromise} options={clientSecret}></Elements>
+          <Elements
+            stripe={stripePromise}
+            options={{
+              clientSecret: clientSecret.clientSecret,
+              appearance: {
+                theme: "stripe",
+                // Additional styling options
+              },
+            }}
+          >
+            <CheckOutForm />
+          </Elements>
         )
       )}
     </>

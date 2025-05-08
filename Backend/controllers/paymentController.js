@@ -52,7 +52,7 @@ exports.createPaymentIntent = catchAsync(async (req, res, next) => {
 
     // Create payment intent with customer
     const paymentIntent = await stripe.paymentIntents.create({
-        amount: booking.price * 100,
+        amount: booking.price,
         currency: 'usd',
         customer: customer.id,
         metadata: {
