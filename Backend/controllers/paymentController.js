@@ -62,18 +62,13 @@ exports.createPaymentIntent = catchAsync(async (req, res, next) => {
     });
 
     // Update booking with payment intent ID
-    try {
-        booking.paymentIntentId = paymentIntent.id;
-        booking.paymentStatus = 'processing';
-        await booking.save({ validateBeforeSave: false });
-    } catch (err) {
-        return next(new AppError('Error saving payment information', 500));
-    }
+    booking.paymentIntentId = paymentIntent.id;
+    await booking.save();
 
     res.status(200).json({
         status: 'success',
         clientSecret: paymentIntent.client_secret,
-        paymentIntentId: paymentIntent.id // Add this to response
+        paymentIntentId: paymentIntent.id
     });
 });
 

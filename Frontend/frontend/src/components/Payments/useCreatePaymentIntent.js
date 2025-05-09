@@ -12,11 +12,19 @@ export function useCreatePaymentIntent() {
             return createPaymentIntent(bookingId);
         },
         onSuccess: (data) => {
-            setClientSecret({ clientSecret: data.clientSecret });
+            if (data.clientSecret) {
+                setClientSecret({
+                    clientSecret: data.clientSecret,
+                    paymentIntentId: data.paymentIntentId
+                });
+            } else {
+                toast.error("Invalid payment intent response");
+            }
         },
-        onError: (err) => {
-            toast.error("Error creating payment intent:");
+        onError: (error) => {
+            toast.error(error.message || "Error creating payment intent");
         },
     });
+
     return { paymentIntent, error, isPending };
 }

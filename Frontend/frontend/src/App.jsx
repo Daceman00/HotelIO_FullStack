@@ -50,7 +50,7 @@ function App() {
           <div className="flex flex-col flex-1 ml-1 overflow-y-auto">
             {isUserLoggedIn && <Header />}
             {/* Render Header if user is logged in */}
-
+            <Payments />
             <Routes>
               <Route path="/payments" element={<Payments />} />
               <Route path="/dashboard" element={<DashboardPage />} />

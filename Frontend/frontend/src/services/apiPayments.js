@@ -35,3 +35,33 @@ export async function processPayment(paymentIntentId, paymentMethod) {
     }
 
 }
+
+
+export async function confirmPayment(paymentIntentId) {
+    try {
+        const response = await axios.post(`payments/confirm-payment`, {
+            paymentIntentId,
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error confirming payment:", error);
+        throw new Error(error.response?.data?.message || "Failed to confirm payment");
+    }
+}
+
+
+export async function processPaymentWithDetails(paymentIntentId, paymentMethod) {
+    try {
+        const response = await axios.post(`${API_URL}/payments/process-payment-details`, {
+            paymentIntentId,
+            paymentMethod,
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error processing payment details:", error);
+        throw new Error(error.response?.data?.message || "Failed to process payment details");
+    }
+}
+

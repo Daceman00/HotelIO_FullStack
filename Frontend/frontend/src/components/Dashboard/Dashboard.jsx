@@ -75,7 +75,7 @@ function Dashboard() {
             className="text-center lg:text-left space-y-3 md:space-y-2 lg:space-y-6 text-white"
           >
             <h1 className="text-3xl md:text-4xl lg:text-7xl font-bold leading-tight">
-              <span className="bg-gradient-to-r from-[#dfa974] to-[#e8b18d] text-transparent bg-clip-text">
+              <span className="bg-gradient-to-r from-amber-600 to-amber-400 text-transparent bg-clip-text">
                 HotelIO
               </span>
               <br />A New Dimension of Luxury
@@ -90,7 +90,7 @@ function Dashboard() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleRedirect}
-              className="inline-flex items-center px-6 md:px-4 lg:px-8 py-3 md:py-2 lg:py-4 bg-[#dfa974] hover:bg-[#c68a5e] text-base md:text-sm lg:text-lg font-semibold rounded-lg shadow-lg transition-all duration-300"
+              className="inline-flex items-center px-6 md:px-4 lg:px-8 py-3 md:py-2 lg:py-4 bg-gradient-to-r from-amber-600 to-amber-400 text-base md:text-sm lg:text-lg font-semibold rounded-lg shadow-lg transition-all duration-300"
             >
               Explore Rooms
               <i className="fas fa-arrow-right ml-3" />

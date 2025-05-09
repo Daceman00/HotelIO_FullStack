@@ -1,17 +1,64 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   useStripe,
   useElements,
   PaymentElement,
 } from "@stripe/react-stripe-js";
 import toast from "react-hot-toast";
+import { useProcessPayment } from "./useProcessPayment";
+import { useConfirmPayment } from "./useConfirmPayment";
 
-function CheckOutForm() {
+function CheckOutForm({ paymentIntentId }) {
   const stripe = useStripe();
   const elements = useElements();
-
   const [message, setMessage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const {
+    processPayment: processPaymentMutation,
+    isPending: isProcessingPayment,
+  } = useProcessPayment();
+  const { confirmPayment, isPending: isConfirmingPayment } =
+    useConfirmPayment();
+
+  // Handle required action for authentication challenges
+  const handleRequiredAction = async (clientSecret) => {
+    setMessage("Additional authentication required...");
+
+    try {
+      const { error } = await stripe.handleCardAction(clientSecret);
+
+      if (error) {
+        setMessage(`Authentication failed: ${error.message}`);
+        setIsProcessing(false);
+        return;
+      }
+
+      // After authentication, create a new payment method
+      const { error: paymentMethodError, paymentMethod } =
+        await stripe.createPaymentMethod({
+          type: "card",
+          card: elements.getElement(PaymentElement),
+        });
+
+      if (paymentMethodError) {
+        setMessage(
+          `Payment method creation failed: ${paymentMethodError.message}`
+        );
+        setIsProcessing(false);
+        return;
+      }
+
+      // Process payment with the new payment method
+      processPaymentMutation({
+        paymentIntentId,
+        paymentMethodId: paymentMethod.id,
+      });
+    } catch (err) {
+      setMessage("Authentication failed. Please try again.");
+      setIsProcessing(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,38 +66,61 @@ function CheckOutForm() {
     if (!stripe || !elements) {
       return;
     }
+
     setIsProcessing(true);
+    setMessage("Processing payment...");
 
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/dashboard`,
-      },
-      redirect: "if_required",
-    });
+    try {
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/dashboard`,
+        },
+        redirect: "if_required",
+      });
 
-    if (error) {
-      if (error?.type === "card_error" || error?.type === "validation_error") {
-        setMessage(error.message);
+      if (error) {
+        setMessage(`Payment failed: ${error.message}`);
+        toast.error(`Payment failed: ${error.message}`);
+        setIsProcessing(false);
       } else {
-        setMessage("An unexpected error occurred.");
+        confirmPayment(paymentIntentId);
       }
-    } else {
-      toast.success("Payment confirmed successfully.");
+    } catch (err) {
+      setMessage("An unexpected error occurred.");
+      toast.error("An unexpected error occurred.");
+      setIsProcessing(false);
     }
-
-    setIsProcessing(false);
   };
 
+  const isLoading = isProcessing || isProcessingPayment || isConfirmingPayment;
+
   return (
-    <form id="payment-form" onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-5">
       <PaymentElement id="payment-element" />
-      <button disabled={isProcessing || !stripe || !elements} id="submit">
-        <span id="button-text">
-          {isProcessing ? "Processing ... " : "Pay now"}
-        </span>
+
+      <button
+        disabled={isLoading || !stripe || !elements}
+        className={`
+          w-full mt-5 px-4 py-3 text-white font-medium rounded-md
+          transition-colors duration-200 ease-in-out
+          ${
+            isLoading || !stripe || !elements
+              ? "bg-blue-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700 cursor-pointer"
+          }
+        `}
+      >
+        {isLoading ? (
+          <div className="flex items-center justify-center">
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          "Pay Now"
+        )}
       </button>
-      {message && <div id="payment-message">{message}</div>}
+
+      {message && <div className="mt-3 text-sm text-red-600">{message}</div>}
     </form>
   );
 }
