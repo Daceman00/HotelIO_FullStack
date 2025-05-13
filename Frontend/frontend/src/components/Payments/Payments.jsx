@@ -7,7 +7,7 @@ import { useCreatePaymentIntent } from "./useCreatePaymentIntent";
 import CheckOutForm from "./CheckOutForm";
 import toast from "react-hot-toast";
 
-function Payments({ bookingId = "681c639f87604016c1603533" }) {
+function Payments({ bookingId = "6821b04ade325bf5dd647b4e" }) {
   const [stripePromise, setStripePromise] = useState(null);
   const [isLoadingKey, setIsLoadingKey] = useState(true);
 

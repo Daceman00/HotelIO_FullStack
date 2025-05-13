@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import { useProcessPayment } from "./useProcessPayment";
 import { useConfirmPayment } from "./useConfirmPayment";
 
-function CheckOutForm({ paymentIntentId }) {
+function CheckOutForm({ paymentIntentId, onSuccess }) {
   const stripe = useStripe();
   const elements = useElements();
   const [message, setMessage] = useState(null);
@@ -50,10 +50,23 @@ function CheckOutForm({ paymentIntentId }) {
       }
 
       // Process payment with the new payment method
-      processPaymentMutation({
-        paymentIntentId,
-        paymentMethodId: paymentMethod.id,
-      });
+      processPaymentMutation(
+        {
+          paymentIntentId,
+          paymentMethodId: paymentMethod.id,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Payment successful!");
+            onSuccess?.();
+          },
+          onError: (error) => {
+            setMessage(`Payment failed: ${error.message}`);
+            toast.error(`Payment failed: ${error.message}`);
+            setIsProcessing(false);
+          },
+        }
+      );
     } catch (err) {
       setMessage("Authentication failed. Please try again.");
       setIsProcessing(false);
@@ -84,7 +97,19 @@ function CheckOutForm({ paymentIntentId }) {
         toast.error(`Payment failed: ${error.message}`);
         setIsProcessing(false);
       } else {
-        confirmPayment(paymentIntentId);
+        // Call confirmPayment and handle the response
+        const result = await confirmPayment(paymentIntentId);
+
+        if (result?.requiresAction && result?.clientSecret) {
+          // Handle 3D Secure or other required actions
+          await handleRequiredAction(result.clientSecret);
+        } else if (result?.paymentStatus === "succeeded") {
+          // Payment succeeded
+          toast.success("Payment successful!");
+          onSuccess?.();
+        }
+        setIsProcessing(false);
+        setMessage(null);
       }
     } catch (err) {
       setMessage("An unexpected error occurred.");
@@ -96,7 +121,7 @@ function CheckOutForm({ paymentIntentId }) {
   const isLoading = isProcessing || isProcessingPayment || isConfirmingPayment;
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-5">
+    <form onSubmit={handleSubmit} className="w-full">
       <PaymentElement id="payment-element" />
 
       <button

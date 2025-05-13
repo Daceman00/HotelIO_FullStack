@@ -7,14 +7,16 @@ export function useConfirmPayment() {
         mutationKey: ['confirmPayment'],
         mutationFn: (paymentIntentId) => confirmPaymentApi(paymentIntentId),
         onSuccess: (data) => {
-            if (data.requiresAction) {
-                handleRequiredAction(data.clientSecret);
+            if (data.requiresAction && data.clientSecret) {
+                // Return the data so the component can handle the required action
+                return data;
             } else if (data.paymentStatus === "succeeded") {
                 toast.success("Payment successful!");
+                return data;
             }
         },
-        onError: () => {
-            toast.error("Failed to confirm payment.");
+        onError: (error) => {
+            toast.error(error.message || "Failed to confirm payment.");
         }
     });
 

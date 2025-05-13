@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../Reusable/LoadingSpinner";
 import Error from "../Reusable/Error";
+import PaymentModal from "./components/Payments/PaymentModal";
 
 function BookingInfoModal({
   isOpen,
@@ -198,6 +199,17 @@ function BookingInfoModal({
               >
                 View Bookings
               </button>
+              <button
+                onClick={() => setIsPaymentModalOpen(true)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Pay Now
+              </button>
+              <PaymentModal
+                isOpen={isPaymentModalOpen}
+                onClose={() => setIsPaymentModalOpen(false)}
+                bookingId={bookingId}
+              />
             </div>
           </>
         )}
