@@ -4,6 +4,7 @@ import { useGetUsersBookingsCount } from "./useGetUsersBookingsCounts";
 import { useInView } from "react-intersection-observer";
 import useUIStore from "../../stores/UiStore";
 import SingleBooking from "./SingleBooking";
+import LoadingSpinner from "../Reusable/LoadingSpinner";
 
 function UserBookings() {
   const { bookingActiveTab, setBookingActiveTab } = useUIStore();

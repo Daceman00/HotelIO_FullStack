@@ -26,10 +26,10 @@ exports.createPaymentIntent = catchAsync(async (req, res, next) => {
         return next(new AppError('No booking found with that ID', 404));
     }
 
-    /* // Verify booking belongs to current user
+    // Verify booking belongs to current user
     if (booking.user.id !== req.user.id) {
         return next(new AppError('You can only pay for your own bookings', 403));
-    } */
+    }
 
     // Check if already paid
     if (booking.paid) {

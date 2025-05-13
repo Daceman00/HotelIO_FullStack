@@ -87,7 +87,7 @@ function CheckOutForm({ paymentIntentId, onSuccess }) {
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `${window.location.origin}/dashboard`,
+          return_url: `${window.location.origin}/bookings`,
         },
         redirect: "if_required",
       });

@@ -1,9 +1,9 @@
 import { format, parseISO } from "date-fns";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../Reusable/LoadingSpinner";
 import Error from "../Reusable/Error";
-import PaymentModal from "./components/Payments/PaymentModal";
+import PaymentModal from "../Payments/PaymentModal";
 
 function BookingInfoModal({
   isOpen,
@@ -14,6 +14,7 @@ function BookingInfoModal({
   opacity = 50,
 }) {
   const navigate = useNavigate();
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -208,7 +209,7 @@ function BookingInfoModal({
               <PaymentModal
                 isOpen={isPaymentModalOpen}
                 onClose={() => setIsPaymentModalOpen(false)}
-                bookingId={bookingId}
+                bookingId={bookingData.id}
               />
             </div>
           </>
