@@ -172,7 +172,7 @@ const Sidebar = React.memo(function Sidebar() {
 
         <button
           onClick={toggleSidebar}
-          className="fixed top-4 left-4 z-50 bg-[#dfa974] text-white px-4 py-2 rounded-lg focus:outline-none shadow-lg hover:bg-[#c5915f] transition"
+          className="fixed top-12 left-4 z-[60] bg-[#dfa974] text-white px-4 py-2 rounded-lg focus:outline-none shadow-lg hover:bg-[#c5915f] transition"
         >
           ☰
         </button>

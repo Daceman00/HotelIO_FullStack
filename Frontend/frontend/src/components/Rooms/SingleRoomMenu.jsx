@@ -31,7 +31,7 @@ function SingleRoomMenu({ room }) {
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
       case "available":
-        return "bg-[#dfa974]";
+        return "bg-amber-500";
       case "maintenance":
         return "bg-red-500";
       default:
@@ -48,7 +48,7 @@ function SingleRoomMenu({ room }) {
 
   return (
     <div
-      className={`bg-white rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl ${
+      className={`bg-white rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1 ${
         !isAdmin && isMaintenance ? "opacity-50 pointer-events-none" : ""
       }`}
     >
@@ -67,7 +67,7 @@ function SingleRoomMenu({ room }) {
             />
 
             {/* Price Tag */}
-            <div className="absolute bottom-0 left-0 bg-[#dfa974] text-white py-1 px-3 rounded-tr-lg font-medium">
+            <div className="absolute bottom-0 left-0 bg-gradient-to-r from-amber-600 to-amber-400 text-white py-1 px-3 rounded-tr-lg font-medium">
               ${room.price}/night
             </div>
 
@@ -147,7 +147,7 @@ function SingleRoomMenu({ room }) {
           {/* Content Container */}
           <div className="p-6">
             {/* Room Info Header */}
-            <div className="flex justify-between items-center mb-3">
+            <div className="flex justify-between items-center mb-4">
               <div>
                 <h3 className="text-xl font-bold text-gray-800 mb-1">
                   Room #{room.roomNumber}
@@ -157,7 +157,7 @@ function SingleRoomMenu({ room }) {
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-xl font-bold text-[#dfa974]">
+                <p className="text-xl font-bold text-amber-500">
                   ${room.price}
                 </p>
                 <p className="text-xs text-gray-500">per night</p>
@@ -168,7 +168,7 @@ function SingleRoomMenu({ room }) {
             <div className="flex items-center text-gray-600 mb-4">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2"
+                className="h-5 w-5 mr-2 text-amber-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -190,7 +190,7 @@ function SingleRoomMenu({ room }) {
                 {room.features.map((feature) => (
                   <span
                     key={feature}
-                    className="px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-600"
+                    className="px-2 py-1 bg-amber-50 border border-amber-200 rounded-full text-xs text-amber-700"
                   >
                     {feature}
                   </span>
@@ -201,7 +201,7 @@ function SingleRoomMenu({ room }) {
             {/* View Details Button */}
             <button
               onClick={() => navigate(`/rooms/${room._id}`)}
-              className="w-full py-2.5 px-4 bg-[#dfa974] text-white rounded-lg font-medium hover:bg-[#c99764] transition-colors duration-300 flex items-center justify-center"
+              className="w-full py-2.5 px-4 bg-gradient-to-r from-amber-600 to-amber-400 text-white rounded-lg font-medium hover:from-amber-700 hover:to-amber-500 transition-colors duration-300 flex items-center justify-center shadow-sm"
             >
               View Details
               <svg

@@ -187,7 +187,7 @@ function BookingInfoModal({
             </div>
 
             {/* Footer */}
-            <div className="bg-gray-50 px-6 py-4 border-t border-gray-100 flex gap-3">
+            <div className="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-between gap-3">
               <button
                 onClick={onClose}
                 className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-3 px-4 rounded-lg transition-colors"
@@ -202,7 +202,7 @@ function BookingInfoModal({
               </button>
               <button
                 onClick={() => setIsPaymentModalOpen(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                className="flex-1 bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Pay Now
               </button>
