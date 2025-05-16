@@ -32,7 +32,7 @@ exports.createPaymentIntent = catchAsync(async (req, res, next) => {
     }
 
     // Check if already paid
-    if (booking.paid) {
+    if (booking.paid === 'paid') {
         return next(new AppError('This booking is already paid', 400));
     }
 
@@ -88,7 +88,7 @@ exports.confirmPayment = catchAsync(async (req, res, next) => {
     switch (paymentIntent.status) {
         case 'succeeded':
             booking.paymentStatus = 'paid';
-            booking.paid = true;
+            booking.paid = 'paid';
             booking.paidAt = new Date();
             break;
         case 'processing':
@@ -150,8 +150,8 @@ exports.processPaymentWithDetails = catchAsync(async (req, res, next) => {
     // Find and update booking
     const booking = await Booking.findOne({ paymentIntentId });
     booking.paymentStatus = paymentIntent.status === 'succeeded' ? 'paid' : 'pending';
-    booking.paid = paymentIntent.status === 'succeeded';
-    if (booking.paid) booking.paidAt = new Date();
+    booking.paid = paymentIntent.status === 'succeeded' ? 'paid' : 'unpaid';
+    if (booking.paid === 'paid') booking.paidAt = new Date();
     await booking.save();
 
     res.status(200).json({

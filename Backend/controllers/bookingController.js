@@ -588,3 +588,43 @@ exports.getMostBookedRooms = catchAsync(async (req, res, next) => {
 exports.getBooking = factory.getOne(Booking);
 exports.updateBooking = factory.updateOne(Booking);
 
+exports.deleteUnpaidBookingsAtCheckIn = catchAsync(async (req, res, next) => {
+    const currentDate = new Date();
+    currentDate.setHours(12, 0, 0, 0); // Set to noon for check-in time
+
+    // Find all unpaid bookings where check-in date is today or in the past
+    const unpaidBookings = await Booking.find({
+        paid: 'unpaid',
+        checkIn: { $lte: currentDate }
+    }).populate('user');
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        for (const booking of unpaidBookings) {
+            // Mark the booking as missed
+            booking.paid = 'missed';
+            await booking.save({ session });
+
+            // Here you could add code to send notification to user
+            // For example: sendEmail(booking.user.email, 'Booking Cancelled', 'Your booking was cancelled due to non-payment')
+        }
+
+        await session.commitTransaction();
+
+        res.status(200).json({
+            status: 'success',
+            message: `Successfully marked ${unpaidBookings.length} unpaid bookings as missed`,
+            data: {
+                processedCount: unpaidBookings.length
+            }
+        });
+    } catch (error) {
+        await session.abortTransaction();
+        next(error);
+    } finally {
+        session.endSession();
+    }
+});
+

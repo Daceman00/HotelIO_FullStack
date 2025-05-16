@@ -13,6 +13,7 @@ import Modal from "../Reusable/Modal";
 const statusStyles = {
   paid: "bg-green-100 text-green-800",
   unpaid: "bg-red-100 text-red-800",
+  missed: "bg-orange-100 text-orange-800",
 };
 
 const formatDate = (date) => {
@@ -23,14 +24,29 @@ const formatDate = (date) => {
   });
 };
 
-const PaymentBadge = ({ isPaid }) => (
-  <span
-    className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
-    ${isPaid ? statusStyles.paid : statusStyles.unpaid}`}
-  >
-    {isPaid ? "Paid" : "Unpaid"}
-  </span>
-);
+const PaymentBadge = ({ paymentStatus }) => {
+  const getPaymentLabel = (status) => {
+    switch (status) {
+      case "paid":
+        return "Paid";
+      case "unpaid":
+        return "Unpaid";
+      case "missed":
+        return "Missed Payment";
+      default:
+        return "Unpaid";
+    }
+  };
+
+  return (
+    <span
+      className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
+      ${statusStyles[paymentStatus] || statusStyles.unpaid}`}
+    >
+      {getPaymentLabel(paymentStatus)}
+    </span>
+  );
+};
 
 function SingleBooking({ booking }) {
   const { deleteBooking, isPending, error } = useDeleteBooking();
@@ -54,7 +70,7 @@ function SingleBooking({ booking }) {
           description={"If you delete this user, it will lose all his data!"}
           onConfirm={handleConfirmModal}
           isPending={isPending}
-          opacity="10"
+          opacity="50"
         />
       )}
       <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 max-w-lg">
@@ -115,7 +131,7 @@ function SingleBooking({ booking }) {
                 <h4 className="text-sm text-gray-500 font-medium uppercase tracking-wider mb-1">
                   Payment Status
                 </h4>
-                <PaymentBadge isPaid={booking.paid} />
+                <PaymentBadge paymentStatus={booking.paymentStatus} />
               </div>
               <div className="text-sm text-gray-500">
                 Booked on {formatDate(booking.createdAt)}

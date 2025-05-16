@@ -24,8 +24,9 @@ const bookingSchema = new mongoose.Schema({
         default: 0 // Add a default value for price
     },
     paid: {
-        type: Boolean,
-        default: false
+        type: String,
+        enum: ['unpaid', 'paid', 'missed'],
+        default: 'unpaid'
     },
     paidAt: {
         type: Date
@@ -135,10 +136,15 @@ bookingSchema.pre('save', async function (next) {
 
 // Pre-save middleware to set the paidAt field
 bookingSchema.pre('save', function (next) {
-    if (this.isModified('paid') && this.paid) {
+    if (this.isModified('paid') && this.paid === 'paid') {
         this.paidAt = new Date();
     }
     next();
+});
+
+// Add a virtual property for backward compatibility
+bookingSchema.virtual('isPaid').get(function () {
+    return this.paid === 'paid';
 });
 
 bookingSchema.pre(/^find/, function (next) {
