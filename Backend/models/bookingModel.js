@@ -96,7 +96,7 @@ bookingSchema.pre('save', async function (next) {
     }
 
     // Set default check-in and check-out times
-    this.checkIn.setHours(12, 0, 0, 0); // Set default check-in time to 14:00
+    this.checkIn.setHours(12, 0, 0, 0); // Set default check-in time to 12:00
     this.checkOut.setHours(11, 0, 0, 0); // Set default check-out time to 11:00
 
     // Skip overlapping booking check if only the 'paid' property is being updated

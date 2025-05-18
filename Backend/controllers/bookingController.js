@@ -147,14 +147,15 @@ exports.getAllBookings = catchAsync(async (req, res, next) => {
                 break;
             case 'past':
                 filters.checkOut = { $lte: currentDate };
+                filters.paid = { $ne: 'missed' }; // Exclude missed bookings from past
+                break;
+            case 'missed':
+                filters.paid = 'missed';
                 break;
         }
     }
 
-    // Handle paid filter
-    if (req.query.paid !== undefined) {
-        filters.paid = req.query.paid === 'true';
-    }
+
 
     // Handle search for room.roomNumber, room.roomType, and user fields
     if (req.query.search) {

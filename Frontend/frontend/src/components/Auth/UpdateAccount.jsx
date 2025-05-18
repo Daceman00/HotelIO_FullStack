@@ -8,8 +8,8 @@ import { useDeleteAccount } from "./useDeleteAccount";
 import useFileStore from "../../stores/FileStore";
 import { useUpdateAccountPhoto } from "./useUpdateAccountPhoto";
 import FileUploadInput from "../Reusable/FileUploadInput";
-import WarningButton from "../Reusable/WarningButton";
 import LoadingSpinner from "../Reusable/LoadingSpinner";
+import { Camera, Trash2, Mail, User, Lock } from "lucide-react";
 
 function UpdateAccount() {
   const { user, isPending } = useIsLoggedIn();
@@ -48,7 +48,6 @@ function UpdateAccount() {
       formData.append("photo", selectedFile);
     }
     formData.append("name", updateAccountFormData.name);
-    // Send FormData directly, not wrapped in an object
     await updateAccountPhoto(formData);
   };
 
@@ -57,32 +56,106 @@ function UpdateAccount() {
     onModalClose();
   };
 
-  return (
-    <section className="flex flex-col items-center pt-6 pb-6">
-      {isPending ? (
-        <LoadingSpinner />
-      ) : (
-        <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-          <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              Update Your Account Information
-            </h1>
+  // Custom file upload preview component
+  const PhotoPreview = () => {
+    return (
+      <div className="flex flex-col items-center mb-6">
+        <div className="relative mb-4">
+          <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-[#dfa379] shadow-lg">
+            {previewUrl ? (
+              <img
+                src={previewUrl}
+                alt="Profile preview"
+                className="w-full h-full object-cover"
+              />
+            ) : user?.data.photo ? (
+              <img
+                src={user.data.photo}
+                alt="Current profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-700">
+                <User size={32} className="text-gray-400" />
+              </div>
+            )}
+          </div>
+          <label
+            htmlFor="file-upload"
+            className="absolute bottom-0 right-0 bg-[#dfa379] p-2 rounded-full cursor-pointer shadow-md hover:bg-[#c48960] transition-colors duration-200"
+          >
+            <Camera size={16} className="text-white" />
+            <input
+              id="file-upload"
+              name="file-upload"
+              type="file"
+              className="sr-only"
+              accept="image/*"
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  const fileReader = new FileReader();
+                  const file = e.target.files[0];
+                  fileReader.onload = () => {
+                    useFileStore.setState({
+                      previewUrl: fileReader.result,
+                      selectedFile: file,
+                    });
+                  };
+                  fileReader.readAsDataURL(file);
+                }
+              }}
+            />
+          </label>
+        </div>
+        {previewUrl && (
+          <button
+            type="button"
+            className="text-sm text-red-500 hover:text-red-700 flex items-center"
+            onClick={() =>
+              useFileStore.setState({ previewUrl: null, selectedFile: null })
+            }
+          >
+            <Trash2 size={14} className="mr-1" />
+            Remove
+          </button>
+        )}
+      </div>
+    );
+  };
 
-            <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
-              <FileUploadInput />
+  return (
+    <section className="flex flex-col items-center pt-8 pb-8 px-4">
+      {isPending ? (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <LoadingSpinner />
+        </div>
+      ) : (
+        <div className="w-full bg-white rounded-2xl shadow-xl dark:bg-gray-800 overflow-hidden md:mt-0 sm:max-w-md">
+          <div className="bg-gradient-to-r from-[#dfa379] to-[#c48960] p-6 text-white">
+            <h1 className="text-2xl font-bold">Profile Settings</h1>
+            <p className="text-sm opacity-90 mt-1">
+              Update your personal information
+            </p>
+          </div>
+
+          <div className="p-6 md:p-8">
+            <form className="space-y-5" onSubmit={handleSubmit}>
+              <PhotoPreview />
+
               <div>
                 <label
                   htmlFor="name"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  className=" mb-2 text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center"
                 >
-                  Your Name
+                  <User size={16} className="mr-2" />
+                  Full Name
                 </label>
                 <input
                   type="text"
                   name="name"
                   id="name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder={updateAccountFormData.name}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-[#dfa379] focus:border-[#dfa379] block w-full p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  placeholder="Your name"
                   value={updateAccountFormData.name}
                   onChange={(e) =>
                     setUpdateAccountFormData("name", e.target.value)
@@ -90,58 +163,79 @@ function UpdateAccount() {
                   disabled={isPendingUpdatePhoto}
                 />
               </div>
+
               <div>
                 <label
                   htmlFor="email"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center"
                 >
-                  Email
+                  <Mail size={16} className="mr-2" />
+                  Email Address
                 </label>
                 <input
                   type="email"
                   name="email"
                   id="email"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder={updateAccountFormData.email}
+                  className="bg-gray-100 border border-gray-300 text-gray-500 rounded-lg block w-full p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 cursor-not-allowed"
+                  value={updateAccountFormData.email}
                   disabled
                 />
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Contact support to change your email address
+                </p>
               </div>
 
-              <button
-                disabled={isPendingUpdatePhoto}
-                type="submit"
-                className="w-full text-white bg-[#dfa379] hover:bg-[#c48960] focus:ring-4 focus:outline-none focus:ring-[#dfa379]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-[#dfa379] dark:hover:bg-[#c48960] dark:focus:ring-[#dfa379]/50"
-              >
-                Update Account
-              </button>
-              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Want to change your password?{" "}
-                <Link to="/updatePassword">
-                  <button className="font-medium text-[#dfa379] hover:text-[#c48960] hover:underline dark:text-[#dfa379]">
-                    Click Here!
-                  </button>
+              <div className="flex items-center pt-3">
+                <button
+                  disabled={isPendingUpdatePhoto}
+                  type="submit"
+                  className="w-full text-white bg-[#dfa379] hover:bg-[#c48960] focus:ring-4 focus:outline-none focus:ring-[#dfa379]/30 font-medium rounded-lg px-5 py-3 text-center transition-all duration-200 flex items-center justify-center"
+                >
+                  {isPendingUpdatePhoto ? (
+                    <span className="flex items-center">
+                      <LoadingSpinner size="sm" />
+                      <span className="ml-2">Updating...</span>
+                    </span>
+                  ) : (
+                    "Save Changes"
+                  )}
+                </button>
+              </div>
+
+              <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700 mt-6">
+                <Link
+                  to="/updatePassword"
+                  className="flex items-center text-sm font-medium text-[#dfa379] hover:text-[#c48960] transition-colors duration-200"
+                >
+                  <Lock size={16} className="mr-1" />
+                  Change Password
                 </Link>
-              </p>
+
+                <button
+                  type="button"
+                  onClick={onModalOpen}
+                  className="text-sm text-red-500 hover:text-red-700 flex items-center transition-colors duration-200"
+                >
+                  <Trash2 size={16} className="mr-1" />
+                  Delete Account
+                </button>
+              </div>
             </form>
-            <WarningButton onClick={onModalOpen}>
-              Delete My Account
-            </WarningButton>
           </div>
         </div>
       )}
-      {isModalOpen ? (
+
+      {isModalOpen && (
         <Modal
           isOpen={isModalOpen}
           onClose={onModalClose}
-          title={"Are you sure you want permanently delete your account?"}
-          description={
-            "If you delete your account, you will lose all your data!"
-          }
+          title="Delete Account"
+          description="Are you sure you want to permanently delete your account? This action cannot be undone and all your data will be lost."
           onConfirm={handleConfirmModal}
           isPending={isPendingDelete}
           opacity="50"
         />
-      ) : null}
+      )}
     </section>
   );
 }

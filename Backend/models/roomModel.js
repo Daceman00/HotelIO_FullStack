@@ -174,14 +174,6 @@ roomSchema.pre('remove', async function (next) {
     next();
 });
 
-// Exclude rooms under maintenance
-/* roomSchema.pre(/^find/, function (next) {
-    if (!this.options.includeMaintenance) {
-        this.find({ status: { $ne: 'maintenance' } });
-    }
-    next();
-});
- */
 const Room = mongoose.model("Room", roomSchema);
 
 module.exports = Room;

@@ -9,6 +9,16 @@ import UpdateButton from "../Reusable/UpdateButton";
 import { useDeleteBooking } from "./useDeleteBooking";
 import useUIStore from "../../stores/UiStore";
 import Modal from "../Reusable/Modal";
+import PaymentModal from "../Payments/PaymentModal";
+import { useState, useMemo } from "react";
+import {
+  eachDayOfInterval,
+  format,
+  parseISO,
+  isAfter,
+  setHours,
+  subDays,
+} from "date-fns"; // Add isAfter and setHours
 
 const statusStyles = {
   paid: "bg-green-100 text-green-800",
@@ -51,12 +61,30 @@ const PaymentBadge = ({ paymentStatus }) => {
 function SingleBooking({ booking }) {
   const { deleteBooking, isPending, error } = useDeleteBooking();
   const { isModalOpen } = useUIStore();
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const onModalOpen = useUIStore((state) => state.onModalOpen);
   const onModalClose = useUIStore((state) => state.onModalClose);
+
+  const now = new Date();
+  const today = new Date();
+  const paymentDeadline = setHours(today, 11, 30, 0);
+
+  const isDateBooked = () => {
+    const checkInDate = parseISO(booking.checkIn);
+    const isCheckInToday =
+      format(checkInDate, "yyyy-MM-dd") === format(now, "yyyy-MM-dd");
+
+    if (isCheckInToday) {
+      return isAfter(now, paymentDeadline);
+    }
+    return isAfter(now, checkInDate);
+  };
 
   const handleConfirmModal = () => {
     onModalClose();
   };
+
+  const isPaid = booking.paymentStatus === "paid";
 
   return (
     <>
@@ -139,11 +167,22 @@ function SingleBooking({ booking }) {
             </div>
 
             <div className="flex justify-center gap-3 mt-4">
-              <UpdateButton>Update</UpdateButton>
-              <WarningButton onClick={onModalOpen}>Delete</WarningButton>
+              <UpdateButton
+                isPaid={isPaid}
+                isPast={isDateBooked(booking.checkIn)}
+                onClick={() => setIsPaymentModalOpen(true)}
+              >
+                Pay
+              </UpdateButton>
+              <WarningButton onClick={onModalOpen}>Cancel</WarningButton>
             </div>
           </div>
         </div>
+        <PaymentModal
+          isOpen={isPaymentModalOpen}
+          onClose={() => setIsPaymentModalOpen(false)}
+          bookingId={booking.id}
+        />
       </div>
     </>
   );

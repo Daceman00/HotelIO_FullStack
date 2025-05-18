@@ -1,9 +1,14 @@
-function UpdateButton({ isPending, updateAction, data, children }) {
+function UpdateButton({ isPending, isPaid, onClick, isPast, children }) {
+  const isDisabled = isPending || isPaid || isPast;
   return (
     <button
-      disabled={isPending}
-      onClick={() => updateAction(data._id)}
-      className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 shadow-sm hover:shadow-md active:translate-y-0.5"
+      disabled={isDisabled}
+      onClick={onClick}
+      className={`flex items-center gap-2 font-medium py-2 px-4 rounded-md transition-colors duration-200 shadow-sm hover:shadow-md active:translate-y-0.5 ${
+        isDisabled
+          ? "bg-gray-400 cursor-not-allowed"
+          : "bg-blue-500 hover:bg-blue-600 text-white"
+      }`}
       type="button"
       aria-label="Update"
     >

@@ -99,7 +99,7 @@ function Bookings() {
                 ))}
               </div>
             ) : (
-              ["upcoming", "current", "past"].map((tab) => (
+              ["upcoming", "current", "past", "missed"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setBookingActiveTab(tab)}

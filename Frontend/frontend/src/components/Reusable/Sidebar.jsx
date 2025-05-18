@@ -16,6 +16,7 @@ import { useIsLoggedIn } from "../Auth/useAuth";
 import useAuthStore from "../../stores/AuthStore";
 import { useLogout } from "../Auth/useLogout";
 import { IMAGE_URL_USERS } from "../../helpers/imageURL";
+import { UserIcon } from "@heroicons/react/24/outline";
 
 const Sidebar = React.memo(function Sidebar() {
   const location = useLocation();
@@ -65,11 +66,15 @@ const Sidebar = React.memo(function Sidebar() {
             {/* User Info */}
             {isUserLoggedIn && user ? (
               <>
-                <img
-                  src={`${IMAGE_URL_USERS}/${user?.data?.photo}`}
-                  alt="User Avatar"
-                  className="w-24 h-24 mx-auto rounded-full border-4 border-[#dfa974]"
-                />
+                {user?.data?.photo ? (
+                  <img
+                    src={`${IMAGE_URL_USERS}/${user.data.photo}`}
+                    alt="User Avatar"
+                    className="w-24 h-24 mx-auto rounded-full border-4 border-[#dfa974]"
+                  />
+                ) : (
+                  <UserIcon className="w-24 h-24 mx-auto rounded-full border-4 border-[#dfa974]" />
+                )}
                 <h3 className="text-xl font-semibold mt-4">
                   {user?.data?.name}
                 </h3>
