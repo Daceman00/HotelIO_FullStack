@@ -70,8 +70,7 @@ function UpdateAccount() {
               />
             ) : user?.data.photo ? (
               <img
-                src={user.data.photo}
-                alt="Current profile"
+                src={user?.data.photo}
                 className="w-full h-full object-cover"
               />
             ) : (

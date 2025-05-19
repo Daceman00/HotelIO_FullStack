@@ -591,7 +591,7 @@ exports.updateBooking = factory.updateOne(Booking);
 
 exports.deleteUnpaidBookingsAtCheckIn = catchAsync(async (req, res, next) => {
     const currentDate = new Date();
-    currentDate.setHours(12, 0, 0, 0); // Set to noon for check-in time
+    currentDate.setHours(11, 0, 0, 0); // Set to 11 for check-in time
 
     // Find all unpaid bookings where check-in date is today or in the past
     const unpaidBookings = await Booking.find({
