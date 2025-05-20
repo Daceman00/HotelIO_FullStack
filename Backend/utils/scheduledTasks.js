@@ -6,16 +6,22 @@ const Review = require('../models/reviewModel');
 // Function to run the cleanup task
 const runCleanupTask = async () => {
     const currentDate = new Date();
-    currentDate.setHours(12, 0, 0, 0); // Set to noon for check-in time
+    const startOfToday = new Date(currentDate.setHours(0, 0, 0, 0));
+    const endOfToday = new Date(currentDate.setHours(23, 59, 59, 999));
+    const paymentDeadline = new Date(currentDate.setHours(11, 45, 0, 0)); // Set payment deadline to 11:30 AM
 
     const session = await mongoose.startSession();
     session.startTransaction();
 
     try {
-        // Find all unpaid bookings where check-in date is today or in the past
+        // Find all unpaid bookings where check-in date is today
         const unpaidBookings = await Booking.find({
             paid: 'unpaid',
-            checkIn: { $lte: currentDate }
+            checkIn: {
+                $gte: startOfToday,
+                $lte: endOfToday
+            },
+            createdAt: { $lte: paymentDeadline } // Only process bookings that existed before the payment deadline
         }).populate('user');
 
         console.log(`Found ${unpaidBookings.length} unpaid bookings to process`);
@@ -23,6 +29,7 @@ const runCleanupTask = async () => {
         for (const booking of unpaidBookings) {
             console.log(`Processing booking ${booking._id}:`);
             console.log(`- Check-in date: ${booking.checkIn}`);
+            console.log(`- Payment deadline: ${paymentDeadline}`);
             console.log(`- User: ${booking.user.email}`);
             console.log(`- Room: ${booking.room}`);
             console.log(`- Price: $${booking.price}`);
@@ -42,11 +49,11 @@ const runCleanupTask = async () => {
     } finally {
         session.endSession();
     }
-};
+};;
 
 // Schedule the task to run every day at 12:00 PM
 const scheduleCleanupTask = () => {
-    cron.schedule('0 12 * * *', () => {
+    cron.schedule('30 11 * * *', () => {
         console.log('Running scheduled cleanup task...');
         runCleanupTask();
     });

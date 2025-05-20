@@ -42,16 +42,18 @@ const PaymentBadge = ({ paymentStatus }) => {
       case "unpaid":
         return "Unpaid";
       case "missed":
-        return "Missed Payment";
+        return "Missed";
       default:
         return "Unpaid";
     }
   };
 
+  const status = paymentStatus?.toLowerCase();
+
   return (
     <span
       className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
-      ${statusStyles[paymentStatus] || statusStyles.unpaid}`}
+      ${statusStyles[status] || statusStyles.unpaid}`}
     >
       {getPaymentLabel(paymentStatus)}
     </span>
@@ -84,7 +86,7 @@ function SingleBooking({ booking }) {
     onModalClose();
   };
 
-  const isPaid = booking.paymentStatus === "paid";
+  const isPaid = booking.paid === "paid" || booking.paid === "missed";
 
   return (
     <>
@@ -159,7 +161,7 @@ function SingleBooking({ booking }) {
                 <h4 className="text-sm text-gray-500 font-medium uppercase tracking-wider mb-1">
                   Payment Status
                 </h4>
-                <PaymentBadge paymentStatus={booking.paymentStatus} />
+                <PaymentBadge paymentStatus={booking.paid} />
               </div>
               <div className="text-sm text-gray-500">
                 Booked on {formatDate(booking.createdAt)}

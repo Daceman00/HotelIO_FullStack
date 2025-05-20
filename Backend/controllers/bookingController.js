@@ -28,11 +28,13 @@ exports.getBookingsByUser = catchAsync(async (req, res, next) => {
             case 'current':
                 filter.$and = [
                     { checkIn: { $lte: currentDate } },
-                    { checkOut: { $gt: currentDate } }
+                    { checkOut: { $gt: currentDate } },
+                    { paid: { $ne: 'missed' } } // Exclude missed bookings from current
                 ];
                 break;
             case 'past':
                 filter.checkOut = { $lte: currentDate };
+                filter.paid = { $ne: 'missed' }; // Exclude missed bookings from past
                 break;
         }
     }
@@ -94,28 +96,6 @@ exports.getBookingsByRoom = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.markBookingAsPaid = catchAsync(async (req, res, next) => {
-    const booking = await Booking.findById(req.params.id).populate('user');
-
-    if (!booking) {
-        return next(new AppError('No booking found with that ID', 404));
-    }
-
-    // Check if the user making the request is the one who booked the room
-    if (booking.user._id.toString() !== req.user.id.toString()) {
-        return next(new AppError('You do not have permission to mark this booking as paid', 403));
-    }
-
-    booking.paid = true;
-    await booking.save();
-
-    res.status(200).json({
-        status: 'success',
-        data: {
-            booking
-        }
-    });
-});
 
 exports.createBooking = catchAsync(async (req, res, next) => {
     const newBooking = await Booking.create(req.body);
@@ -142,8 +122,10 @@ exports.getAllBookings = catchAsync(async (req, res, next) => {
             case 'current':
                 filters.$and = [
                     { checkIn: { $lte: currentDate } },
-                    { checkOut: { $gt: currentDate } }
+                    { checkOut: { $gt: currentDate } },
+                    { paid: { $ne: 'missed' } } // Exclude missed bookings from current
                 ];
+
                 break;
             case 'past':
                 filters.checkOut = { $lte: currentDate };
@@ -253,10 +235,12 @@ exports.getBookingCounts = catchAsync(async (req, res, next) => {
     const currentCount = await Booking.countDocuments({
         $and: [
             { checkIn: { $lte: currentDate } },
-            { checkOut: { $gt: currentDate } }
+            { checkOut: { $gt: currentDate } },
+            { paid: { $ne: 'missed' } } // Exclude missed bookings from current
         ]
     });
-    const pastCount = await Booking.countDocuments({ checkOut: { $lte: currentDate } });
+    const pastCount = await Booking.countDocuments({ checkOut: { $lte: currentDate }, paid: { $ne: 'missed' } });
+    const missedCount = await Booking.countDocuments({ paid: 'missed' });
     const totalCount = await Booking.countDocuments();
 
     res.status(200).json({
@@ -265,7 +249,8 @@ exports.getBookingCounts = catchAsync(async (req, res, next) => {
         data: {
             upcoming: upcomingCount,
             current: currentCount,
-            past: pastCount
+            past: pastCount,
+            missed: missedCount
         }
     });
 });
@@ -591,7 +576,7 @@ exports.updateBooking = factory.updateOne(Booking);
 
 exports.deleteUnpaidBookingsAtCheckIn = catchAsync(async (req, res, next) => {
     const currentDate = new Date();
-    currentDate.setHours(11, 0, 0, 0); // Set to 11 for check-in time
+    currentDate.setHours(12, 0, 0, 0); // Set to 11 for check-in time
 
     // Find all unpaid bookings where check-in date is today or in the past
     const unpaidBookings = await Booking.find({

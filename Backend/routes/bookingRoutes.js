@@ -54,10 +54,6 @@ router
     .delete(bookingController.deleteBooking);
 
 router
-    .route('/:id/pay')
-    .patch(authController.restrictTo('user', 'admin'), bookingController.markBookingAsPaid);
-
-router
     .route('/room/:id')
     .get(bookingController.getBookingsByRoom);
 
