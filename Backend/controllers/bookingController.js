@@ -24,6 +24,7 @@ exports.getBookingsByUser = catchAsync(async (req, res, next) => {
         switch (req.query.status) {
             case 'upcoming':
                 filter.checkIn = { $gt: currentDate };
+                filter.paid = { $ne: 'missed' }; // Exclude missed bookings from upcoming
                 break;
             case 'current':
                 filter.$and = [
@@ -118,6 +119,7 @@ exports.getAllBookings = catchAsync(async (req, res, next) => {
         switch (req.query.status) {
             case 'upcoming':
                 filters.checkIn = { $gt: currentDate };
+                filters.paid = { $ne: 'missed' }; // Exclude missed bookings from upcoming
                 break;
             case 'current':
                 filters.$and = [
@@ -231,7 +233,7 @@ exports.getAllBookings = catchAsync(async (req, res, next) => {
 exports.getBookingCounts = catchAsync(async (req, res, next) => {
     const currentDate = new Date();
 
-    const upcomingCount = await Booking.countDocuments({ checkIn: { $gt: currentDate } });
+    const upcomingCount = await Booking.countDocuments({ checkIn: { $gt: currentDate }, paid: { $ne: 'missed' } }); // Exclude missed bookings from upcoming
     const currentCount = await Booking.countDocuments({
         $and: [
             { checkIn: { $lte: currentDate } },
