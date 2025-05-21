@@ -53,7 +53,7 @@ const runCleanupTask = async () => {
 
 // Schedule the task to run every day at 12:00 PM
 const scheduleCleanupTask = () => {
-    cron.schedule('30 11 * * *', () => {
+    cron.schedule('45 11 * * *', () => {
         console.log('Running scheduled cleanup task...');
         runCleanupTask();
     });
