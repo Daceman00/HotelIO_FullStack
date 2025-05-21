@@ -7,8 +7,33 @@ function LatestBookings() {
   const { bookings, isPending, error } = useGetAllBookings();
   const latestBookings = bookings.slice(0, 5);
 
-  const getStatusColor = (paid) => {
-    return paid ? "text-green-600 bg-green-100" : "text-red-600 bg-red-100";
+  const getStatusConfig = (status) => {
+    switch (status) {
+      case "paid":
+        return {
+          bgColor: "bg-green-500",
+          textColor: "text-green-600 bg-green-100",
+          label: "Paid",
+        };
+      case "unpaid":
+        return {
+          bgColor: "bg-red-500",
+          textColor: "text-red-600 bg-red-100",
+          label: "Unpaid",
+        };
+      case "missed":
+        return {
+          bgColor: "bg-orange-100 ",
+          textColor: "text-orange-800 bg-orange-50",
+          label: "Missed",
+        };
+      default:
+        return {
+          bgColor: "bg-yellow-500",
+          textColor: "text-yellow-600 bg-yellow-100",
+          label: "Unknown",
+        };
+    }
   };
 
   const formatDate = (dateString) => {
@@ -108,15 +133,15 @@ function LatestBookings() {
                     <div className="flex items-center gap-2">
                       <div
                         className={`w-2 h-2 rounded-full ${
-                          booking.paid ? "bg-green-500" : "bg-red-500"
+                          getStatusConfig(booking.paid).bgColor
                         }`}
                       ></div>
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                          booking.paid
-                        )}`}
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          getStatusConfig(booking.paid).textColor
+                        }`}
                       >
-                        {booking.paid ? "Paid" : "Unpaid"}
+                        {getStatusConfig(booking.paid).label}
                       </span>
                     </div>
                   </td>

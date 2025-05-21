@@ -3,14 +3,12 @@ import { Link } from "react-router-dom";
 import { useIsLoggedIn } from "../Auth/useAuth";
 import useAuthStore from "../../stores/AuthStore";
 import useUIStore from "../../stores/UiStore";
+import Logo from "./Logo";
 
 const Header = React.memo(function Header() {
   const { user, isPending } = useIsLoggedIn();
-  const isUserLoggedIn = useAuthStore((state) => state.isUserLoggedIn);
   const setUserLoggedIn = useAuthStore((state) => state.setUserLoggedIn);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  // Get sidebar state from UIStore
-  const { sidebarVisible } = useUIStore();
 
   useEffect(() => {
     setUserLoggedIn(!!user);
@@ -105,13 +103,7 @@ const Header = React.memo(function Header() {
         <div className="container mx-auto px-4 md:px-8 lg:px-16">
           <div className="flex items-center justify-between py-4">
             {/* Logo */}
-            <div className="flex items-center">
-              <Link to="/" className="flex items-center">
-                <span className="hidden md:block text-2xl font-serif font-bold text-gray-800">
-                  Hotel<span className="text-amber-600">IO</span>
-                </span>
-              </Link>
-            </div>
+            <Logo />
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
