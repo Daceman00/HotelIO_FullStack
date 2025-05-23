@@ -37,6 +37,9 @@ exports.getBookingsByUser = catchAsync(async (req, res, next) => {
                 filter.checkOut = { $lte: currentDate };
                 filter.paid = { $ne: 'missed' }; // Exclude missed bookings from past
                 break;
+            case 'missed':
+                filter.paid = 'missed';
+                break;
         }
     }
 
@@ -265,17 +268,20 @@ exports.getUserBookingCounts = catchAsync(async (req, res, next) => {
         user: req.user.id,
         $and: [
             { checkIn: { $lte: currentDate } },
-            { checkOut: { $gt: currentDate } }
+            { checkOut: { $gt: currentDate } },
+            { paid: { $ne: 'missed' } }
         ]
     });
-    const pastCount = await Booking.countDocuments({ user: req.user.id, checkOut: { $lte: currentDate } });
+    const pastCount = await Booking.countDocuments({ user: req.user.id, checkOut: { $lte: currentDate }, paid: { $ne: 'missed' } });
+    const missedCount = await Booking.countDocuments({ user: req.user.id, paid: 'missed' });
 
     res.status(200).json({
         status: 'success',
         data: {
             upcoming: upcomingCount,
             current: currentCount,
-            past: pastCount
+            past: pastCount,
+            missed: missedCount
         }
     });
 });

@@ -62,10 +62,11 @@ const PaymentBadge = ({ paymentStatus }) => {
 
 function SingleBooking({ booking }) {
   const { deleteBooking, isPending, error } = useDeleteBooking();
-  const { isModalOpen } = useUIStore();
+  const { isBookingModalOpen } = useUIStore();
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const onModalOpen = useUIStore((state) => state.onModalOpen);
-  const onModalClose = useUIStore((state) => state.onModalClose);
+  const selectedBookingId = useUIStore((state) => state.selectedBookingId);
+  const onBookingModalOpen = useUIStore((state) => state.onBookingModalOpen);
+  const onBookingModalClose = useUIStore((state) => state.onBookingModalClose);
 
   const now = new Date();
   const today = new Date();
@@ -83,21 +84,21 @@ function SingleBooking({ booking }) {
   };
 
   const handleConfirmModal = () => {
-    onModalClose();
+    onBookingModalClose();
   };
 
   const isPaid = booking.paid === "paid" || booking.paid === "missed";
 
   return (
     <>
-      {isModalOpen && (
+      {isBookingModalOpen && selectedBookingId === booking.id && (
         <Modal
           action={deleteBooking}
-          userId={booking.id}
-          isOpen={isModalOpen}
-          onClose={onModalClose}
-          title={"Are you sure you want permanently delete this user?"}
-          description={"If you delete this user, it will lose all his data!"}
+          id={selectedBookingId}
+          isOpen={isBookingModalOpen}
+          onClose={onBookingModalClose}
+          title={"Are you sure you want permanently delete this booking?"}
+          description={"If you delete this booking, it cannot be recovered!"}
           onConfirm={handleConfirmModal}
           isPending={isPending}
           opacity="50"
@@ -176,7 +177,9 @@ function SingleBooking({ booking }) {
               >
                 Pay
               </UpdateButton>
-              <WarningButton onClick={onModalOpen}>Cancel</WarningButton>
+              <WarningButton onClick={() => onBookingModalOpen(booking.id)}>
+                Cancel
+              </WarningButton>
             </div>
           </div>
         </div>

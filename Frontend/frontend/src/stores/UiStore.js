@@ -6,8 +6,14 @@ const useUIStore = create((set) => ({
     setResetUserCard: () => set(() => ({ userCardVisible: false })),
 
     isModalOpen: false,
-    onModalOpen: () => set({ isModalOpen: true }),
-    onModalClose: () => set({ isModalOpen: false }),
+    selectedId: null,
+    onModalOpen: (Id) => set({ isModalOpen: true, selectedId: Id }),
+    onModalClose: () => set({ isModalOpen: false, selectedId: null }),
+
+    isBookingModalOpen: false,
+    selectedBookingId: null,
+    onBookingModalOpen: (Id) => set({ isBookingModalOpen: true, selectedBookingId: Id }),
+    onBookingModalClose: () => set({ isBookingModalOpen: false, selectedBookingId: null }),
 
     isRoomModalOpen: false,
     onRoomModalOpen: () => set({ isRoomModalOpen: true }),
@@ -47,13 +53,15 @@ const useUIStore = create((set) => ({
     bookingActiveTab: 'upcoming',
     setBookingActiveTab: (tab) => set({ bookingActiveTab: tab }),
 
-    selectedSortOption: 'created',
-    sortOrder: '-', // initial value stays as '-'
+    selectedSortOption: 'checkIn',
+    sortOrder: '', // initial value stays as '-'
     setSelectedSortOption: (option) => set({ selectedSortOption: option }),
     toggleSortOrder: () => set(state => ({ sortOrder: state.sortOrder === '' ? '-' : '' })),
 
     selectedFilterOption: [],
     setSelectedFilterOption: (options) => set({ selectedFilterOptions: options }),
+
+
 
 
 }))

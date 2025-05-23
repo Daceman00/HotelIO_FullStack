@@ -5,6 +5,7 @@ function SearchInput({
   placeholder = "Search...",
   searchQuery,
   setSearchQuery,
+  width,
 }) {
   const inputFocusRef = useRef(null);
 
@@ -25,7 +26,7 @@ function SearchInput({
 
   return (
     <div className="mb-4">
-      <div className="relative w-[200px]">
+      <div className={`relative w-[${width}]`}>
         <input
           ref={inputFocusRef}
           type="text"

@@ -47,7 +47,7 @@ function BookingInfoModal({
         ) : (
           <>
             {/* Header */}
-            <div className="bg-gradient-to-r from-green-500 to-green-400 p-8 relative">
+            <div className="bg-gradient-to-r from-amber-400 to-amber-500 p-8 relative">
               {/* Animated checkmark circle */}
               <div className="absolute -top-6 -left-6 w-32 h-32 bg-green-100/30 rounded-full" />
               <div className="flex flex-col items-center relative">
@@ -82,13 +82,16 @@ function BookingInfoModal({
             {/* Body */}
             <div className="p-6 space-y-6 overflow-y-auto">
               {bookingData && (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {/* Guest Info */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-green-100 rounded-lg">
+                  <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div
+                        className="p-2 rounded-lg"
+                        style={{ backgroundColor: "#dfa379" }}
+                      >
                         <svg
-                          className="w-5 h-5 text-green-600"
+                          className="w-6 h-6 text-white"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -101,20 +104,25 @@ function BookingInfoModal({
                           />
                         </svg>
                       </div>
-                      <h4 className="text-lg font-semibold text-gray-800">
+                      <h4 className="text-base font-bold text-gray-800">
                         Guest Information
                       </h4>
                     </div>
-                    <div className="space-y-3 pl-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-500">Name:</span>
-                        <span className="text-gray-800 font-medium">
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center p-2 bg-gray-50/80 rounded-lg">
+                        <span className="text-gray-600 font-medium text-xs">
+                          Name:
+                        </span>
+                        <span className="text-gray-900 font-semibold text-xs">
                           {bookingData.user.name}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-500">Email:</span>
-                        <span className="text-gray-800 break-all max-w-[160px] truncate">
+                      <div className="flex justify-between items-center p-2 bg-gray-50/80 rounded-lg">
+                        <span className="text-gray-600 font-medium text-xs">
+                          Email:
+                        </span>
+                        <span className="text-gray-900 break-all max-w-[150px] truncate font-semibold text-xs">
                           {bookingData.user.email}
                         </span>
                       </div>
@@ -122,11 +130,11 @@ function BookingInfoModal({
                   </div>
 
                   {/* Booking Details */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-green-100 rounded-lg">
+                  <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="p-2 bg-[#dfa379] rounded-lg">
                         <svg
-                          className="w-5 h-5 text-green-600"
+                          className="w-6 h-6 text-white"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -139,46 +147,65 @@ function BookingInfoModal({
                           />
                         </svg>
                       </div>
-                      <h4 className="text-lg font-semibold text-gray-800">
+                      <h4 className="text-base font-bold text-gray-800">
                         Booking Details
                       </h4>
                     </div>
-                    <div className="space-y-4 pl-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-500">Room:</span>
-                        <span className="text-gray-800 font-medium">
-                          {bookingData.room.roomNumber}
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center p-2 bg-gray-50/80 rounded-lg">
+                        <span className="text-gray-600 font-medium text-xs">
+                          Room:
+                        </span>
+                        <span className="text-gray-900 font-bold text-sm">
+                          #{bookingData.room.roomNumber}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-500">Check-in:</span>
-                        <span className="text-gray-800">
-                          {format(
-                            parseISO(bookingData.checkIn),
-                            "MMM dd, yyyy"
-                          )}
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="p-2 bg-gray-50/80 rounded-lg">
+                          <div className="text-gray-600 font-medium text-xs mb-1">
+                            Check-in:
+                          </div>
+                          <div className="text-gray-900 font-semibold text-xs">
+                            {format(
+                              parseISO(bookingData.checkIn),
+                              "MMM dd, yyyy"
+                            )}
+                          </div>
+                        </div>
+                        <div className="p-2 bg-gray-50/80 rounded-lg">
+                          <div className="text-gray-600 font-medium text-xs mb-1">
+                            Check-out:
+                          </div>
+                          <div className="text-gray-900 font-semibold text-xs">
+                            {format(
+                              parseISO(bookingData.checkOut),
+                              "MMM dd, yyyy"
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between items-center p-2 bg-gray-50/80 rounded-lg">
+                        <span className="text-gray-600 font-medium text-xs">
+                          Guests:
+                        </span>
+                        <span className="text-gray-900 font-semibold text-xs">
+                          {bookingData.numOfGuests}{" "}
+                          {bookingData.numOfGuests === 1 ? "Guest" : "Guests"}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-500">Check-out:</span>
-                        <span className="text-gray-800">
-                          {format(
-                            parseISO(bookingData.checkOut),
-                            "MMM dd, yyyy"
-                          )}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-500">Guests:</span>
-                        <span className="text-gray-800">
-                          {bookingData.numOfGuests}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-500">Total Price:</span>
-                        <span className="text-green-600 font-semibold">
-                          ${bookingData.price}
-                        </span>
+
+                      <div className="p-3 bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg border-2 border-amber-200">
+                        <div className="flex justify-between items-center">
+                          <span className="text-amber-800 font-bold text-sm">
+                            Total Price:
+                          </span>
+                          <span className="text-lg font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
+                            ${bookingData.price}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -196,7 +223,7 @@ function BookingInfoModal({
               </button>
               <button
                 onClick={() => navigate("/bookings")}
-                className="flex-1 bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 text-white font-medium py-3 px-4 rounded-lg transition-all"
+                className="flex-1 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-600 hover:to-amber-700 text-white font-medium py-3 px-4 rounded-lg transition-all"
               >
                 View Bookings
               </button>

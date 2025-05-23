@@ -10,7 +10,7 @@ function Modal({
   cancelText = "No, cancel",
   isPending,
   opacity,
-  userId,
+  id,
   action,
 }) {
   useEffect(() => {
@@ -27,7 +27,7 @@ function Modal({
 
   const handleConfirm = () => {
     if (action) {
-      action(userId);
+      action(id);
     }
     onConfirm();
   };
