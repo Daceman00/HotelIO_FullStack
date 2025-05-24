@@ -214,7 +214,7 @@ function Bookings() {
                 placeholder="Search bookings (room, user)"
                 searchQuery={bookingsSearchQuery}
                 setSearchQuery={setBookingsSearchQuery}
-                width="100%"
+                width="200"
               />
             </div>
           </div>

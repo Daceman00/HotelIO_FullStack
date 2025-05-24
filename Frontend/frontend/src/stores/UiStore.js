@@ -15,6 +15,11 @@ const useUIStore = create((set) => ({
     onBookingModalOpen: (Id) => set({ isBookingModalOpen: true, selectedBookingId: Id }),
     onBookingModalClose: () => set({ isBookingModalOpen: false, selectedBookingId: null }),
 
+    isDeleteRoomModalOpen: false,
+    selectedRoomId: null,
+    onDeleteRoomModalOpen: (Id) => set({ isDeleteRoomModalOpen: true, selectedRoomId: Id }),
+    onDeleteRoomModalClose: () => set({ isDeleteRoomModalOpen: false, selectedRoomId: null }),
+
     isRoomModalOpen: false,
     onRoomModalOpen: () => set({ isRoomModalOpen: true }),
     onRoomModalClose: () => set({ isRoomModalOpen: false }),

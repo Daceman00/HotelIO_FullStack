@@ -39,7 +39,7 @@ function RoomsMenu() {
         />
       )}
 
-      <div className="bg-gradient-to-b from-indigo-50 to-white min-h-screen">
+      <div className="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 min-h-screen">
         <div className="relative bg-gradient-to-r from-indigo-50 to-amber-50 shadow-md">
           <div
             className="absolute inset-0 bg-cover bg-center opacity-10"

@@ -64,3 +64,13 @@ export async function updateRoomStatus(roomId, status) {
         throw new Error(error.response.data.message);
     }
 }
+
+export async function deleteRoom(roomId) {
+    try {
+        const { data } = await axios.delete(`/rooms/${roomId}`)
+        return data
+    } catch (error) {
+        console.error(error.response);
+        throw new Error(error.response.data.message);
+    }
+}

@@ -35,7 +35,7 @@ function StatsPage() {
   } = useTopReviewers();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 sm:p-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 sm:p-6 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
       {usersIsPending ||
       isPending_count ||
       isPendingRevenue ||

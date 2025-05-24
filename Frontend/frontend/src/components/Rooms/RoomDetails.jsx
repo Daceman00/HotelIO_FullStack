@@ -53,7 +53,7 @@ const RoomDetails = () => {
   }, [room?.data.room.reviews]);
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 min-h-screen">
       {isRoomUpdateModalOpen && (
         <UpdateRoom
           isOpen={isRoomUpdateModalOpen}

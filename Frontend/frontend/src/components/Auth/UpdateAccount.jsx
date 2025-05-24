@@ -59,7 +59,7 @@ function UpdateAccount() {
   // Custom file upload preview component
   const PhotoPreview = () => {
     return (
-      <div className="flex flex-col items-center mb-6">
+      <div className="flex flex-col items-center mb-6 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
         <div className="relative mb-4">
           <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-[#dfa379] shadow-lg">
             {previewUrl ? (

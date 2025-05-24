@@ -1,9 +1,12 @@
 const Room = require('./../models/roomModel');
+const Booking = require('./../models/bookingModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
 const multer = require('multer');
 const sharp = require('sharp');
+const fs = require('fs').promises;
+const path = require('path');
 
 // Multer configuration
 const multerStorage = multer.memoryStorage();
@@ -170,4 +173,44 @@ exports.getAllRooms = factory.getAll(Room, "bookingsCount");
 exports.getRoom = factory.getOne(Room);
 exports.createRoom = factory.createOne(Room);
 exports.updateRoom = factory.updateOne(Room);
-exports.deleteRoom = factory.deleteOne(Room);
+
+exports.deleteRoom = catchAsync(async (req, res, next) => {
+    const room = await Room.findById(req.params.id);
+
+    if (!room) {
+        return next(new AppError('No room found with that ID', 404));
+    }
+
+    // Delete images from public folder
+    if (room.imageCover) {
+        const coverImagePath = path.join(__dirname, `../public/img/rooms/${room.imageCover}`);
+        try {
+            await fs.unlink(coverImagePath);
+        } catch (err) {
+            console.log('Error deleting cover image:', err);
+        }
+    }
+
+    if (room.images && room.images.length > 0) {
+        const deleteImagePromises = room.images.map(async (image) => {
+            const imagePath = path.join(__dirname, `../public/img/rooms/${image}`);
+            try {
+                await fs.unlink(imagePath);
+            } catch (err) {
+                console.log('Error deleting image:', err);
+            }
+        });
+        await Promise.all(deleteImagePromises);
+    }
+
+    // Delete all bookings associated with this room
+    await Booking.deleteMany({ room: req.params.id });
+
+    // Delete the room
+    await room.deleteOne();
+
+    res.status(204).json({
+        status: 'success',
+        data: null
+    });
+});

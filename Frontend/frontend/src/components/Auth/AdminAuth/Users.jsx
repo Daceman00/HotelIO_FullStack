@@ -47,7 +47,7 @@ function Users() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 bg-clip-text text-transparent">
+              <h1 className="text-3xl sm:text-4xl pb-1 font-bold bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 bg-clip-text text-transparent">
                 User Management
               </h1>
               <p className="text-gray-600 dark:text-gray-300 mt-2 text-sm sm:text-base">
@@ -86,7 +86,7 @@ function Users() {
                 placeholder="Search users by name, email, or role..."
                 searchQuery={userSearchQuery}
                 setSearchQuery={setUserSearchQuery}
-                width="250px"
+                width="200"
               />
             </div>
           </div>
