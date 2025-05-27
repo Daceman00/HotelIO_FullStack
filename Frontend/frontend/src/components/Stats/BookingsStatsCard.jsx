@@ -24,6 +24,7 @@ function BookingsStatsCard({ bookings }) {
           <span>Upcoming: {bookings.data.upcoming}</span>
           <span>Current: {bookings.data.current}</span>
           <span>Past: {bookings.data.past}</span>
+          <span>Missed: {bookings.data.missed}</span>
         </div>
       </div>
     </div>
