@@ -86,7 +86,7 @@ function Users() {
                 placeholder="Search users by name, email, or role..."
                 searchQuery={userSearchQuery}
                 setSearchQuery={setUserSearchQuery}
-                width="200"
+                width="250"
               />
             </div>
           </div>

@@ -9,6 +9,7 @@ exports.checkReviewEligibility = catchAsync(async (req, res, next) => {
     const booking = await Booking.findOne({
         user: userId,
         room: roomId,
+        paid: "paid", // Ensure the booking is paid
         checkIn: { $lte: new Date() }, // Check if checkIn date is in the past or today
         checkOut: { $lt: new Date() } // Check if checkOut date is in the past
     });
