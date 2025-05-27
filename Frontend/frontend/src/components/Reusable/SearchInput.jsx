@@ -25,7 +25,7 @@ function SearchInput({
   }, []);
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 ">
       <div className={`relative w-[${width}px]`}>
         <input
           ref={inputFocusRef}
