@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useGetBookingsByUser } from "./useGetBookingsByUser";
 import { useGetUsersBookingsCount } from "./useGetUsersBookingsCounts";
 import { useInView } from "react-intersection-observer";
@@ -7,7 +8,27 @@ import SingleBooking from "./SingleBooking";
 import LoadingSpinner from "../Reusable/LoadingSpinner";
 
 function UserBookings() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { bookingActiveTab, setBookingActiveTab } = useUIStore();
+
+  // Sync URL with active tab
+  useEffect(() => {
+    const tabFromUrl = searchParams.get("tab");
+    if (
+      tabFromUrl &&
+      ["upcoming", "current", "past", "missed"].includes(tabFromUrl)
+    ) {
+      setBookingActiveTab(tabFromUrl);
+    } else {
+      setSearchParams({ tab: bookingActiveTab });
+    }
+  }, [searchParams, setBookingActiveTab]);
+
+  const handleTabChange = (tab) => {
+    setSearchParams({ tab });
+    setBookingActiveTab(tab);
+  };
+
   const {
     bookings,
     isPending,
@@ -50,7 +71,7 @@ function UserBookings() {
                   ["upcoming", "current", "past", "missed"].map((tab) => (
                     <button
                       key={tab}
-                      onClick={() => setBookingActiveTab(tab)}
+                      onClick={() => handleTabChange(tab)}
                       className={`relative px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-300 ${
                         bookingActiveTab === tab
                           ? "bg-gradient-to-r from-[#dfa379] to-[#c4916b] text-white shadow-lg shadow-[#dfa379]/30 transform scale-105"

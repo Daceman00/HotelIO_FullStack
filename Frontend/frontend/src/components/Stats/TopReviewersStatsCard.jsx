@@ -1,11 +1,10 @@
-import React from "react";
 import { UserIcon } from "@heroicons/react/24/outline";
 
 function TopReviewersStatsCard({ reviewers }) {
   return (
     <div className="group relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-sm p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/50">
       {/* Gradient accent */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400"></div>
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-red-400"></div>
 
       {/* Subtle background pattern */}
       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-blue-50/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -14,8 +13,8 @@ function TopReviewersStatsCard({ reviewers }) {
         {/* Left section - Main stats */}
         <div className="flex sm:flex-col items-center sm:items-start gap-3 sm:gap-4 flex-1">
           <div className="flex items-center justify-between w-full sm:w-auto">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100 group-hover:from-blue-200 group-hover:to-indigo-200 transition-all duration-300 shadow-sm">
-              <UserIcon className="h-6 w-6 text-blue-600 group-hover:text-blue-700 transition-colors duration-300" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 group-hover:from-amber-200 group-hover:to-orange-200 transition-all duration-300 shadow-sm">
+              <UserIcon className="h-6 w-6 text-[#dfa379] group-hover:text-[#cc8f65] transition-colors duration-300" />
             </div>
 
             {/* Status indicator */}

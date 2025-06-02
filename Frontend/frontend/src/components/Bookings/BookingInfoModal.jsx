@@ -222,7 +222,7 @@ function BookingInfoModal({
                 Close
               </button>
               <button
-                onClick={() => navigate("/bookings")}
+                onClick={() => navigate("/bookings?tab=upcoming")}
                 className="flex-1 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-600 hover:to-amber-700 text-white font-medium py-3 px-4 rounded-lg transition-all"
               >
                 View Bookings
