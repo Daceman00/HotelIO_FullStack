@@ -20,6 +20,7 @@ import UpdateRoom from "./UpdateRoom";
 import useUIStore from "../../stores/UiStore";
 import FeatureItem from "../Reusable/FeatureItem";
 import StarRatingDisplay from "../Reusable/StarRatingDisplay";
+import LoadingSpinner from "../Reusable/LoadingSpinner";
 
 const RoomDetails = () => {
   const { isAdmin } = useAuthStore();
@@ -51,6 +52,22 @@ const RoomDetails = () => {
     });
     return sorted.slice(0, 5);
   }, [room?.data.room.reviews]);
+
+  if (isPending) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+        <p className="text-red-500">Error: {error.message}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 min-h-screen">

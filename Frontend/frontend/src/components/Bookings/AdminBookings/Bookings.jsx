@@ -1,16 +1,17 @@
 import { useEffect, useState, useRef, useCallback } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 import useUIStore from "../../../stores/UiStore";
 import SingleBooking from "../SingleBooking";
 import { useInView } from "react-intersection-observer";
 import { useGetBookingsCount } from "../AdminBookings/useGetBookingsCount";
 import { useGetAllBookings } from "./useGetAllBookings";
 import SearchInput from "../../Reusable/SearchInput";
-import { useLocation } from "react-router-dom";
 import LoadingSpinner from "../../Reusable/LoadingSpinner";
 import Error from "../../Reusable/Error";
 
 function Bookings() {
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { bookingActiveTab, setBookingActiveTab } = useUIStore();
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
   const { selectedSortOption, sortOrder } = useUIStore();
@@ -83,6 +84,18 @@ function Bookings() {
     setSelectedSortOption("checkIn");
   }, [location.pathname, setBookingsSearchQuery, setSelectedSortOption]);
 
+  useEffect(() => {
+    const tabFromUrl = searchParams.get("tab");
+    if (
+      tabFromUrl &&
+      ["upcoming", "current", "past", "missed"].includes(tabFromUrl)
+    ) {
+      setBookingActiveTab(tabFromUrl);
+    } else {
+      setSearchParams({ tab: bookingActiveTab });
+    }
+  }, [searchParams, setBookingActiveTab, bookingActiveTab]);
+
   if (error) return <Error message={error.message} />;
 
   return (
@@ -106,7 +119,10 @@ function Bookings() {
                   ["upcoming", "current", "past", "missed"].map((tab) => (
                     <button
                       key={tab}
-                      onClick={() => setBookingActiveTab(tab)}
+                      onClick={() => {
+                        setSearchParams({ tab });
+                        setBookingActiveTab(tab);
+                      }}
                       className={`relative px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-300 ${
                         bookingActiveTab === tab
                           ? "bg-gradient-to-r from-[#dfa379] to-[#c4916b] text-white shadow-lg shadow-[#dfa379]/30 transform scale-105"
