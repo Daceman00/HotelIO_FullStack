@@ -52,8 +52,8 @@ exports.resizeRoomImages = catchAsync(async (req, res, next) => {
          */
         await sharp(coverImage.buffer)
             .resize({
-                width: 400,
-                height: 400,
+                width: 416,
+                height: 256,
                 fit: 'cover',         // Square crop
                 position: 'center',   // Focus on the center of the image
                 withoutEnlargement: true,
