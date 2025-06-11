@@ -1,10 +1,18 @@
 import axios from "axios";
 
-export async function getAllRooms(sort) {
+export async function getAllRooms({ sort, limit = 9, page }) {
     try {
-        const params = { sort }
+        const params = { sort, limit, page }
         const { data } = await axios.get(`/rooms`, { params })
-        return data
+
+        return {
+            data: data.data,
+            total: data.results,
+            currentPage: page,
+            hasMore: data.results >= limit,
+            nextPage: data.results < limit ? null : page + 1
+        }
+
     } catch (error) {
         console.error(error.response);
         throw new Error(error.response.data.message);

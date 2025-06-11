@@ -4,15 +4,15 @@ import { useGetAllRooms } from "./useGetAllRooms";
 import LoadingSpinner from "../Reusable/LoadingSpinner";
 
 function Rooms() {
-  const { rooms, isPending } = useGetAllRooms("-averageRating");
+  const { rooms, isPending } = useGetAllRooms({ sort: "-averageRating" });
 
   const top4ratedRooms = useMemo(
     () =>
-      rooms?.data?.data
-        ?.filter((room) => room.status === "available")
-        ?.slice(0, 4) || [],
+      rooms?.filter((room) => room.status === "available")?.slice(0, 4) || [],
     [rooms]
   );
+
+  console.log("Top 4 Rated Rooms:", top4ratedRooms);
 
   return (
     <div

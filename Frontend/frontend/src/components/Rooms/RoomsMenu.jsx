@@ -10,24 +10,49 @@ import useAuthStore from "../../stores/AuthStore";
 import LoadingSpinner from "../Reusable/LoadingSpinner";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { IMAGE_URL_MENU } from "../../helpers/imageURL";
+import Pagination from "../Reusable/Pagination";
 
 function RoomsMenu() {
   const { isAdmin } = useAuthStore();
-  const { rooms, isPending } = useGetAllRooms("roomNumber");
+  const { rooms, isPending, error } = useGetAllRooms({
+    sort: "roomNumber",
+    limit: 9,
+  });
   const { isRoomModalOpen } = useUIStore();
   const onRoomModalOpen = useUIStore((state) => state.onRoomModalOpen);
   const onRoomModalClose = useUIStore((state) => state.onRoomModalClose);
   const location = useLocation();
   const [filter, setFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const roomsPerPage = 9;
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [location]);
 
-  const filteredRooms = rooms?.data.data.filter((room) => {
+  console.log("RoomsMenu - Rooms:", rooms);
+
+  const filteredRooms = rooms.filter((room) => {
     if (filter === "all") return true;
     return room.status.toLowerCase() === filter.toLowerCase();
   });
+
+  const indexOfLastRoom = currentPage * roomsPerPage;
+  const indexOfFirstRoom = indexOfLastRoom - roomsPerPage;
+  const currentRooms = filteredRooms.slice(indexOfFirstRoom, indexOfLastRoom);
+  const totalPages = Math.ceil(filteredRooms.length / roomsPerPage);
+
+  const handlePrevious = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNext = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  const handlePageSelect = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   return (
     <>
@@ -127,11 +152,22 @@ function RoomsMenu() {
               </h3>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
-              {filteredRooms?.map((room) => (
-                <SingleRoomMenu room={room} key={room._id} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
+                {currentRooms.map((room) => (
+                  <SingleRoomMenu room={room} key={room._id} />
+                ))}
+              </div>
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPrevious={handlePrevious}
+                  onNext={handleNext}
+                  onPageSelect={handlePageSelect}
+                />
+              )}
+            </>
           )}
         </div>
       </div>

@@ -74,6 +74,14 @@ exports.getAll = (Model, popOptions) =>
         // Count total documents
         const total = await Model.countDocuments(filter);
 
+        // Calculate total pages and current page
+        // Pagination parameters
+        // page: current page number (default: 1)
+        // limit: number of documents per page (default: 100)
+        const page = req.query.page * 1 || 1;
+        const limit = req.query.limit * 1 || 100;
+        const totalPages = Math.ceil(total / limit);
+
         let features = new APIFeatures(Model.find(filter), req.query)
             .filter()
             .sort()
@@ -88,7 +96,9 @@ exports.getAll = (Model, popOptions) =>
         res.status(200).json({
             status: 'success',
             results: doc.length,
-            total, // Include total in the response
+            total,
+            page,
+            totalPages,
             data: {
                 data: doc
             }
