@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useGetAllRooms } from "./useGetAllRooms";
 import SingleRoomMenu from "./SingleRoomMenu";
-import { Link, useLocation } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import CreateButton from "../Reusable/CreateButton";
 import useUIStore from "../../stores/UiStore";
@@ -13,45 +18,68 @@ import { IMAGE_URL_MENU } from "../../helpers/imageURL";
 import Pagination from "../Reusable/Pagination";
 
 function RoomsMenu() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { isAdmin } = useAuthStore();
-  const { rooms, isPending, error } = useGetAllRooms({
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const [filter, setFilter] = useState(searchParams.get("filter") || "all");
+  const { rooms, isPending, hasMore, nextPage, error } = useGetAllRooms({
     sort: "roomNumber",
     limit: 9,
+    page: currentPage,
   });
   const { isRoomModalOpen } = useUIStore();
   const onRoomModalOpen = useUIStore((state) => state.onRoomModalOpen);
   const onRoomModalClose = useUIStore((state) => state.onRoomModalClose);
   const location = useLocation();
-  const [filter, setFilter] = useState("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const roomsPerPage = 9;
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [location]);
 
-  console.log("RoomsMenu - Rooms:", rooms);
+  useEffect(() => {
+    setSearchParams({ filter, page: currentPage });
+  }, [filter, currentPage, setSearchParams]);
 
   const filteredRooms = rooms.filter((room) => {
     if (filter === "all") return true;
     return room.status.toLowerCase() === filter.toLowerCase();
   });
 
-  const indexOfLastRoom = currentPage * roomsPerPage;
-  const indexOfFirstRoom = indexOfLastRoom - roomsPerPage;
-  const currentRooms = filteredRooms.slice(indexOfFirstRoom, indexOfLastRoom);
-  const totalPages = Math.ceil(filteredRooms.length / roomsPerPage);
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+    setSearchParams({
+      ...Object.fromEntries(searchParams),
+      filter: newFilter,
+      page: 1,
+    });
+  };
 
   const handlePrevious = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
+    if (currentPage > 1) {
+      const newPage = currentPage - 1;
+      setSearchParams({
+        ...Object.fromEntries(searchParams),
+        page: newPage,
+      });
+    }
   };
 
   const handleNext = () => {
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+    if (hasMore) {
+      const newPage = nextPage;
+      setSearchParams({
+        ...Object.fromEntries(searchParams),
+        page: newPage,
+      });
+    }
   };
 
   const handlePageSelect = (pageNumber) => {
-    setCurrentPage(pageNumber);
+    setSearchParams({
+      ...Object.fromEntries(searchParams),
+      page: pageNumber,
+    });
   };
 
   return (
@@ -101,7 +129,7 @@ function RoomsMenu() {
           <div className="flex flex-col md:flex-row justify-between items-center mb-8">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
               <button
-                onClick={() => setFilter("all")}
+                onClick={() => handleFilterChange("all")}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   filter === "all"
                     ? "bg-amber-500 text-white"
@@ -111,7 +139,7 @@ function RoomsMenu() {
                 All Rooms
               </button>
               <button
-                onClick={() => setFilter("available")}
+                onClick={() => handleFilterChange("available")}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   filter === "available"
                     ? "bg-amber-500 text-white"
@@ -122,7 +150,7 @@ function RoomsMenu() {
               </button>
               {isAdmin && (
                 <button
-                  onClick={() => setFilter("maintenance")}
+                  onClick={() => handleFilterChange("maintenance")}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                     filter === "maintenance"
                       ? "bg-amber-500 text-white"
@@ -154,19 +182,17 @@ function RoomsMenu() {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
-                {currentRooms.map((room) => (
+                {filteredRooms.map((room) => (
                   <SingleRoomMenu room={room} key={room._id} />
                 ))}
               </div>
-              {totalPages > 1 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPrevious={handlePrevious}
-                  onNext={handleNext}
-                  onPageSelect={handlePageSelect}
-                />
-              )}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={nextPage || hasMore ? currentPage + 1 : currentPage}
+                onPrevious={handlePrevious}
+                onNext={handleNext}
+                onPageSelect={handlePageSelect}
+              />
             </>
           )}
         </div>

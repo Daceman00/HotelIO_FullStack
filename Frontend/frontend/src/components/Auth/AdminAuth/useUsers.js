@@ -3,12 +3,14 @@ import { getAllUsers } from "../../../services/apiUsers";
 import useUIStore from "../../../stores/UiStore";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 export function useUsers() {
+    const [searchParams] = useSearchParams();
     const { currentPage } = useUIStore();
     const { userSearchQuery } = useUIStore();
     const debouncedSearchTerm = useDebounce(userSearchQuery, 500);
-    const [effectiveSearch, setEffectiveSearch] = useState('')
+    const [effectiveSearch, setEffectiveSearch] = useState(searchParams.get("search") || '')
     const queryClient = useQueryClient();
 
     useEffect(() => {
@@ -25,7 +27,6 @@ export function useUsers() {
         keepPreviousData: true,
         staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     });
-
 
 
     useEffect(() => {

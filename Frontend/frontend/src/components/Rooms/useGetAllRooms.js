@@ -15,24 +15,17 @@ export function useGetAllRooms({ sort, page = 1, limit }) {
     })
 
     const rooms = data?.data?.data ?? [];
-    const total = data?.total ?? 0;
+    const hasMore = data?.hasMore ?? false;
+    const nextPage = data?.nextPage;
 
     useEffect(() => {
-        if (rooms.length >= limit) {
+        if (hasMore) {
             queryClient.prefetchQuery({
-                queryKey: ['rooms', sort, page + 1, limit],
-                queryFn: () => getAllRooms({ sort, page: page + 1, limit }),
+                queryKey: ['rooms', sort, nextPage, limit],
+                queryFn: () => getAllRooms({ sort, page: nextPage, limit }),
             });
         }
-    }, [page, sort, limit, rooms.length, queryClient]);
+    }, [page, sort, limit, hasMore, nextPage, queryClient]);
 
-    return {
-        rooms,
-        isPending,
-        error,
-        total,
-        currentPage: page,
-        hasMore: rooms.length >= limit,
-        nextPage: rooms.length < limit ? null : page + 1
-    }
+    return { rooms, isPending, error, hasMore, nextPage }
 }

@@ -5,12 +5,13 @@ import useUIStore from "../../../stores/UiStore";
 import { useMoveBack } from "../../../hooks/useMoveBack";
 import Pagination from "../../Reusable/Pagination";
 import SearchInput from "../../Reusable/SearchInput";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import LoadingSpinner from "../../Reusable/LoadingSpinner";
 
 function Users() {
   const location = useLocation();
   const moveBack = useMoveBack();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const { userSearchQuery } = useUIStore();
   const setUserSearchQuery = useUIStore((state) => state.setUserSearchQuery);
@@ -25,20 +26,47 @@ function Users() {
   const totalPages = Math.ceil(total / itemsPerPage);
 
   const handlePrevious = () => {
-    setCurrentPage(Math.max(1, currentPage - 1));
+    const newPage = Math.max(1, currentPage - 1);
+    setCurrentPage(newPage);
+    setSearchParams((prev) => ({ ...Object.fromEntries(prev), page: newPage }));
   };
 
   const handleNext = () => {
-    setCurrentPage(Math.min(totalPages, currentPage + 1));
+    const newPage = Math.min(totalPages, currentPage + 1);
+    setCurrentPage(newPage);
+    setSearchParams((prev) => ({ ...Object.fromEntries(prev), page: newPage }));
   };
 
   const handlePageSelect = (pageNumber) => {
     setCurrentPage(pageNumber);
+    setSearchParams((prev) => ({
+      ...Object.fromEntries(prev),
+      page: pageNumber,
+    }));
   };
 
   useEffect(() => {
+    const searchQuery = searchParams.get("search") || "";
+    const pageQuery = parseInt(searchParams.get("page")) || 1;
+    setUserSearchQuery(searchQuery);
+    setCurrentPage(pageQuery);
+  }, [searchParams, setUserSearchQuery, setCurrentPage]);
+
+  useEffect(() => {
+    const params = { ...Object.fromEntries(searchParams) };
+    if (userSearchQuery) {
+      params.search = userSearchQuery;
+    } else {
+      delete params.search;
+    }
+    params.page = currentPage;
+    setSearchParams(params);
+  }, [userSearchQuery, currentPage, setSearchParams]);
+
+  useEffect(() => {
     setUserSearchQuery("");
-  }, [setUserSearchQuery, location.pathname]);
+    setCurrentPage(1);
+  }, [setUserSearchQuery, setCurrentPage, location.pathname]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 p-4 sm:p-6 lg:p-8">

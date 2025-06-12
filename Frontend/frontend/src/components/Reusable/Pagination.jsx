@@ -7,10 +7,36 @@ const Pagination = ({
   onNext,
   onPageSelect,
 }) => {
-  const pageNumbers = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pageNumbers.push(i);
-  }
+  const getPageNumbers = () => {
+    const delta = 2;
+    const range = [];
+    const rangeWithDots = [];
+    let l;
+
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
+    ) {
+      range.push(i);
+    }
+
+    if (currentPage - delta > 2) {
+      rangeWithDots.push(1, "...");
+    } else {
+      rangeWithDots.push(1);
+    }
+
+    rangeWithDots.push(...range);
+
+    if (currentPage + delta < totalPages - 1) {
+      rangeWithDots.push("...", totalPages);
+    } else if (totalPages > 1) {
+      rangeWithDots.push(totalPages);
+    }
+
+    return rangeWithDots;
+  };
 
   return (
     <div className="flex justify-center mt-8 mb-4">
@@ -45,17 +71,21 @@ const Pagination = ({
 
         {/* Page Numbers */}
         <div className="flex items-center gap-1 mx-2">
-          {pageNumbers.map((number) => (
+          {getPageNumbers().map((number, index) => (
             <button
-              key={number}
-              onClick={() => onPageSelect(number)}
+              key={index}
+              onClick={() => typeof number === "number" && onPageSelect(number)}
               className={`flex items-center justify-center w-10 h-10 text-sm font-semibold rounded-lg
-                         transition-all duration-200 ease-in-out transform hover:scale-110
+                         transition-all duration-200 ease-in-out transform 
+                         ${typeof number === "number" ? "hover:scale-110" : ""}
                          ${
                            currentPage === number
                              ? "bg-gradient-to-r from-[#dfa974] to-[#c8956a] text-white shadow-md scale-110 ring-2 ring-[#dfa974] ring-opacity-30"
-                             : "bg-gray-50 text-[#dfa974] hover:bg-[#dfa974] hover:bg-opacity-10 hover:text-[#c8956a] border border-gray-200 hover:border-[#dfa974] hover:border-opacity-30"
+                             : typeof number === "number"
+                             ? "bg-gray-50 text-[#dfa974] hover:bg-[#dfa974] hover:bg-opacity-10 hover:text-[#c8956a] border border-gray-200 hover:border-[#dfa974] hover:border-opacity-30"
+                             : "bg-transparent cursor-default"
                          }`}
+              disabled={typeof number !== "number"}
             >
               {number}
             </button>

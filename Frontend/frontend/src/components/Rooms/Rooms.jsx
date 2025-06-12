@@ -12,8 +12,6 @@ function Rooms() {
     [rooms]
   );
 
-  console.log("Top 4 Rated Rooms:", top4ratedRooms);
-
   return (
     <div
       id="rooms"
