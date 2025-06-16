@@ -4,7 +4,7 @@ import { useUsers } from "../components/Auth/AdminAuth/useUsers";
 import BookingsStatsCard from "../components/Stats/BookingsStatsCard";
 import { useGetBookingsCount } from "../components/Bookings/AdminBookings/useGetBookingsCount";
 import TopSendersDoguhnutChart from "../components/Stats/TopSendersDoughnutChart";
-import TopBookersDoguhnutChart from "../components/Stats/topBookersDoughnutChart";
+import TopBookersDoguhnutChart from "../components/Stats/TopBookersDoughnutChart";
 import TotalSpentStatsCard from "../components/Stats/TotalSpentStatsCard";
 import { usetotalRevenue } from "../components/Stats/useTotalRevenue";
 import { useTopReviewers } from "../components/Stats/useTopReviewers";
