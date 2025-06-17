@@ -2,7 +2,7 @@ import axios from "./../helpers/axios"
 
 export async function signup(userData) {
     try {
-        const { data } = await axios.post(`http://localhost:3000/api/v1/users/signup`, userData)
+        const { data } = await axios.post(`/users/signup`, userData)
         return data;
     } catch (error) {
         throw new Error(error.response?.data)
@@ -11,7 +11,7 @@ export async function signup(userData) {
 
 export async function login(userData) {
     try {
-        const { data } = await axios.post(`https://hotelio-fullstack.onrender.com/api/v1/users/login`, userData)
+        const { data } = await axios.post(`/users/login`, userData)
         return data;
 
     } catch (error) {
@@ -23,7 +23,7 @@ export async function login(userData) {
 export async function getUser(token) {
     if (!token) return null;
     try {
-        const { data } = await axios.get(`http://localhost:3000/api/v1/users/getMyAccount`, {
+        const { data } = await axios.get(`/users/getMyAccount`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -38,7 +38,7 @@ export async function getUser(token) {
 
 export async function logout() {
     try {
-        await axios.get(`http://localhost:3000/api/v1/users/logout`)
+        await axios.get(`/users/logout`)
     } catch (error) {
         console.error(error);
         throw new Error("Logout not successful");
@@ -47,7 +47,7 @@ export async function logout() {
 
 export async function forgotPassword(userEmail) {
     try {
-        await axios.post(`http://localhost:3000/api/v1/users/forgotPassword`, userEmail)
+        await axios.post(`/users/forgotPassword`, userEmail)
     } catch (error) {
         console.error(error);
         throw new Error(error);
@@ -56,7 +56,7 @@ export async function forgotPassword(userEmail) {
 
 export async function resetPassword(token, passwordData) {
     try {
-        await axios.patch(`http://localhost:3000/api/v1/users/resetPassword/${token}`, passwordData)
+        await axios.patch(`/users/resetPassword/${token}`, passwordData)
     } catch (error) {
         console.error(error.response);
         throw new Error(error.response.data.message);
@@ -65,7 +65,7 @@ export async function resetPassword(token, passwordData) {
 
 export async function updateAccountPhoto(formData) {
     try {
-        const { data } = await axios.patch(`http://localhost:3000/api/v1/users/updateMyAccount`, formData, {
+        const { data } = await axios.patch(`/users/updateMyAccount`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
