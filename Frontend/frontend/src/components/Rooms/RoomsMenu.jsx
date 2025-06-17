@@ -23,11 +23,12 @@ function RoomsMenu() {
   const { isAdmin } = useAuthStore();
   const currentPage = Number(searchParams.get("page")) || 1;
   const [filter, setFilter] = useState(searchParams.get("filter") || "all");
-  const { rooms, isPending, hasMore, nextPage, error } = useGetAllRooms({
-    sort: "roomNumber",
-    limit: 9,
-    page: currentPage,
-  });
+  const { rooms, isPending, isFetching, hasMore, nextPage, error } =
+    useGetAllRooms({
+      sort: "roomNumber",
+      limit: 9,
+      page: currentPage,
+    });
   const { isRoomModalOpen } = useUIStore();
   const onRoomModalOpen = useUIStore((state) => state.onRoomModalOpen);
   const onRoomModalClose = useUIStore((state) => state.onRoomModalClose);
@@ -169,7 +170,7 @@ function RoomsMenu() {
             )}
           </div>
 
-          {isPending ? (
+          {isPending || isFetching ? (
             <div className="flex justify-center items-center py-20">
               <LoadingSpinner />
             </div>

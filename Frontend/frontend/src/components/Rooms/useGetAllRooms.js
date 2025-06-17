@@ -5,7 +5,7 @@ import { getAllRooms } from "../../services/apiRooms";
 
 export function useGetAllRooms({ sort, page = 1, limit }) {
     const queryClient = useQueryClient();
-    const { data, isPending, error } = useQuery({
+    const { data, isPending, isFetching, error } = useQuery({
         queryKey: ['rooms', sort, page, limit],
         queryFn: () => getAllRooms({ sort, page, limit }),
 
@@ -27,5 +27,5 @@ export function useGetAllRooms({ sort, page = 1, limit }) {
         }
     }, [page, sort, limit, hasMore, nextPage, queryClient]);
 
-    return { rooms, isPending, error, hasMore, nextPage }
+    return { rooms, isPending, isFetching, error, hasMore, nextPage }
 }
