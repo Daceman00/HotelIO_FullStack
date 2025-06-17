@@ -14,11 +14,7 @@ import { motion } from "framer-motion";
 import { IMAGE_URL_MENU } from "../../helpers/imageURL";
 
 function Dashboard() {
-  const images = [
-    "/images/hero-1.jpg",
-    "/images/hero-2.jpg",
-    "/images/hero-3.jpg",
-  ];
+  const images = ["/hero-1.jpg", "/hero-2.jpg", "/hero-3.jpg"];
 
   const { authTab } = useUIStore();
   const setAuthTab = useUIStore((state) => state.setAuthTab);
