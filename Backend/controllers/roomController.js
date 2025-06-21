@@ -7,9 +7,60 @@ const multer = require('multer');
 const sharp = require('sharp');
 const fs = require('fs').promises;
 const path = require('path');
+const multerS3 = require('multer-s3-transform');
+const s3 = require('../config/s3'); // Import the shared S3 config
 
-// Multer configuration
-const multerStorage = multer.memoryStorage();
+// New S3 storage configuration
+const roomMulterStorage = multerS3({
+    s3: s3,
+    bucket: process.env.AWS_BUCKET_NAME,
+    acl: 'public-read',
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    shouldTransform: (req, file, cb) => cb(null, /^image/i.test(file.mimetype)),
+    transforms: [
+        {
+            id: 'cover',
+            shouldTransform: (req, file, cb) => cb(null, file.fieldname === 'imageCover'),
+            transform: (req, file, cb) => {
+                cb(null, sharp()
+                    .resize(416, 256, {
+                        fit: 'cover',
+                        position: 'center',
+                        withoutEnlargement: true
+                    })
+                    .webp({ quality: 80 })
+                    .sharpen()
+                );
+            },
+            key: (req, file, cb) => {
+                const suffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+                const filename = `room-cover-${suffix}.webp`;
+                cb(null, `rooms/${filename}`);
+            }
+        },
+        {
+            id: 'gallery',
+            shouldTransform: (req, file, cb) => cb(null, file.fieldname === 'images'),
+            transform: (req, file, cb) => {
+                cb(null, sharp()
+                    .resize(1600, 900, {
+                        fit: 'cover',
+                        position: 'center',
+                        withoutEnlargement: true
+                    })
+                    .webp({ quality: 85 })
+                    .sharpen()
+                );
+            },
+            key: (req, file, cb) => {
+                const suffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+                const filename = `room-gallery-${suffix}.webp`;
+                cb(null, `rooms/${filename}`);
+            }
+        }
+    ]
+});
+
 
 const multerFilter = (req, file, cb) => {
     if (file.mimetype.startsWith('image')) {
@@ -20,105 +71,42 @@ const multerFilter = (req, file, cb) => {
 };
 
 const upload = multer({
-    storage: multerStorage,
+    storage: roomMulterStorage,
     fileFilter: multerFilter,
+    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
-// Middleware to handle image uploads
+
+// Middleware to handle uploads
 exports.uploadRoomImages = upload.fields([
     { name: 'imageCover', maxCount: 1 },
-    { name: 'images', maxCount: 5 }, // Adjust the maxCount as per your requirement
+    { name: 'images', maxCount: 5 }
 ]);
 
-// Middleware to resize images 
-exports.resizeRoomImages = catchAsync(async (req, res, next) => {
+exports.processRoomImages = catchAsync(async (req, res, next) => {
     if (!req.files) return next();
 
-    // Enable experimental SIMD optimizations for faster processing
-    sharp.concurrency(1);
-    sharp.simd(true);
-
+    // Process cover image
     if (req.files.imageCover) {
-        // 1) Process cover image
-        const coverImage = req.files.imageCover[0];
-        req.body.imageCover = `room-${req.params.id}-${Date.now()}-cover.webp`;
-
-        /* 
-         * COVER IMAGE DIMENSIONS:
-         * - Width: 1200px (good balance for hero image display)
-         * - Height: 800px (16:9 aspect ratio)
-         * - This creates a consistent landscape orientation that works well
-         *   in the hero section while maintaining a reasonable file size
-         */
-        await sharp(coverImage.buffer)
-            .resize({
-                width: 416,
-                height: 256,
-                fit: 'cover',         // Square crop
-                position: 'center',   // Focus on the center of the image
-                withoutEnlargement: true,
-                kernel: sharp.kernel.lanczos3
-            })
-            .webp({
-                quality: 80,          // Slightly lower quality for thumbnails
-                alphaQuality: 80,
-                lossless: false,
-                nearLossless: false   // Less aggressive optimization for thumbnails
-            })
-            .sharpen({
-                sigma: 0.5,
-                m1: 1,
-                m2: 2
-            })
-            .withMetadata()
-            .toFile(`public/img/rooms/${req.body.imageCover}`);
+        const coverFile = req.files.imageCover[0];
+        req.body.imageCover = coverFile.transforms[0].location;
+        req.body.imageCoverKey = coverFile.transforms[0].key;
     }
 
-    // 2) Process additional images
+    // Process gallery images
     if (req.files.images) {
         req.body.images = [];
+        req.body.imageKeys = [];
 
-        await Promise.all(
-            req.files.images.map(async (file, i) => {
-                const filename = `room-${req.params.id}-${Date.now()}-${i + 1}.webp`;
-
-                /* 
-                 * GALLERY IMAGE DIMENSIONS:
-                 * - Width: 1600px (provides good detail on larger screens)
-                 * - Height: 900px (16:9 aspect ratio)
-                 * - These dimensions work well with the Swiper gallery in the
-                 *   modernized UI while maintaining consistent proportions
-                 */
-                await sharp(file.buffer)
-                    .resize({
-                        width: 1600,
-                        height: 900,
-                        fit: 'cover',        // Ensures consistent dimensions
-                        position: 'center',  // Focus on the center of the image
-                        withoutEnlargement: true,
-                        kernel: sharp.kernel.lanczos3
-                    })
-                    .webp({
-                        quality: 85,
-                        alphaQuality: 90,
-                        lossless: false,
-                        nearLossless: true
-                    })
-                    .sharpen({
-                        sigma: 0.5,
-                        m1: 1,
-                        m2: 3
-                    })
-                    .withMetadata()
-                    .toFile(`public/img/rooms/${filename}`);
-
-                req.body.images.push(filename);
-            })
-        );
+        req.files.images.forEach(file => {
+            req.body.images.push(file.transforms[0].location);
+            req.body.imageKeys.push(file.transforms[0].key);
+        });
     }
 
     next();
 });
+
 exports.getRoomWithReviewsAndBookings = catchAsync(async (req, res, next) => {
     const room = await Room.findById(req.params.id)
         .populate({
@@ -174,6 +162,18 @@ exports.getRoom = factory.getOne(Room);
 exports.createRoom = factory.createOne(Room);
 exports.updateRoom = factory.updateOne(Room);
 
+exports.createRoomWithImages = [
+    exports.uploadRoomImages,
+    exports.processRoomImages,
+    exports.createRoom
+];
+
+exports.updateRoomWithImages = [
+    exports.uploadRoomImages,
+    exports.processRoomImages,
+    exports.updateRoom
+];
+
 exports.deleteRoom = catchAsync(async (req, res, next) => {
     const room = await Room.findById(req.params.id);
 
@@ -181,32 +181,8 @@ exports.deleteRoom = catchAsync(async (req, res, next) => {
         return next(new AppError('No room found with that ID', 404));
     }
 
-    // Delete images from public folder
-    if (room.imageCover) {
-        const coverImagePath = path.join(__dirname, `../public/img/rooms/${room.imageCover}`);
-        try {
-            await fs.unlink(coverImagePath);
-        } catch (err) {
-            console.log('Error deleting cover image:', err);
-        }
-    }
-
-    if (room.images && room.images.length > 0) {
-        const deleteImagePromises = room.images.map(async (image) => {
-            const imagePath = path.join(__dirname, `../public/img/rooms/${image}`);
-            try {
-                await fs.unlink(imagePath);
-            } catch (err) {
-                console.log('Error deleting image:', err);
-            }
-        });
-        await Promise.all(deleteImagePromises);
-    }
-
-    // Delete all bookings associated with this room
-    await Booking.deleteMany({ room: req.params.id });
-
-    // Delete the room
+    // The following line will trigger the pre('deleteOne') middleware in roomModel.js,
+    // which deletes bookings and removes images from S3.
     await room.deleteOne();
 
     res.status(204).json({

@@ -24,7 +24,7 @@ const filterObj = (obj, ...unallowedFields) => {
 const multerStorage = multerS3({
     s3: s3,
     bucket: process.env.AWS_BUCKET_NAME,
-    acl: null, // Set the ACL to public-read for profile photos
+    acl: 'public-read', // Set the ACL to public-read for profile photos
     contentType: multerS3.AUTO_CONTENT_TYPE,
     shouldTransform: function (req, file, cb) {
         cb(null, /^image/i.test(file.mimetype))
@@ -187,6 +187,25 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
         // Delete associated reviews in transaction
         await Review.deleteMany({ user: user._id }).session(session);
         await Booking.deleteMany({ user: user._id }).session(session);
+
+        // Delete user photo from S3 bucket if it is a URL
+        if (user.photo && user.photo.startsWith('http')) {
+            try {
+                const parsedUrl = new URL(user.photo);
+                const key = decodeURIComponent(parsedUrl.pathname.substring(1)); // Remove leading slash
+
+                const params = {
+                    Bucket: process.env.AWS_BUCKET_NAME,
+                    Key: key
+                };
+
+                await s3.deleteObject(params).promise();
+                console.log(`Deleted user photo from S3: ${key}`);
+            } catch (err) {
+                console.error('Failed to delete user photo from S3:', err);
+                // Optionally handle or log error
+            }
+        }
 
         await session.commitTransaction();
 

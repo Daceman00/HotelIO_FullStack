@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const AppError = require('./../utils/appError');
 const fs = require('fs');
 const path = require('path');
+const s3 = require('../config/s3'); // Import the shared S3 config
 
 const roomSchema = mongoose.Schema({
     roomNumber: {
@@ -36,9 +37,13 @@ const roomSchema = mongoose.Schema({
 
     imageCover: {
         type: String,
-
     },
+    imageCoverKey: {
+        type: String
+    },
+
     images: [String],
+    imageKeys: [String],
 
     features: {
         type: [String],
@@ -154,24 +159,37 @@ roomSchema.pre('save', function (next) {
 });
 
 // Middleware to delete room images before removing the room document
-roomSchema.pre('remove', async function (next) {
-    const room = this;
+roomSchema.pre('deleteOne', { document: true, query: false }, async function () {
+    const roomId = this._id;
+
+    // Delete related bookings
+    await mongoose.model('Booking').deleteMany({ room: roomId });
+
+    // Delete images from S3
+    const deleteFromS3 = async (key) => {
+        if (!key) return;
+        console.log(key)
+
+        try {
+            await s3.deleteObject({
+                Bucket: process.env.AWS_BUCKET_NAME,
+                Key: key
+            }).promise();
+            console.log(`Deleted S3 object: ${key}`);
+        } catch (err) {
+            console.error(`Error deleting S3 object ${key}:`, err);
+        }
+    };
 
     // Delete cover image
-    const coverImagePath = path.join(__dirname, `../../public/img/rooms/${room.imageCover}`);
-    if (fs.existsSync(coverImagePath)) {
-        fs.unlinkSync(coverImagePath);
+    if (this.imageCoverKey) {
+        await deleteFromS3(this.imageCoverKey);
     }
 
-    // Delete additional images
-    room.images.forEach(image => {
-        const imagePath = path.join(__dirname, `../../public/img/rooms/${image}`);
-        if (fs.existsSync(imagePath)) {
-            fs.unlinkSync(imagePath);
-        }
-    });
-
-    next();
+    // Delete gallery images
+    if (this.imageKeys && this.imageKeys.length) {
+        await Promise.all(this.imageKeys.map(key => deleteFromS3(key)));
+    }
 });
 
 const Room = mongoose.model("Room", roomSchema);

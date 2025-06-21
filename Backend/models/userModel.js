@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs")
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const s3 = require('../config/s3'); // Import the shared S3 config
 
 const userSchema = mongoose.Schema({
     name: {
@@ -91,19 +92,30 @@ userSchema.pre('save', async function (next) {
     next()
 })
 
-// Delete all reviews, bookings, and user photo associated with this user
 userSchema.pre('deleteOne', { document: true, query: false }, async function () {
     const userId = this._id;
 
     await mongoose.model('Review').deleteMany({ user: userId });
     await mongoose.model('Booking').deleteMany({ user: userId });
 
-    // Delete user photo from public folder
+    // Delete user photo from S3 bucket
     if (this.photo) {
-        const photoPath = path.join(__dirname, '..', 'public', 'img', 'users', this.photo);
-        fs.unlink(photoPath, (err) => {
-            if (err) console.error('Failed to delete user photo:', err);
-        });
+        try {
+            // Parse the S3 URL to extract the object key
+            const parsedUrl = new URL(this.photo);
+            const key = decodeURIComponent(parsedUrl.pathname.substring(1)); // Remove leading slash
+
+            const params = {
+                Bucket: process.env.AWS_BUCKET_NAME,
+                Key: key
+            };
+
+            await s3.deleteObject(params).promise();
+            console.log(`Deleted user photo from S3: ${key}`);
+        } catch (err) {
+            console.error('Failed to delete user photo from S3:', err);
+            // Consider adding error handling or monitoring here
+        }
     }
 });
 
@@ -137,6 +149,7 @@ userSchema.methods.createPasswordResetToken = function () {
 
     return resetToken
 }
+
 
 const User = mongoose.model('User', userSchema)
 

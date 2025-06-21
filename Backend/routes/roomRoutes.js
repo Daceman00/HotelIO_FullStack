@@ -13,11 +13,11 @@ router.use('/:roomId/bookings', bookingRouter);
 
 router.route('/')
     .get(roomController.getAllRooms)
-    .post(roomController.createRoom)
+    .post(roomController.createRoomWithImages) // Use this if you want to upload images on create
 
 router.route('/:id')
     .get(roomController.getRoomWithReviewsAndBookings)
-    .patch(roomController.updateRoom)
+    .patch(roomController.updateRoomWithImages) // Use this if you want to upload images on update
     .delete(roomController.deleteRoom)
 
 router.route('/:id/active-bookings')
@@ -27,7 +27,7 @@ router
     .route('/:id/images')
     .patch(
         roomController.uploadRoomImages,
-        roomController.resizeRoomImages,
+        roomController.processRoomImages,
         roomController.updateRoom // Update the room with image paths
     );
 
