@@ -5,6 +5,9 @@ const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
 const multer = require('multer');
 const sharp = require('sharp');
+const multerS3 = require('multer-s3-transform');
+const s3 = require('../config/s3'); // Import the shared S3 config
+
 const APIFeatures = require('../utils/apiFeatures');
 const mongoose = require("mongoose");
 const Booking = require('../models/bookingModel');
@@ -17,7 +20,28 @@ const filterObj = (obj, ...unallowedFields) => {
     return newObj
 }
 
-const multerStorage = multer.memoryStorage();
+// Replace the multerStorage configuration
+const multerStorage = multerS3({
+    s3: s3,
+    bucket: process.env.AWS_BUCKET_NAME,
+    acl: null, // Set the ACL to public-read for profile photos
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    shouldTransform: function (req, file, cb) {
+        cb(null, /^image/i.test(file.mimetype))
+    },
+    transforms: [{
+        id: 'original',
+        transform: function (req, file, cb) {
+            cb(null, sharp()
+                .resize(500, 500)
+                .jpeg({ quality: 90 }))
+        },
+        key: function (req, file, cb) {
+            const filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+            cb(null, `users/${filename}`);
+        }
+    }]
+});
 
 const multerFilter = (req, file, cb) => {
     if (file.mimetype.startsWith('image')) {
@@ -37,17 +61,12 @@ exports.uploadProfilePhoto = upload.single('photo');
 
 // Middleware to resize profile photo
 exports.resizeProfilePhoto = catchAsync(async (req, res, next) => {
-    if (!req.file) return next(); // If no file is uploaded, proceed to the next middleware
+    if (!req.file) return next();
 
-    // Generate filename and resize photo
-    req.body.photo = `user-${req.user.id}-${Date.now()}.jpeg`;
-    await sharp(req.file.buffer)
-        .resize(500, 500) // Resize to a square image
-        .toFormat('jpeg')
-        .jpeg({ quality: 90 })
-        .toFile(`public/img/users/${req.body.photo}`);
+    // Get the file URL from S3
+    req.body.photo = req.file.transforms[0].location;
 
-    // Attach the photo to the user
+    // Update user's photo in database
     await User.findByIdAndUpdate(req.user.id, { photo: req.body.photo });
 
     next();

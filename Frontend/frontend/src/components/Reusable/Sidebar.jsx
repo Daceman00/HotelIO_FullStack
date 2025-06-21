@@ -84,7 +84,7 @@ const Sidebar = React.memo(function Sidebar() {
                 <div className="relative inline-block">
                   {user?.data?.photo ? (
                     <img
-                      src={`${IMAGE_URL_USERS}/${user.data.photo}`}
+                      src={user.data.photo}
                       alt="User Avatar"
                       className="w-20 h-20 mx-auto rounded-full border-2 border-[#dfa379] object-cover shadow-md"
                     />

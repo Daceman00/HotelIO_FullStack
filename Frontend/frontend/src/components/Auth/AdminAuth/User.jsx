@@ -3,7 +3,6 @@ import { useDeleteUser } from "./useDeleteUser";
 import WarningButton from "../../Reusable/WarningButton";
 import useUIStore from "../../../stores/UiStore";
 import Modal from "../../Reusable/Modal";
-import { IMAGE_URL_USERS } from "../../../helpers/imageURL";
 import { UserIcon } from "@heroicons/react/24/outline";
 
 function User({ user }) {
@@ -41,7 +40,7 @@ function User({ user }) {
               {user?.photo ? (
                 <img
                   className="w-10 h-10 rounded-full object-cover"
-                  src={`${IMAGE_URL_USERS}/${user.photo}`}
+                  src={user.photo}
                   alt="User Avatar"
                 />
               ) : (
