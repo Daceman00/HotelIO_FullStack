@@ -17,7 +17,7 @@ const useServiceConfig = (mode = modes.all) => {
     const isPending = useMemo(() => {
         switch (mode) {
             case modes.fetching:
-                return isFetching > 0;
+                return isFetching > 1;
             case modes.mutating:
                 return isMutating > 0;
             case modes.restoring:
