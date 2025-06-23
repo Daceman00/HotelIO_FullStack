@@ -208,63 +208,75 @@ exports.deleteRoom = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteRoomImages = catchAsync(async (req, res, next) => {
-    const roomId = req.params.id;
-    const { imagesToDelete } = req.body;
+    try {
+        const roomId = req.params.id;
+        const { imagesToDelete } = req.body;
 
-    // Validate input
-    if (!roomId || !imagesToDelete || !Array.isArray(imagesToDelete) || imagesToDelete.length === 0) {
-        return next(new AppError('Invalid request parameters', 400));
-    }
+        // Validate input
+        if (!roomId || !imagesToDelete || !Array.isArray(imagesToDelete) || imagesToDelete.length === 0) {
+            return next(new AppError('Invalid request parameters', 400));
+        }
 
-    // Find room and verify existence
-    const room = await Room.findById(roomId);
-    if (!room) {
-        return next(new AppError('Room not found', 404));
-    }
+        // Find room and verify existence
+        const room = await Room.findById(roomId);
+        if (!room) {
+            return next(new AppError('Room not found', 404));
+        }
 
-    // Prepare keys for deletion
-    const keysToDelete = [];
+        // Prepare keys for deletion
+        const keysToDelete = [];
 
-    // Process cover image
-    if (imagesToDelete.includes('cover') && room.imageCoverKey) {
-        keysToDelete.push(room.imageCoverKey);
-        room.imageCover = undefined;
-        room.imageCoverKey = undefined;
-    }
+        // Process cover image
+        if (imagesToDelete.includes('cover') && room.imageCoverKey) {
+            keysToDelete.push(room.imageCoverKey);
+            room.imageCover = undefined;
+            room.imageCoverKey = undefined;
+        }
 
-    // Process gallery images
-    const galleryKeysToDelete = imagesToDelete
-        .filter(key => key.startsWith('gallery-'))
-        .map(key => key.replace('gallery-', ''));
+        // Process gallery images
+        const galleryKeysToDelete = imagesToDelete
+            .filter(key => key.startsWith('gallery-'))
+            .map(key => key.replace('gallery-', ''));
 
-    if (galleryKeysToDelete.length > 0) {
-        const newImages = [];
-        const newImageKeys = [];
+        if (galleryKeysToDelete.length > 0) {
+            const newImages = [];
+            const newImageKeys = [];
 
-        room.images.forEach((url, index) => {
-            const key = room.imageKeys[index];
-            if (!galleryKeysToDelete.includes(key)) {
-                newImages.push(url);
-                newImageKeys.push(key);
-            } else {
-                keysToDelete.push(key);
-            }
+            room.images.forEach((url, index) => {
+                const key = room.imageKeys[index];
+                if (!galleryKeysToDelete.includes(key)) {
+                    newImages.push(url);
+                    newImageKeys.push(key);
+                } else {
+                    keysToDelete.push(key);
+                }
+            });
+
+            room.images = newImages;
+            room.imageKeys = newImageKeys;
+        }
+
+        // Add this debug logging:
+        console.log("Keys to delete:", keysToDelete);
+        console.log("Room before save:", room);
+
+        // Delete from S3
+        if (keysToDelete.length > 0) {
+            await deleteS3Files(keysToDelete);
+            console.log("S3 deletion result:", result);
+        }
+
+        // Save updated room document
+        await room.save();
+        console.log("Room after save:", savedRoom);
+
+        res.status(204).json({
+            status: 'success',
+            data: null
         });
-
-        room.images = newImages;
-        room.imageKeys = newImageKeys;
+    } catch (err) {
+        console.error("Deletion error:", err);
+        return next(new AppError('Deletion failed', 500));
     }
 
-    // Delete from S3
-    if (keysToDelete.length > 0) {
-        await deleteS3Files(keysToDelete);
-    }
-
-    // Save updated room document
-    await room.save();
-
-    res.status(204).json({
-        status: 'success',
-        data: null
-    });
 });
