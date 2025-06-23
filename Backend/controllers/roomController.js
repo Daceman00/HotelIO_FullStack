@@ -272,7 +272,7 @@ exports.deleteRoomImages = catchAsync(async (req, res, next) => {
             data: null
         });
     } catch (err) {
-        console.error("Deletion error:", err);
+        console.error("Deletion errore:", err);
         return next(new AppError('Deletion failed', 500));
     }
 
