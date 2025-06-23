@@ -9,6 +9,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const multerS3 = require('multer-s3-transform');
 const s3 = require('../config/s3'); // Import the shared S3 config
+const { deleteS3Files } = require('../utils/s3Utils');
 
 const roomMulterStorage = multerS3({
     s3: s3,
