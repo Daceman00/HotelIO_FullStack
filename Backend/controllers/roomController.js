@@ -10,7 +10,6 @@ const path = require('path');
 const multerS3 = require('multer-s3-transform');
 const s3 = require('../config/s3'); // Import the shared S3 config
 
-// New S3 storage configuration
 const roomMulterStorage = multerS3({
     s3: s3,
     bucket: process.env.AWS_BUCKET_NAME,
@@ -23,19 +22,26 @@ const roomMulterStorage = multerS3({
             shouldTransform: (req, file, cb) => cb(null, file.fieldname === 'imageCover'),
             transform: (req, file, cb) => {
                 cb(null, sharp()
-                    .resize(416, 256, {
+                    .resize(1200, 738, {  // Increased source dimensions
                         fit: 'cover',
-                        position: 'center',
+                        position: sharp.strategy.entropy,  // Better content-aware cropping
                         withoutEnlargement: true
                     })
-                    .webp({ quality: 80 })
-                    .sharpen()
+                    .webp({
+                        quality: 90,
+                        alphaQuality: 90,
+                        effort: 6  // Better compression
+                    })
+                    .sharpen({
+                        sigma: 0.6,
+                        flat: 1.0,
+                        jagged: 1.0
+                    })
                 );
             },
             key: (req, file, cb) => {
                 const suffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-                const filename = `room-cover-${suffix}.webp`;
-                cb(null, `rooms/${filename}`);
+                cb(null, `rooms/room-cover-${suffix}.webp`);
             }
         },
         {
@@ -43,41 +49,48 @@ const roomMulterStorage = multerS3({
             shouldTransform: (req, file, cb) => cb(null, file.fieldname === 'images'),
             transform: (req, file, cb) => {
                 cb(null, sharp()
-                    .resize(1600, 900, {
-                        fit: 'cover',
-                        position: 'center',
-                        withoutEnlargement: true
+                    .resize(1920, 1080, {  // Increased source dimensions
+                        fit: 'inside',
+                        withoutEnlargement: true,  // Prevent quality-destroying upscaling
+                        fastShrinkOnLoad: false   // Better quality reduction
                     })
-                    .webp({ quality: 85 })
-                    .sharpen()
+                    .webp({
+                        quality: 85,
+                        alphaQuality: 90,
+                        effort: 6  // Better compression
+                    })
+                    .sharpen({
+                        sigma: 0.8,
+                        flat: 1.0,
+                        jagged: 1.0
+                    })
+                    .withMetadata()  // Preserve color profiles
                 );
             },
             key: (req, file, cb) => {
                 const suffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-                const filename = `room-gallery-${suffix}.webp`;
-                cb(null, `rooms/${filename}`);
+                cb(null, `rooms/room-gallery-${suffix}.webp`);
             }
         }
     ]
 });
 
-
+// Improved file filter
 const multerFilter = (req, file, cb) => {
-    if (file.mimetype.startsWith('image')) {
+    if (/^image\/(jpe?g|png|webp|avif)/i.test(file.mimetype)) {
         cb(null, true);
     } else {
-        cb(new AppError('Not an image! Please upload only images.', 400), false);
+        cb(new AppError('Unsupported image format! Please upload JPEG, PNG, or WEBP images.', 400), false);
     }
 };
 
 const upload = multer({
     storage: roomMulterStorage,
     fileFilter: multerFilter,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+    limits: { fileSize: 12 * 1024 * 1024 } // Increased to 12MB
 });
 
-
-// Middleware to handle uploads
+// Middleware remains the same
 exports.uploadRoomImages = upload.fields([
     { name: 'imageCover', maxCount: 1 },
     { name: 'images', maxCount: 5 }
@@ -93,15 +106,17 @@ exports.processRoomImages = catchAsync(async (req, res, next) => {
         req.body.imageCoverKey = coverFile.transforms[0].key;
     }
 
-    // Process gallery images
+    // Process gallery images (exclude any accidental cover images)
     if (req.files.images) {
         req.body.images = [];
         req.body.imageKeys = [];
 
-        req.files.images.forEach(file => {
-            req.body.images.push(file.transforms[0].location);
-            req.body.imageKeys.push(file.transforms[0].key);
-        });
+        req.files.images
+            .filter(file => file.fieldname === 'images')
+            .forEach(file => {
+                req.body.images.push(file.transforms[0].location);
+                req.body.imageKeys.push(file.transforms[0].key);
+            });
     }
 
     next();
@@ -184,6 +199,68 @@ exports.deleteRoom = catchAsync(async (req, res, next) => {
     // The following line will trigger the pre('deleteOne') middleware in roomModel.js,
     // which deletes bookings and removes images from S3.
     await room.deleteOne();
+
+    res.status(204).json({
+        status: 'success',
+        data: null
+    });
+});
+
+exports.deleteRoomImages = catchAsync(async (req, res, next) => {
+    const roomId = req.params.id;
+    const { imagesToDelete } = req.body;
+
+    // Validate input
+    if (!roomId || !imagesToDelete || !Array.isArray(imagesToDelete) || imagesToDelete.length === 0) {
+        return next(new AppError('Invalid request parameters', 400));
+    }
+
+    // Find room and verify existence
+    const room = await Room.findById(roomId);
+    if (!room) {
+        return next(new AppError('Room not found', 404));
+    }
+
+    // Prepare keys for deletion
+    const keysToDelete = [];
+
+    // Process cover image
+    if (imagesToDelete.includes('cover') && room.imageCoverKey) {
+        keysToDelete.push(room.imageCoverKey);
+        room.imageCover = undefined;
+        room.imageCoverKey = undefined;
+    }
+
+    // Process gallery images
+    const galleryKeysToDelete = imagesToDelete
+        .filter(key => key.startsWith('gallery-'))
+        .map(key => key.replace('gallery-', ''));
+
+    if (galleryKeysToDelete.length > 0) {
+        const newImages = [];
+        const newImageKeys = [];
+
+        room.images.forEach((url, index) => {
+            const key = room.imageKeys[index];
+            if (!galleryKeysToDelete.includes(key)) {
+                newImages.push(url);
+                newImageKeys.push(key);
+            } else {
+                keysToDelete.push(key);
+            }
+        });
+
+        room.images = newImages;
+        room.imageKeys = newImageKeys;
+    }
+
+    // Delete from S3
+    if (keysToDelete.length > 0) {
+        await deleteS3Files(keysToDelete);
+    }
+
+    // Save updated room document
+    await room.save();
 
     res.status(204).json({
         status: 'success',

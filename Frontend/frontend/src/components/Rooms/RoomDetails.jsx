@@ -113,7 +113,7 @@ const RoomDetails = () => {
             {room?.data.room.images.map((image, idx) => (
               <SwiperSlide key={idx} className="relative">
                 <img
-                  src={`${IMAGE_URL}/${image}`}
+                  src={image}
                   alt={`Room ${idx + 1}`}
                   className="w-full h-full object-cover"
                   loading="lazy"

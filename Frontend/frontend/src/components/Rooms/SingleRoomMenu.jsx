@@ -103,7 +103,7 @@ function SingleRoomMenu({ room }) {
             {/* Image Container */}
             <div className="relative overflow-hidden">
               <img
-                src={`${IMAGE_URL}/${room.imageCover}`}
+                src={room.imageCover}
                 alt={`Room ${room.roomNumber}`}
                 className="w-full h-64 object-cover transition-transform duration-700 hover:scale-110"
               />

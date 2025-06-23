@@ -29,6 +29,9 @@ router
         roomController.uploadRoomImages,
         roomController.processRoomImages,
         roomController.updateRoom // Update the room with image paths
-    );
+    )
+    .delete(
+        roomController.deleteRoomImages // Custom method to delete images from S3
+    )
 
 module.exports = router;
