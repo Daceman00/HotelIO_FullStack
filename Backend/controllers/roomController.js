@@ -260,7 +260,7 @@ exports.deleteRoomImages = catchAsync(async (req, res, next) => {
         // Delete from S3
         if (keysToDelete.length > 0) {
             await deleteS3Files(keysToDelete);
-            console.log("S3 deletion result:", result);
+            console.log("Files deleted from S3:", keysToDelete);
         }
 
         // Save updated room document
