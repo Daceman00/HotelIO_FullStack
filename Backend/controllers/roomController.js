@@ -234,10 +234,7 @@ exports.deleteRoomImages = catchAsync(async (req, res, next) => {
         }
 
         // Process gallery images
-        const galleryKeysToDelete = imagesToDelete
-            .filter(key => key.startsWith('gallery-'))
-            .map(key => key.replace('gallery-', ''));
-
+        const galleryKeysToDelete = imagesToDelete.filter(key => key !== 'cover');
         if (galleryKeysToDelete.length > 0) {
             const newImages = [];
             const newImageKeys = [];
@@ -268,7 +265,7 @@ exports.deleteRoomImages = catchAsync(async (req, res, next) => {
 
         // Save updated room document
         await room.save();
-        console.log("Room after save:", savedRoom);
+
 
         res.status(204).json({
             status: 'success',
