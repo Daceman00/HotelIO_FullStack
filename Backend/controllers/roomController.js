@@ -42,6 +42,7 @@ const roomMulterStorage = multerS3({
             },
             key: (req, file, cb) => {
                 const suffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+                // Ensure NO leading slash here:
                 cb(null, `rooms/room-cover-${suffix}.webp`);
             }
         },
@@ -70,6 +71,7 @@ const roomMulterStorage = multerS3({
             },
             key: (req, file, cb) => {
                 const suffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+                // Ensure NO leading slash here:
                 cb(null, `rooms/room-gallery-${suffix}.webp`);
             }
         }
@@ -253,27 +255,29 @@ exports.deleteRoomImages = catchAsync(async (req, res, next) => {
             room.imageKeys = newImageKeys;
         }
 
-        // Add this debug logging:
+        // Debug logging
         console.log("Keys to delete:", keysToDelete);
         console.log("Room before save:", room);
 
-        // Delete from S3
+        // Delete from S3 (try both with and without leading slash for legacy files)
         if (keysToDelete.length > 0) {
-            await deleteS3Files(keysToDelete);
-            console.log("Files deleted from S33:", keysToDelete);
+            const allKeys = [
+                ...keysToDelete,
+                ...keysToDelete.map(k => k.startsWith('/') ? k : '/' + k)
+            ];
+            await deleteS3Files(allKeys);
+            console.log("Files deleted from S3:", allKeys);
         }
 
         // Save updated room document
         await room.save();
-
 
         res.status(204).json({
             status: 'success',
             data: null
         });
     } catch (err) {
-        console.error("Deletion errore:", err);
+        console.error("Deletion error:", err);
         return next(new AppError('Deletion failed', 500));
     }
-
 });
