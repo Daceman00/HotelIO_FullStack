@@ -11,71 +11,59 @@ const multerS3 = require('multer-s3-transform');
 const s3 = require('../config/s3'); // Import the shared S3 config
 const { deleteS3Files } = require('../utils/s3Utils')
 
-const roomMulterStorage = multerS3({
+// Cover Image Storage (only cover transform)
+const coverStorage = multerS3({
     s3: s3,
     bucket: process.env.AWS_BUCKET_NAME,
     acl: 'public-read',
     contentType: multerS3.AUTO_CONTENT_TYPE,
     shouldTransform: (req, file, cb) => cb(null, /^image/i.test(file.mimetype)),
-    transforms: [
-        {
-            id: 'cover',
-            shouldTransform: (req, file, cb) => cb(null, file.fieldname === 'imageCover'),
-            transform: (req, file, cb) => {
-                cb(null, sharp()
-                    .resize(1200, 738, {  // Increased source dimensions
-                        fit: 'cover',
-                        position: sharp.strategy.entropy,  // Better content-aware cropping
-                        withoutEnlargement: true
-                    })
-                    .webp({
-                        quality: 90,
-                        alphaQuality: 90,
-                        effort: 6  // Better compression
-                    })
-                    .sharpen({
-                        sigma: 0.6,
-                        flat: 1.0,
-                        jagged: 1.0
-                    })
-                );
-            },
-            key: (req, file, cb) => {
-                const suffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-                // Ensure NO leading slash here:
-                cb(null, `rooms/room-cover-${suffix}.webp`);
-            }
+    transforms: [{
+        id: 'cover',
+        transform: (req, file, cb) => {
+            cb(null, sharp()
+                .resize(1200, 738, {
+                    fit: 'cover',
+                    position: sharp.strategy.entropy,
+                    withoutEnlargement: true
+                })
+                .webp({ quality: 90, alphaQuality: 90, effort: 6 })
+                .sharpen({ sigma: 0.6, flat: 1.0, jagged: 1.0 })
+            );
         },
-        {
-            id: 'gallery',
-            shouldTransform: (req, file, cb) => cb(null, file.fieldname === 'images'),
-            transform: (req, file, cb) => {
-                cb(null, sharp()
-                    .resize(1920, 1080, {  // Increased source dimensions
-                        fit: 'inside',
-                        withoutEnlargement: true,  // Prevent quality-destroying upscaling
-                        fastShrinkOnLoad: false   // Better quality reduction
-                    })
-                    .webp({
-                        quality: 85,
-                        alphaQuality: 90,
-                        effort: 6  // Better compression
-                    })
-                    .sharpen({
-                        sigma: 0.8,
-                        flat: 1.0,
-                        jagged: 1.0
-                    })
-                    .withMetadata()  // Preserve color profiles
-                );
-            },
-            key: (req, file, cb) => {
-                const suffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-                // Ensure NO leading slash here:
-                cb(null, `rooms/room-gallery-${suffix}.webp`);
-            }
+        key: (req, file, cb) => {
+            const suffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+            cb(null, `rooms/room-cover-${suffix}.webp`);
         }
-    ]
+    }]
+});
+
+// Gallery Images Storage (only gallery transform)
+const galleryStorage = multerS3({
+    s3: s3,
+    bucket: process.env.AWS_BUCKET_NAME,
+    acl: 'public-read',
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    shouldTransform: (req, file, cb) => cb(null, /^image/i.test(file.mimetype)),
+    transforms: [{
+        id: 'gallery',
+        transform: (req, file, cb) => {
+            cb(null, sharp()
+                .resize(1920, 1080, {
+                    fit: 'inside',
+                    withoutEnlargement: true,
+                    fastShrinkOnLoad: false
+                })
+                .webp({ quality: 85, alphaQuality: 90, effort: 6 })
+                .sharpen({ sigma: 0.8, flat: 1.0, jagged: 1.0 })
+                .withMetadata()
+            );
+        },
+        key: (req, file, cb) => {
+            const suffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+            cb(null, `rooms/room-gallery-${suffix}.webp`);
+        }
+    }]
 });
 
 // Improved file filter
@@ -87,40 +75,36 @@ const multerFilter = (req, file, cb) => {
     }
 };
 
-const upload = multer({
-    storage: roomMulterStorage,
+// Cover image upload (single file)
+exports.uploadRoomCover = multer({
+    storage: coverStorage,
     fileFilter: multerFilter,
-    limits: { fileSize: 12 * 1024 * 1024 } // Increased to 12MB
+    limits: { fileSize: 12 * 1024 * 1024 }
+}).single('imageCover'); // Field name: imageCover
+
+// Gallery images upload (multiple files)
+exports.uploadRoomGallery = multer({
+    storage: galleryStorage,
+    fileFilter: multerFilter,
+    limits: { fileSize: 12 * 1024 * 1024 }
+}).array('images', 5); // Field name: images, max 5 files
+
+// Process cover image
+exports.processRoomCover = catchAsync(async (req, res, next) => {
+    if (!req.file) return next();
+
+    req.body.imageCover = req.file.transforms[0].location;
+    req.body.imageCoverKey = req.file.transforms[0].key;
+
+    next();
 });
 
-// Middleware remains the same
-exports.uploadRoomImages = upload.fields([
-    { name: 'imageCover', maxCount: 1 },
-    { name: 'images', maxCount: 5 }
-]);
+// Process gallery images
+exports.processRoomGallery = catchAsync(async (req, res, next) => {
+    if (!req.files || req.files.length === 0) return next();
 
-exports.processRoomImages = catchAsync(async (req, res, next) => {
-    if (!req.files) return next();
-
-    // Process cover image
-    if (req.files.imageCover) {
-        const coverFile = req.files.imageCover[0];
-        req.body.imageCover = coverFile.transforms[0].location;
-        req.body.imageCoverKey = coverFile.transforms[0].key;
-    }
-
-    // Process gallery images (exclude any accidental cover images)
-    if (req.files.images) {
-        req.body.images = [];
-        req.body.imageKeys = [];
-
-        req.files.images
-            .filter(file => file.fieldname === 'images')
-            .forEach(file => {
-                req.body.images.push(file.transforms[0].location);
-                req.body.imageKeys.push(file.transforms[0].key);
-            });
-    }
+    req.body.images = req.files.map(file => file.transforms[0].location);
+    req.body.imageKeys = req.files.map(file => file.transforms[0].key);
 
     next();
 });

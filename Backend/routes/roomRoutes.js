@@ -23,15 +23,17 @@ router.route('/:id')
 router.route('/:id/active-bookings')
     .get(roomController.getRoomWithActiveBookings);
 
-router
-    .route('/:id/images')
-    .patch(
-        roomController.uploadRoomImages,
-        roomController.processRoomImages,
-        roomController.updateRoom // Update the room with image paths
-    )
-    .delete(
-        roomController.deleteRoomImages // Custom method to delete images from S3
-    )
+// Cover image route
+router.post('/rooms/:id/cover',
+    roomController.uploadRoomCover,
+    roomController.processRoomCover,
+    roomController.updateRoom
+);
 
+// Gallery images route
+router.post('/rooms/:id/gallery',
+    roomController.uploadRoomGallery,
+    roomController.processRoomGallery,
+    roomController.updateRoom
+);
 module.exports = router;
