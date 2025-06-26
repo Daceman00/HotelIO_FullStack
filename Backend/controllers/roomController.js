@@ -164,18 +164,6 @@ exports.getRoom = factory.getOne(Room);
 exports.createRoom = factory.createOne(Room);
 exports.updateRoom = factory.updateOne(Room);
 
-exports.createRoomWithImages = [
-    exports.uploadRoomImages,
-    exports.processRoomImages,
-    exports.createRoom
-];
-
-exports.updateRoomWithImages = [
-    exports.uploadRoomImages,
-    exports.processRoomImages,
-    exports.updateRoom
-];
-
 exports.deleteRoom = catchAsync(async (req, res, next) => {
     const room = await Room.findById(req.params.id);
 
@@ -193,7 +181,7 @@ exports.deleteRoom = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.deleteRoomImages = catchAsync(async (req, res, next) => {
+/* exports.deleteRoomImages = catchAsync(async (req, res, next) => {
     try {
         const roomId = req.params.id;
         const { imagesToDelete } = req.body;
@@ -264,4 +252,4 @@ exports.deleteRoomImages = catchAsync(async (req, res, next) => {
         console.error("Deletion error:", err);
         return next(new AppError('Deletion failed', 500));
     }
-});
+}); */
