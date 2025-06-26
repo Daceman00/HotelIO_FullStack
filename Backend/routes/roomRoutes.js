@@ -22,14 +22,14 @@ router.route('/:id/active-bookings')
     .get(roomController.getRoomWithActiveBookings);
 
 
-router.route('/rooms/:id/cover')
+router.route('/:id/cover')
     .post(
         roomController.uploadRoomCover,
         roomController.processRoomCover,
         roomController.updateRoom
     );
 
-router.route('/rooms/:id/gallery')
+router.route('/:id/gallery')
     .post(
         roomController.uploadRoomGallery,
         roomController.processRoomGallery,
