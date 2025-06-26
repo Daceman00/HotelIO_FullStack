@@ -16,7 +16,6 @@ router.route('/')
 
 router.route('/:id')
     .get(roomController.getRoomWithReviewsAndBookings)
-
     .delete(roomController.deleteRoom)
 
 router.route('/:id/active-bookings')

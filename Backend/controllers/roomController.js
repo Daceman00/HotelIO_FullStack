@@ -159,10 +159,7 @@ exports.getRoomWithActiveBookings = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.getAllRooms = factory.getAll(Room, "bookingsCount");
-exports.getRoom = factory.getOne(Room);
-exports.createRoom = factory.createOne(Room);
-exports.updateRoom = factory.updateOne(Room);
+
 
 exports.deleteRoom = catchAsync(async (req, res, next) => {
     const room = await Room.findById(req.params.id);
@@ -182,6 +179,7 @@ exports.deleteRoom = catchAsync(async (req, res, next) => {
 });
 
 /* exports.deleteRoomImages = catchAsync(async (req, res, next) => {
+    
     try {
         const roomId = req.params.id;
         const { imagesToDelete } = req.body;
@@ -253,3 +251,8 @@ exports.deleteRoom = catchAsync(async (req, res, next) => {
         return next(new AppError('Deletion failed', 500));
     }
 }); */
+
+exports.getAllRooms = factory.getAll(Room, "bookingsCount");
+exports.getRoom = factory.getOne(Room);
+exports.createRoom = factory.createOne(Room);
+exports.updateRoom = factory.updateOne(Room);
