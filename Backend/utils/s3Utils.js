@@ -3,7 +3,7 @@ const s3 = require('../config/s3'); // Import the shared S3 config
 
 exports.deleteS3Files = async (keys) => {
     try {
-        const objects = keys.map(Key => ({ Key: Key.trim() })); // Trim whitespace
+        const objects = keys.map(Key => ({ Key: Key.trim() })); // Trim whitespacee
         const response = await s3.deleteObjects({
             Bucket: process.env.AWS_BUCKET_NAME,
             Delete: { Objects: objects }
