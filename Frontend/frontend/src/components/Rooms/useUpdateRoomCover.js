@@ -1,14 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateRoomPhotos as updateRoomPhotosApi } from "../../services/apiRooms";
+import { updateRoomCoverPhoto } from "../../services/apiRooms";
 import toast from "react-hot-toast";
 
-export function useUpdateRoomPhotos() {
+export function useUpdateRoomCover() {
     const queryClient = useQueryClient()
-    const { mutate: updateRoomPhotos, error, isPending } = useMutation({
-        mutationFn: ({ roomId, formData }) => updateRoomPhotosApi(roomId, formData),
+    const { mutate: updateRoomCover, error, isPending } = useMutation({
+        mutationFn: ({ roomId, formData }) => updateRoomCoverPhoto(roomId, formData),
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["room"],
+                queryKey: ["rooms"],
             })
             toast.success('Room photo updated successfully');
         },
@@ -16,5 +16,5 @@ export function useUpdateRoomPhotos() {
             toast.error('Error updating room photo');
         }
     })
-    return { updateRoomPhotos, error, isPending }
+    return { updateRoomCover, error, isPending }
 }

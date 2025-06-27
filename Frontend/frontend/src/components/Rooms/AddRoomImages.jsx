@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { useUpdateRoomPhotos } from "./useUpdateRoomPhotos";
+import { useUpdateRoomCover } from "./useUpdateRoomCover";
 import useFileStore from "../../stores/FileStore";
 import ImageGrid from "../Reusable/ImageGrid";
 import CreateButton from "../Reusable/CreateButton";
@@ -10,10 +10,13 @@ import {
   ArrowUpTrayIcon,
 } from "@heroicons/react/24/outline";
 import LoadingSpinner from "../Reusable/LoadingSpinner";
+import { useUpdateRoomGallery } from "./useUpdateRoomGallery";
 
 function AddRoomImages({ roomId, isOpen, onClose, opacity }) {
   const modalRef = useRef(null);
-  const { updateRoomPhotos, isPending } = useUpdateRoomPhotos();
+  const { updateRoomCover, isPending: isPendingCover } = useUpdateRoomCover();
+  const { updateRoomGallery, isPending: isPendingGallery } =
+    useUpdateRoomGallery();
   const {
     galleryImages,
     addGalleryImages,
@@ -51,7 +54,7 @@ function AddRoomImages({ roomId, isOpen, onClose, opacity }) {
     });
 
     try {
-      await updateRoomPhotos({ roomId, formData });
+      await updateRoomGallery({ roomId, formData });
       clearGalleryImages();
     } catch (error) {
       console.error("Gallery upload failed:", error);
@@ -63,7 +66,7 @@ function AddRoomImages({ roomId, isOpen, onClose, opacity }) {
     formData.append("imageCover", coverImage);
 
     try {
-      await updateRoomPhotos({ roomId, formData });
+      await updateRoomCover({ roomId, formData });
       clearCoverImage();
     } catch (error) {
       console.error("Cover upload failed:", error);
@@ -89,7 +92,7 @@ function AddRoomImages({ roomId, isOpen, onClose, opacity }) {
           ref={modalRef}
           className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl md:max-w-xl lg:max-w-2xl xl:max-w-3xl max-h-[95vh] overflow-y-auto border border-gray-100 transform transition-all duration-300"
         >
-          {isPending ? (
+          {isPendingCover || isPendingGallery ? (
             <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
               <LoadingSpinner />
               <p className="text-gray-500 font-medium animate-pulse">
@@ -139,14 +142,14 @@ function AddRoomImages({ roomId, isOpen, onClose, opacity }) {
                   <div className="flex justify-end">
                     <button
                       onClick={handleCoverUpload}
-                      disabled={isPending || !coverImage}
+                      disabled={isPendingCover || !coverImage}
                       className={`flex items-center gap-2 py-2.5 px-4 rounded-xl font-medium transition-all duration-200 ${
-                        !coverImage || isPending
+                        !coverImage || isPendingCover
                           ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                           : "bg-[#dfa379] hover:bg-[#c98b62] text-white shadow-md hover:shadow-lg"
                       }`}
                     >
-                      {isPending ? (
+                      {isPendingCover ? (
                         <span className="flex items-center">
                           <svg
                             className="animate-spin mr-2 h-4 w-4"
@@ -200,14 +203,14 @@ function AddRoomImages({ roomId, isOpen, onClose, opacity }) {
                   <div className="flex justify-end gap-3">
                     <button
                       onClick={handleGalleryUpload}
-                      disabled={isPending || galleryImages.length === 0}
+                      disabled={isPendingGallery || galleryImages.length === 0}
                       className={`flex items-center gap-2 py-2.5 px-4 rounded-xl font-medium transition-all duration-200 ${
-                        galleryImages.length === 0 || isPending
+                        galleryImages.length === 0 || isPendingGallery
                           ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                           : "bg-[#dfa379] hover:bg-[#c98b62] text-white shadow-md hover:shadow-lg"
                       }`}
                     >
-                      {isPending ? (
+                      {isPendingGallery ? (
                         <span className="flex items-center">
                           <svg
                             className="animate-spin mr-2 h-4 w-4"

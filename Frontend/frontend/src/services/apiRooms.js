@@ -50,9 +50,9 @@ export async function updateRoom(roomId, roomData) {
     }
 }
 
-export async function updateRoomPhotos(roomId, formData) {
+export async function updateRoomCoverPhoto(roomId, formData) {
     try {
-        const { data } = await axios.patch(`/rooms/${roomId}/images`, formData, {
+        const { data } = await axios.patch(`/rooms/${roomId}/cover`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -60,6 +60,19 @@ export async function updateRoomPhotos(roomId, formData) {
         return data;
     } catch (error) {
         throw new Error(error.response?.data?.message || 'Error updating photo');
+    }
+}
+
+export async function updateRoomGalleryPhotos(roomId, formData) {
+    try {
+        const { data } = await axios.patch(`/rooms/${roomId}/gallery`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return data;
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Error updating gallery photos');
     }
 }
 

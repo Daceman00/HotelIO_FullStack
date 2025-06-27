@@ -23,14 +23,14 @@ router.route('/:id/active-bookings')
 
 
 router.route('/:id/cover')
-    .post(
+    .patch(
         roomController.uploadRoomCover,
         roomController.processRoomCover,
         roomController.updateRoom
     );
 
 router.route('/:id/gallery')
-    .post(
+    .patch(
         roomController.uploadRoomGallery,
         roomController.processRoomGallery,
         roomController.updateRoom
