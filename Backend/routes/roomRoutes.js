@@ -13,10 +13,13 @@ router.use('/:roomId/bookings', bookingRouter);
 
 router.route('/')
     .get(roomController.getAllRooms)
+    .post(roomController.createRoom);
 
 router.route('/:id')
     .get(roomController.getRoomWithReviewsAndBookings)
     .delete(roomController.deleteRoom)
+    .patch(roomController.updateRoom)
+
 
 router.route('/:id/active-bookings')
     .get(roomController.getRoomWithActiveBookings);
@@ -26,14 +29,14 @@ router.route('/:id/cover')
     .patch(
         roomController.uploadRoomCover,
         roomController.processRoomCover,
-        roomController.updateRoom
+        roomController.updateRoomImages
     );
 
 router.route('/:id/gallery')
     .patch(
         roomController.uploadRoomGallery,
         roomController.processRoomGallery,
-        roomController.updateRoom
+        roomController.updateRoomImages
     );
 
 module.exports = router;

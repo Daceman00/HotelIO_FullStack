@@ -117,10 +117,6 @@ function CreateRoom({ isOpen, onClose, opacity }) {
               </p>
 
               <form className="space-y-8" onSubmit={handleSubmit}>
-                <div className="flex justify-center">
-                  <FileUploadInput className="group relative h-24 w-24 md:h-32 md:w-32 mx-auto rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors cursor-pointer border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center" />
-                </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Room Number */}
                   <div className="group relative">

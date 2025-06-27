@@ -14,7 +14,7 @@ router.use(authController.protect)
 
 router.get("/getMyAccount", userController.getMyAccount, userController.getUser);
 router.patch("/updateMyAccount", userController.uploadProfilePhoto, userController.resizeProfilePhoto, userController.updateMyAccount);
-router.delete("/deleteMyAccount", userController.deleteMyAccount);
+router.delete("/deleteMyAccount", userController.deleteMe);
 router.patch("/updateMyPassword", authController.updatePassword)
 
 router.use(authController.restrictTo('admin'))

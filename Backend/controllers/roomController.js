@@ -250,7 +250,7 @@ exports.deleteRoom = catchAsync(async (req, res, next) => {
     }
 }); */
 
-exports.updateRoom = catchAsync(async (req, res, next) => {
+exports.updateRoomImages = catchAsync(async (req, res, next) => {
     const updateData = { ...req.body };
     const updateOps = {};
 
@@ -308,3 +308,4 @@ exports.updateRoom = catchAsync(async (req, res, next) => {
 exports.getAllRooms = factory.getAll(Room, "bookingsCount");
 exports.getRoom = factory.getOne(Room);
 exports.createRoom = factory.createOne(Room);
+exports.updateRoom = factory.updateOne(Room);

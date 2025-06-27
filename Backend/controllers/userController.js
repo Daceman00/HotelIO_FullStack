@@ -96,15 +96,61 @@ exports.updateMyAccount = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.deleteMe = catchAsync(async (req, res, next) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-exports.deleteMyAccount = catchAsync(async (req, res, next) => {
-    await User.findByIdAndDelete(req.user.id);
+    try {
+        // Get current user from req.user (set by protect middleware)
+        const currentUser = req.user;
 
-    res.status(204).json({
-        status: 'success',
-        data: null
-    })
-})
+        // Fetch user with session for transaction
+        const user = await User.findById(currentUser.id).session(session);
+        if (!user) {
+            return next(new AppError('User not found', 404));
+        }
+
+        // Delete associated data
+        await Promise.all([
+            Review.deleteMany({ user: user._id }).session(session),
+            Booking.deleteMany({ user: user._id }).session(session)
+        ]);
+
+        // Delete profile photo from S3 if exists
+        if (user.photo && user.photo.startsWith('http')) {
+            try {
+                const parsedUrl = new URL(user.photo);
+                const key = decodeURIComponent(parsedUrl.pathname.substring(1));
+
+                await s3.deleteObject({
+                    Bucket: process.env.AWS_BUCKET_NAME,
+                    Key: key
+                }).promise();
+            } catch (s3Error) {
+                console.error('S3 deletion error:', s3Error);
+                // Continue account deletion even if S3 fails
+            }
+        }
+
+        // Delete user document
+        await User.findByIdAndDelete(user._id).session(session);
+
+        await session.commitTransaction();
+
+        // Logout after successful deletion (clear cookie if using cookie-based auth)
+        res.clearCookie('jwt');
+
+        res.status(204).json({
+            status: 'success',
+            data: null
+        });
+    } catch (error) {
+        await session.abortTransaction();
+        next(error);
+    } finally {
+        session.endSession();
+    }
+});
 
 exports.getUserWithReviews = catchAsync(async (req, res, next) => {
     const popOptions = {
