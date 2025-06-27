@@ -252,51 +252,56 @@ exports.deleteRoom = catchAsync(async (req, res, next) => {
 
 exports.updateRoom = catchAsync(async (req, res, next) => {
     const updateData = { ...req.body };
+    const updateOps = {};
 
-    // Handle gallery images - APPEND to existing array
-    if (updateData.newImages) {
-        const room = await Room.findById(req.params.id);
+    // Handle gallery images - APPEND using $push
+    if (req.body.images && req.body.imageKeys) {
+        updateOps.$push = {
+            images: { $each: req.body.images },
+            imageKeys: { $each: req.body.imageKeys }
+        };
 
-        if (!room) {
-            return next(new AppError('Room not found', 404));
-        }
-
-        // Append new images to existing array
-        updateData.images = [...room.images, ...updateData.newImages];
-        updateData.imageKeys = [...room.imageKeys, ...updateData.newImageKeys];
-
-        // Remove temporary properties
-        delete updateData.newImages;
-        delete updateData.newImageKeys;
+        // Remove properties to avoid conflicts
+        delete updateData.images;
+        delete updateData.imageKeys;
     }
 
-    // Handle cover image separately
+    // Handle cover image update
     if (updateData.imageCover) {
-        // Optional: Delete previous cover image from S3
-        //await deleteFromS3(room.imageCoverKey);
-        updateData.imageCoverKey = req.body.imageCoverKey;
+        updateOps.$set = {
+            imageCover: updateData.imageCover,
+            imageCoverKey: updateData.imageCoverKey
+        };
+        delete updateData.imageCover;
+        delete updateData.imageCoverKey;
     }
 
-    // Proceed with normal update
+    // Handle other updates (name, description, etc.)
+    if (Object.keys(updateData).length > 0) {
+        updateOps.$set = {
+            ...updateOps.$set,
+            ...updateData
+        };
+    }
+
+    // If no update operations, skip DB call
+    if (Object.keys(updateOps).length === 0) {
+        const room = await Room.findById(req.params.id);
+        if (!room) return next(new AppError('Room not found', 404));
+        return res.status(200).json({ status: 'success', data: { room } });
+    }
+
     const updatedRoom = await Room.findByIdAndUpdate(
         req.params.id,
-        updateData,
-        {
-            new: true,              // Return updated document
-            runValidators: true,     // Run schema validators
-            context: 'query'         // Needed for some validators
-        }
+        updateOps,
+        { new: true, runValidators: true, context: 'query' }
     );
 
-    if (!updatedRoom) {
-        return next(new AppError('Room not found', 404));
-    }
+    if (!updatedRoom) return next(new AppError('Room not found', 404));
 
     res.status(200).json({
         status: 'success',
-        data: {
-            room: updatedRoom
-        }
+        data: { room: updatedRoom }
     });
 });
 
