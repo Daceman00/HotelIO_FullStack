@@ -250,7 +250,56 @@ exports.deleteRoom = catchAsync(async (req, res, next) => {
     }
 }); */
 
+exports.updateRoom = catchAsync(async (req, res, next) => {
+    const updateData = { ...req.body };
+
+    // Handle gallery images - APPEND to existing array
+    if (updateData.newImages) {
+        const room = await Room.findById(req.params.id);
+
+        if (!room) {
+            return next(new AppError('Room not found', 404));
+        }
+
+        // Append new images to existing array
+        updateData.images = [...room.images, ...updateData.newImages];
+        updateData.imageKeys = [...room.imageKeys, ...updateData.newImageKeys];
+
+        // Remove temporary properties
+        delete updateData.newImages;
+        delete updateData.newImageKeys;
+    }
+
+    // Handle cover image separately
+    if (updateData.imageCover) {
+        // Optional: Delete previous cover image from S3
+        //await deleteFromS3(room.imageCoverKey);
+        updateData.imageCoverKey = req.body.imageCoverKey;
+    }
+
+    // Proceed with normal update
+    const updatedRoom = await Room.findByIdAndUpdate(
+        req.params.id,
+        updateData,
+        {
+            new: true,              // Return updated document
+            runValidators: true,     // Run schema validators
+            context: 'query'         // Needed for some validators
+        }
+    );
+
+    if (!updatedRoom) {
+        return next(new AppError('Room not found', 404));
+    }
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            room: updatedRoom
+        }
+    });
+});
+
 exports.getAllRooms = factory.getAll(Room, "bookingsCount");
 exports.getRoom = factory.getOne(Room);
 exports.createRoom = factory.createOne(Room);
-exports.updateRoom = factory.updateOne(Room);
