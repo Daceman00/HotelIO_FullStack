@@ -157,8 +157,6 @@ exports.getRoomWithActiveBookings = catchAsync(async (req, res, next) => {
     });
 });
 
-
-
 exports.deleteRoom = catchAsync(async (req, res, next) => {
     const room = await Room.findById(req.params.id);
 

@@ -66,8 +66,8 @@ const useUIStore = create((set) => ({
     selectedFilterOption: [],
     setSelectedFilterOption: (options) => set({ selectedFilterOptions: options }),
 
-
-
+    isRefreshing: false,
+    setIsRefreshing: (refreshing) => set({ isRefreshing: refreshing }),
 
 }))
 

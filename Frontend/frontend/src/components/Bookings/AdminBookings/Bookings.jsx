@@ -8,6 +8,7 @@ import { useGetAllBookings } from "./useGetAllBookings";
 import SearchInput from "../../Reusable/SearchInput";
 import LoadingSpinner from "../../Reusable/LoadingSpinner";
 import Error from "../../Reusable/Error";
+import RefreshButton from "../../Reusable/RefreshButton";
 
 function Bookings() {
   const location = useLocation();
@@ -23,6 +24,8 @@ function Bookings() {
   const setBookingsSearchQuery = useUIStore(
     (state) => state.setBookingsSearchQuery
   );
+  const { isRefreshing } = useUIStore((state) => state.isRefreshing);
+  const setIsRefreshing = useUIStore((state) => state.setIsRefreshing);
 
   const sortingOptions = {
     checkIn: "checkIn",
@@ -47,6 +50,7 @@ function Bookings() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    refetch,
   } = useGetAllBookings(bookingActiveTab, getSortString());
 
   const { bookings_counts, error_count, isPending_count } =
@@ -57,6 +61,13 @@ function Bookings() {
     threshold: 0,
     rootMargin: "200px",
   });
+
+  function handleRefresh() {
+    setIsRefreshing(true);
+    refetch().finally(() => {
+      setIsRefreshing(false);
+    });
+  }
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
@@ -144,6 +155,10 @@ function Bookings() {
                     </button>
                   ))
                 )}
+                <RefreshButton
+                  onRefresh={handleRefresh}
+                  isRefreshing={isRefreshing}
+                />
               </div>
 
               {/* Sorting Controls */}

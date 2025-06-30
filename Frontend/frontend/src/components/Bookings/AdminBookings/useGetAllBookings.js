@@ -13,6 +13,7 @@ export function useGetAllBookings(status, sort) {
         isFetchingNextPage,
         isPending,
         isError,
+        refetch
     } = useInfiniteQuery({
         queryKey: ["bookings", status, sort, bookingsSearchQuery],
         queryFn: ({ pageParam = 1 }) =>
@@ -39,5 +40,6 @@ export function useGetAllBookings(status, sort) {
         hasNextPage,
         isFetchingNextPage,
         total,
+        refetch,
     };
 }
