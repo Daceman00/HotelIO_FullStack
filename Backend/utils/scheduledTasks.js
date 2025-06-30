@@ -8,7 +8,7 @@ const runCleanupTask = async () => {
     const currentDate = new Date();
     const startOfToday = new Date(currentDate.setHours(0, 0, 0, 0));
     const endOfToday = new Date(currentDate.setHours(23, 59, 59, 999));
-    const paymentDeadline = new Date(currentDate.setHours(11, 45, 0, 0)); // Set payment deadline to 11:30 AM
+    const paymentDeadline = new Date(currentDate.setHours(11, 30, 0, 0)); // Set payment deadline to 11:30 AM
 
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -51,7 +51,7 @@ const runCleanupTask = async () => {
     }
 };;
 
-// Schedule the task to run every day at 12:00 PM
+// Schedule the task to run every day at 11:45 PM
 const scheduleCleanupTask = () => {
     cron.schedule('45 11 * * *', () => {
         console.log('Running scheduled cleanup task...');
