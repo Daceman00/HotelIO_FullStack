@@ -126,7 +126,7 @@ function LatestBookings() {
                       <div className="flex items-center gap-4">
                         <div className="flex-shrink-0">
                           <div className="w-10 h-10 bg-gradient-to-br from-[#dfa379] to-[#c8956d] rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-sm">
-                            {getGuestInitials(booking.user.email)}
+                            {getGuestInitials(booking?.user?.email)}
                           </div>
                         </div>
                         <div className="min-w-0 flex-1">

@@ -89,6 +89,8 @@ function SingleBooking({ booking }) {
 
   const isPaid = booking.paid === "paid" || booking.paid === "missed";
 
+  console.log("Booking:", booking?.user);
+
   return (
     <>
       {isBookingModalOpen && selectedBookingId === booking.id && (

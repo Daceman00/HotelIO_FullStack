@@ -15,7 +15,7 @@ function SingleRoom({ room }) {
         style={{ clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 100%)" }}
       >
         <img
-          src={`${IMAGE_URL}/${room.imageCover}`}
+          src={room.imageCover}
           alt={`Room ${room.roomNumber}`}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
