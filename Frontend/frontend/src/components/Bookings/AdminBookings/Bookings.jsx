@@ -58,8 +58,7 @@ function Bookings() {
     error_count,
     isPending_count,
     refetch: refetchCounts,
-  } = useGetCounts(bookingActiveTab, getSortString());
-  useGetBookingsCount();
+  } = useGetBookingsCount();
 
   // Replace the existing useInView implementation with this one
   const { ref: loadMoreRef, inView } = useInView({
