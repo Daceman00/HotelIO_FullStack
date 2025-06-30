@@ -50,11 +50,16 @@ function Bookings() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    refetch,
+    refetch: refetchBookings,
   } = useGetAllBookings(bookingActiveTab, getSortString());
 
-  const { bookings_counts, error_count, isPending_count } =
-    useGetBookingsCount();
+  const {
+    bookings_counts,
+    error_count,
+    isPending_count,
+    refetch: refetchCounts,
+  } = useGetCounts(bookingActiveTab, getSortString());
+  useGetBookingsCount();
 
   // Replace the existing useInView implementation with this one
   const { ref: loadMoreRef, inView } = useInView({
@@ -64,7 +69,7 @@ function Bookings() {
 
   function handleRefresh() {
     setIsRefreshing(true);
-    refetch().finally(() => {
+    Promise.all([refetchBookings(), refetchCounts()]).finally(() => {
       setIsRefreshing(false);
     });
   }
