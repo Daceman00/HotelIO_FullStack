@@ -2,13 +2,20 @@ const cron = require('node-cron');
 const mongoose = require('mongoose');
 const Booking = require('../models/bookingModel');
 const Review = require('../models/reviewModel');
+const sendEmail = require('./email');
 
 // Function to run the cleanup task
 const runCleanupTask = async () => {
     const currentDate = new Date();
-    const startOfToday = new Date(currentDate.setHours(0, 0, 0, 0));
-    const endOfToday = new Date(currentDate.setHours(23, 59, 59, 999));
-    const paymentDeadline = new Date(currentDate.setHours(11, 30, 0, 0)); // Set payment deadline to 11:30 AM
+    // Create new dates to avoid mutation issues
+    const startOfToday = new Date(currentDate);
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const endOfToday = new Date(currentDate);
+    endOfToday.setHours(23, 59, 59, 999);
+
+    const paymentDeadline = new Date(currentDate);
+    paymentDeadline.setHours(11, 30, 0, 0); // Set payment deadline to 11:30 AM
 
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -43,14 +50,67 @@ const runCleanupTask = async () => {
 
         await session.commitTransaction();
         console.log(`Cleanup task completed. Marked ${unpaidBookings.length} bookings as missed`);
+
+        // Moved email sending inside try block after transaction commit
+        if (process.env.ADMIN_EMAIL && unpaidBookings.length > 0) {
+            const totalAmount = unpaidBookings.reduce((sum, b) => sum + b.price, 0);
+            const subject = `Booking Cleanup Report - ${new Date().toLocaleDateString()}`;
+
+            // HTML version of the report
+            let html = `
+            <h1 style="color: #333; font-family: Arial, sans-serif;">Booking Cleanup Report</h1>
+            <p style="font-family: Arial, sans-serif;"><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+            <p style="font-family: Arial, sans-serif;"><strong>Total missed bookings:</strong> ${unpaidBookings.length}</p>
+            <p style="font-family: Arial, sans-serif;"><strong>Total amount:</strong> $${totalAmount.toFixed(2)}</p>
+            `;
+
+            html += `<h2 style="font-family: Arial, sans-serif;">Details:</h2>
+                     <table border="1" cellpadding="8" style="border-collapse: collapse; font-family: Arial, sans-serif; margin-bottom: 20px;">
+                     <tr style="background-color: #f2f2f2;">
+                         <th>#</th>
+                         <th>Booking ID</th>
+                         <th>User</th>
+                         <th>Room</th>
+                         <th>Price</th>
+                         <th>Check-in</th>
+                     </tr>`;
+
+            unpaidBookings.forEach((booking, index) => {
+                html += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${booking._id}</td>
+                    <td>${booking.user.email}</td>
+                    <td>${booking.room}</td>
+                    <td>$${booking.price.toFixed(2)}</td>
+                    <td>${booking.checkIn.toISOString().split('T')[0]}</td>
+                </tr>`;
+            });
+
+            html += `</table>`;
+
+            // Send email with HTML content
+            try {
+                await sendEmail({
+                    email: process.env.ADMIN_EMAIL,
+                    subject: 'Daily cleanup report',
+                    message: textReport,
+                    html: htmlReport
+                });
+                console.log(`📧 HTML report email sent to ${process.env.ADMIN_EMAIL}`);
+            } catch (emailError) {
+                console.error('Failed to send report email:', emailError);
+            }
+        } else if (unpaidBookings.length === 0) {
+            console.log('No bookings to report');
+        }
     } catch (error) {
         await session.abortTransaction();
         console.error('Error running cleanup task:', error.message);
     } finally {
         session.endSession();
     }
-};;
-
+};
 // Schedule the task to run every day at 11:45 PM
 const scheduleCleanupTask = () => {
     cron.schedule('45 11 * * *', () => {

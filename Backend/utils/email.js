@@ -1,9 +1,8 @@
-const nodemailer = require('nodemailer')
+// utils/email.js
+const nodemailer = require('nodemailer');
 
-const sendEmail = async options => {
-
+const sendEmail = async (options) => {
     const transporter = nodemailer.createTransport({
-
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
         auth: {
@@ -12,16 +11,18 @@ const sendEmail = async options => {
         },
         logger: true,
         debug: true,
-    })
+    });
 
+    // Enhanced mail options with HTML support
     const mailOptions = {
         from: 'dariomandic <dariomandic2000@gmail.com>',
         to: options.email,
         subject: options.subject,
-        text: options.message
-    }
+        text: options.message,
+        html: options.html  // Add HTML support (optional)
+    };
 
-    await transporter.sendMail(mailOptions)
-}
+    await transporter.sendMail(mailOptions);
+};
 
 module.exports = sendEmail;
