@@ -8,6 +8,7 @@ const bookingRouter = require('./routes/bookingRoutes');
 const paymentRouter = require('./routes/paymentRoutes');
 const AppError = require('./utils/appError');
 const { runCleanupTask } = require('./utils/scheduledTasks');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 
@@ -30,8 +31,20 @@ app.use((req, res, next) => {
     next();
 });
 
-// 2. ADD CLEANUP ENDPOINT HERE (BEFORE MAIN ROUTES)
-app.get('/cron/cleanup-bookings', async (req, res, next) => {
+// Rate limiting for cleanup endpoint
+const cleanupLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour window
+    max: 5, // max 5 requests per hour
+    message: 'Too many requests from this IP, please try again after an hour',
+    skip: (req) => {
+        // Skip rate limiting for local development
+        return process.env.NODE_ENV === 'development' &&
+            req.ip === '::ffff:127.0.0.1';
+    }
+});
+
+// Cleanup endpoint with rate limiting
+app.get('/cron/cleanup-bookings', cleanupLimiter, async (req, res, next) => {
     // Verify secret key
     if (req.query.secret !== process.env.CRON_SECRET) {
         return res.status(403).json({
