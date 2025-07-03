@@ -52,7 +52,7 @@ const runCleanupTask = async () => {
         console.log(`Cleanup task completed. Marked ${unpaidBookings.length} bookings as missed`);
 
         // Moved email sending inside try block after transaction commit
-        if (process.env.ADMIN_EMAIL && unpaidBookings.length > 0) {
+        if (process.env.ADMIN_EMAIL) {
             const totalAmount = unpaidBookings.reduce((sum, b) => sum + b.price, 0);
             const subject = `Booking Cleanup Report - ${new Date().toLocaleDateString()}`;
 
