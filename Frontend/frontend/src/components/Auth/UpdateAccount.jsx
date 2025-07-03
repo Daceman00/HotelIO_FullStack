@@ -49,6 +49,8 @@ function UpdateAccount() {
     }
     formData.append("name", updateAccountFormData.name);
     await updateAccountPhoto(formData);
+    // Reset preview and selected file after upload
+    useFileStore.setState({ previewUrl: null, selectedFile: null });
   };
 
   const handleConfirmModal = () => {

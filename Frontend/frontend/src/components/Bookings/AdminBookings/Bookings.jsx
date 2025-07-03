@@ -45,7 +45,6 @@ function Bookings() {
   const {
     bookings,
     isPending,
-    total,
     error,
     fetchNextPage,
     hasNextPage,
