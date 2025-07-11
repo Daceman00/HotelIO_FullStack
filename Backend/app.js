@@ -44,17 +44,17 @@ const cleanupLimiter = rateLimit({
 });
 
 // Simple route to prevent sleeping
-app.get('/wake-up', (req, res) => {
+app.get('/cron/wake-up', cleanupLimiter, (req, res) => {
     res.send('👋 Instance is awake');
 });
 
 // Schedule self-wake every 10 minutes
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'development') {
     setInterval(() => {
         fetch(`https://hotelio-fullstack.onrender.com/api/v1/wake-up`)
             .then(() => console.log('Self-wake completed'))
             .catch(err => console.error('Wake failed:', err));
-    }, 9 * 60 * 1000); // Every 9 minutes
+    }, 11 * 60 * 1000); // Every 9 minutes
 }
 
 // Cleanup endpoint with rate limiting
