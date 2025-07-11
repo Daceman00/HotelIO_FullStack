@@ -12,6 +12,9 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 
+// Configure Express to trust proxy headers (essential for Render.com)
+app.set('trust proxy', true);  // Add this at the top of your app configuration
+
 // 1) MIDDLEWARES
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
@@ -35,7 +38,8 @@ app.use((req, res, next) => {
 const standardLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
     max: 100, // More generous limit
-    message: 'Too many requests, please try later'
+    message: 'Too many requests, please try later',
+    validate: { trustProxy: false }  // Explicitly handle proxy trust
 });
 
 // Rate limiting for cleanup endpoint
@@ -47,7 +51,8 @@ const cleanupLimiter = rateLimit({
         // Skip rate limiting for local development
         return process.env.NODE_ENV === 'development' &&
             req.ip === '::ffff:127.0.0.1';
-    }
+    },
+    validate: { trustProxy: false }  // Explicitly handle proxy trust
 });
 
 // Simple route to prevent sleeping
