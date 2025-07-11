@@ -102,9 +102,6 @@ function App() {
                 }
               />
 
-              {/*
-            <Route path="/reports" element={<div>Reports Page</div>} />
-            <Route path="/settings" element={<div>Settings Page</div>} /> */}
               <Route path="/forgotPassword" element={<ForgotPassword />} />
               <Route path="/resetPassword/:token" element={<ResetPassword />} />
               <Route path="/" element={<Navigate to="/dashboard" />} />

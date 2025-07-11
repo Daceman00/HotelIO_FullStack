@@ -15,7 +15,7 @@ const sendEmail = async (options) => {
 
     // Enhanced mail options with HTML support
     const mailOptions = {
-        from: 'dariomandic <dariomandic2000@gmail.com>',
+        from: 'HotelIO <HotelIO-noreply@gmail.com>',
         to: options.email,
         subject: options.subject,
         text: options.message,

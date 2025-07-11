@@ -89,11 +89,24 @@ const runCleanupTask = async () => {
 
             html += `</table>`;
 
+            // Plain text version of the report
+            let textReport = `Booking Cleanup Report\n`;
+            textReport += `Date: ${new Date().toLocaleString()}\n`;
+            textReport += `Total missed bookings: ${unpaidBookings.length}\n`;
+            textReport += `Total amount: $${totalAmount.toFixed(2)}\n\n`;
+            textReport += `Details:\n`;
+            unpaidBookings.forEach((booking, index) => {
+                textReport += `${index + 1}. Booking ID: ${booking._id}, User: ${booking.user.email}, Room: ${booking.room}, Price: $${booking.price.toFixed(2)}, Check-in: ${booking.checkIn.toISOString().split('T')[0]}\n`;
+            });
+
+            // Assign html to htmlReport for clarity
+            const htmlReport = html;
+
             // Send email with HTML content
             try {
                 await sendEmail({
                     email: process.env.ADMIN_EMAIL,
-                    subject: 'Daily cleanup report',
+                    subject: subject, // use the subject variable here
                     message: textReport,
                     html: htmlReport
                 });
@@ -123,4 +136,4 @@ const scheduleCleanupTask = () => {
 module.exports = {
     scheduleCleanupTask,
     runCleanupTask
-}; 
+};
