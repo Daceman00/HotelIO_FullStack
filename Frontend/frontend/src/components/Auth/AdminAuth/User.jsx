@@ -4,15 +4,31 @@ import WarningButton from "../../Reusable/WarningButton";
 import useUIStore from "../../../stores/UiStore";
 import Modal from "../../Reusable/Modal";
 import { UserIcon } from "@heroicons/react/24/outline";
+import { useChangeRole } from "./useChangeRole";
+import ChangeRole from "./ChangeRole";
 
 function User({ user }) {
   const { deleteUser, error, isPending } = useDeleteUser();
   const { isModalOpen, selectedId } = useUIStore();
   const onModalOpen = useUIStore((state) => state.onModalOpen);
   const onModalClose = useUIStore((state) => state.onModalClose);
+  const {
+    changeRole,
+    isPending: isPendingRoleChange,
+    error: isErrorRoleChange,
+  } = useChangeRole();
 
   const handleConfirmModal = () => {
     onModalClose();
+  };
+
+  const handleRoleChange = (newRole) => {
+    if (newRole !== user.role) {
+      changeRole({
+        userID: user.id,
+        role: newRole,
+      });
+    }
   };
 
   return (
@@ -60,11 +76,13 @@ function User({ user }) {
           </div>
         </td>
 
-        {/* Role Column - matches w-1/5 from header */}
+        {/* Role Column with Dropdown */}
         <td className="w-1/5 px-6 py-4">
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-            {user.role.toUpperCase()}
-          </span>
+          <ChangeRole
+            currentRole={user.role}
+            onRoleChange={handleRoleChange}
+            disabled={isPending || isPendingRoleChange}
+          />
         </td>
 
         {/* Status Column - matches w-1/5 from header */}

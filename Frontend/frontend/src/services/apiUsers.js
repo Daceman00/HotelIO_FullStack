@@ -34,3 +34,13 @@ export async function deleteUser(userID) {
     }
 
 }
+
+export async function changeRole(userID, role) {
+    try {
+        const { data } = await axios.patch(`/users/${userID}`, { role });
+        return data;
+    } catch (error) {
+        console.error(error.response);
+        throw new Error(error.response.data.message);
+    }
+}
