@@ -125,18 +125,6 @@ const Header = React.memo(function Header() {
               >
                 About Us
               </Link>
-              <Link
-                to="/news"
-                className="relative text-gray-800 hover:text-amber-600 font-medium text-sm py-2 transition-colors duration-300 after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-amber-600 after:transition-all"
-              >
-                News
-              </Link>
-              <Link
-                to="/contact"
-                className="relative text-gray-800 hover:text-amber-600 font-medium text-sm py-2 transition-colors duration-300 after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-amber-600 after:transition-all"
-              >
-                Contact
-              </Link>
             </nav>
 
             {/* CTA Button */}

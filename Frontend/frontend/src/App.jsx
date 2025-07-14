@@ -25,6 +25,7 @@ import Users from "./components/Auth/AdminAuth/Users";
 import useAuthStore from "./stores/AuthStore";
 import ReviewsForSingleRoom from "./components/Reviews/ReviewsForSingleRoom";
 import StatsPage from "./pages/StatsPage";
+import About from "./components/Reusable/About";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -101,7 +102,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
+              <Route path="/about" element={<About />} />
               <Route path="/forgotPassword" element={<ForgotPassword />} />
               <Route path="/resetPassword/:token" element={<ResetPassword />} />
               <Route path="/" element={<Navigate to="/dashboard" />} />
