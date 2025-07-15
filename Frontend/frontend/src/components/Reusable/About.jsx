@@ -60,7 +60,7 @@ function About() {
           <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg mb-6 transform hover:scale-110 transition-transform duration-300">
             <Hotel className="w-10 h-10" style={{ color: "#dfa379" }} />
           </div>
-          <h1 className="text-6xl font-bold text-gray-800 mb-4 tracking-tight">
+          <h1 className="text-6xl font-serif font-bold text-gray-800 mb-4 tracking-tight">
             Hotel<span style={{ color: "#dfa379" }}>IO</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">

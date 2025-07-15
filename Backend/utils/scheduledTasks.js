@@ -36,6 +36,7 @@ const runCleanupTask = async () => {
         for (const booking of unpaidBookings) {
             console.log(`Processing booking ${booking._id}:`);
             console.log(`- Check-in date: ${booking.checkIn}`);
+            console.log(`- Check-out date: ${booking.checkOut}`);
             console.log(`- Payment deadline: ${paymentDeadline}`);
             console.log(`- User: ${booking.user.email}`);
             console.log(`- Room: ${booking.room}`);
@@ -73,6 +74,7 @@ const runCleanupTask = async () => {
                          <th>Room</th>
                          <th>Price</th>
                          <th>Check-in</th>
+                         <th>Check-out</th>
                      </tr>`;
 
             unpaidBookings.forEach((booking, index) => {
@@ -81,9 +83,10 @@ const runCleanupTask = async () => {
                     <td>${index + 1}</td>
                     <td>${booking._id}</td>
                     <td>${booking.user.email}</td>
-                    <td>${booking.room}</td>
+                    <td>${booking.room.roomNumber}</td>
                     <td>$${booking.price.toFixed(2)}</td>
                     <td>${booking.checkIn.toISOString().split('T')[0]}</td>
+                    <td>${booking.checkOut.toISOString().split('T')[0]}</td>
                 </tr>`;
             });
 
