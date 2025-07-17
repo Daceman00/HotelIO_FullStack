@@ -15,6 +15,12 @@ const useUIStore = create((set) => ({
     onBookingModalOpen: (Id) => set({ isBookingModalOpen: true, selectedBookingId: Id }),
     onBookingModalClose: () => set({ isBookingModalOpen: false, selectedBookingId: null }),
 
+    // Review modal states
+    isReviewModalOpen: false,
+    selectedReviewId: null,
+    onReviewModalOpen: (Id) => set({ isReviewModalOpen: true, selectedReviewId: Id }),
+    onReviewModalClose: () => set({ isReviewModalOpen: false, selectedReviewId: null }),
+
     isDeleteRoomModalOpen: false,
     selectedRoomId: null,
     onDeleteRoomModalOpen: (Id) => set({ isDeleteRoomModalOpen: true, selectedRoomId: Id }),

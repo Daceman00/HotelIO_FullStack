@@ -7,9 +7,8 @@ export function useDeleteReview() {
     const { mutate: deleteReview, error, isPending } = useMutation({
         mutationFn: (reviewId) => deleteReviewApi(reviewId),
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["room"],
-            })
+            queryClient.invalidateQueries({ queryKey: ["room"] });
+            queryClient.invalidateQueries({ queryKey: ["reviews"] });
             toast.success('Review deleted successfully');
         },
         onError: (error) => {

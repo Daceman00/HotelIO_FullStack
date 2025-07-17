@@ -10,28 +10,29 @@ import StarRatingDisplay from "../Reusable/StarRatingDisplay";
 function SingleReview({ review, idx }) {
   const { isAdmin } = useAuthStore();
   const { deleteReview, isPending, error } = useDeleteReview();
-  const { isModalOpen } = useUIStore();
-  const onModalOpen = useUIStore((state) => state.onModalOpen);
-  const onModalClose = useUIStore((state) => state.onModalClose);
+  const { isReviewModalOpen } = useUIStore();
+  const selectedReviewId = useUIStore((state) => state.selectedReviewId);
+  const onReviewModalOpen = useUIStore((state) => state.onReviewModalOpen);
+  const onReviewModalClose = useUIStore((state) => state.onReviewModalClose);
   const handleDeleteReview = () => {
-    onModalClose();
+    onReviewModalClose();
   };
 
   return (
     <>
-      {isModalOpen ? (
+      {isReviewModalOpen && selectedReviewId === review.id && (
         <Modal
           action={deleteReview}
-          id={review.id}
-          isOpen={isModalOpen}
-          onClose={onModalClose}
+          id={selectedReviewId}
+          isOpen={isReviewModalOpen}
+          onClose={onReviewModalClose}
           title={"Are you sure you want permanently delete this review?"}
           description={"If you delete this review, you can not return it!"}
           onConfirm={handleDeleteReview}
           isPending={isPending}
           opacity="20"
         />
-      ) : null}
+      )}
       <div
         key={idx}
         className="group relative mb-8 p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200"
@@ -76,7 +77,7 @@ function SingleReview({ review, idx }) {
                 />
                 {isAdmin && (
                   <button
-                    onClick={onModalOpen}
+                    onClick={() => onReviewModalOpen(review.id)}
                     className="p-1 text-gray-400 hover:text-red-500 transition-colors duration-200"
                     aria-label="Delete review"
                   >
