@@ -22,7 +22,7 @@ function SingleReview({ review, idx }) {
       {isModalOpen ? (
         <Modal
           action={deleteReview}
-          userId={review.id}
+          id={review.id}
           isOpen={isModalOpen}
           onClose={onModalClose}
           title={"Are you sure you want permanently delete this review?"}
