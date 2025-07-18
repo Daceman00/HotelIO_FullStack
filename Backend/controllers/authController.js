@@ -113,7 +113,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     await user.save({ validateBeforeSave: false })
 
     // Send email with token
-    const resetURL = `http://localhost:5173/resetPassword/${resetToken}`;
+    const resetURL = `https://hoteliodario.netlify.app/resetPassword/${resetToken}`;
 
     const message = `
     <html>

@@ -9,6 +9,10 @@ const CoverImageUpload = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Add preview property if not present
+      if (!file.preview) {
+        file.preview = URL.createObjectURL(file);
+      }
       setCoverImage(file);
     }
   };
