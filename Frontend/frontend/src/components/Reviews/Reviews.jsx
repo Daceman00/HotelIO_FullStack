@@ -22,7 +22,7 @@ function Reviews() {
 
   if (error) return <Error message={error.message} />;
   return (
-    <section className="py-16 bg-white">
+    <section id="reviews" className="py-16 bg-white">
       {isPending ? (
         <div className="flex justify-center items-center min-h-[400px]">
           <LoadingSpinner />

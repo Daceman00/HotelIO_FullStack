@@ -1,5 +1,6 @@
 import React from "react";
 import Logo from "./Logo";
+import { Link } from "react-router-dom";
 
 const Footer = React.memo(function Footer() {
   return (
@@ -39,19 +40,30 @@ const Footer = React.memo(function Footer() {
             <ul className="space-y-4 text-gray-400">
               {[
                 { name: "Our Properties", url: "#properties" },
-                { name: "Rooms & Suites", url: "#rooms" },
-                { name: "Experiences", url: "#experiences" },
-                { name: "About Us", url: "#about" },
+                { name: "Rooms & Suites", url: "/rooms" },
+                { name: "Experiences", url: "/dashboard#reviews" },
+                { name: "About Us", url: "/about" },
               ].map((link) => (
                 <li key={link.name}>
-                  <a
-                    href={link.url}
-                    className="hover:text-indigo-400 transition-colors flex items-center group"
-                  >
-                    <span className="transform transition-transform group-hover:translate-x-1">
-                      {link.name}
-                    </span>
-                  </a>
+                  {link.action ? (
+                    <button
+                      onClick={link.action}
+                      className="hover:text-indigo-400 transition-colors flex items-center group"
+                    >
+                      <span className="transform transition-transform group-hover:translate-x-1">
+                        {link.name}
+                      </span>
+                    </button>
+                  ) : (
+                    <Link
+                      to={link.url}
+                      className="hover:text-indigo-400 transition-colors flex items-center group"
+                    >
+                      <span className="transform transition-transform group-hover:translate-x-1">
+                        {link.name}
+                      </span>
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -77,22 +89,6 @@ const Footer = React.memo(function Footer() {
               <p className="text-sm text-gray-500">
                 Sign up for our newsletter to receive special offers and updates
               </p>
-              <div className="pt-4 flex flex-col space-y-2">
-                <a
-                  href="tel:+123456789"
-                  className="text-gray-400 hover:text-indigo-400 transition-colors flex items-center space-x-2"
-                >
-                  <i className="fas fa-phone text-sm" />
-                  <span>+1 (234) 567-890</span>
-                </a>
-                <a
-                  href="mailto:hello@hotelio.com"
-                  className="text-gray-400 hover:text-indigo-400 transition-colors flex items-center space-x-2"
-                >
-                  <i className="fas fa-envelope text-sm" />
-                  <span>hello@hotelio.com</span>
-                </a>
-              </div>
             </div>
           </div>
         </div>
