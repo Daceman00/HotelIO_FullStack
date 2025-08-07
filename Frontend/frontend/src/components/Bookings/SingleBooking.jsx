@@ -10,7 +10,7 @@ import { useDeleteBooking } from "./useDeleteBooking";
 import useUIStore from "../../stores/UiStore";
 import Modal from "../Reusable/Modal";
 import PaymentModal from "../Payments/PaymentModal";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import {
   eachDayOfInterval,
   format,

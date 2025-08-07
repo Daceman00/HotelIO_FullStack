@@ -53,24 +53,34 @@ reviewSchema.statics.calculateAverageRating = async function (roomId) {
             }
         ]);
 
-        const updateData = stats.length > 0
-            ? {
-                averageRating: stats[0].averageRating,
+        const Room = mongoose.model('Room');
+        let updateData = {};
+
+        if (stats.length > 0) {
+            // Round to 1 decimal place for display
+            const roundedRating = Math.round(stats[0].averageRating * 10) / 10;
+            updateData = {
+                averageRating: roundedRating,
                 numRatings: stats[0].numRatings
-            }
-            : {
+            };
+        } else {
+            // Set to 0 when no reviews exist
+            updateData = {
                 averageRating: 0,
                 numRatings: 0
             };
+        }
 
-        const Room = mongoose.model('Room');
-        await Room.findByIdAndUpdate(roomId, updateData, { new: true, runValidators: true });
+        await Room.findByIdAndUpdate(
+            roomId,
+            updateData,
+            { new: true, runValidators: true }
+        );
     } catch (error) {
         console.error(`Error calculating average rating: ${error.message}`);
         throw error;
     }
 };
-
 reviewSchema.pre(/^find/, function (next) {
     this.populate({
         path: 'user',

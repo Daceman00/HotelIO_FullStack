@@ -142,4 +142,22 @@ exports.getTopReviewers = catchAsync(async (req, res, next) => {
 exports.getReview = factory.getOne(Review);
 exports.createReview = factory.createOne(Review);
 exports.updateReview = factory.updateOne(Review);
-exports.deleteReview = factory.deleteOne(Review);
+
+exports.deleteReview = catchAsync(async (req, res, next) => {
+    const review = await Review.findByIdAndDelete(req.params.id);
+
+    if (!review) {
+        return res.status(404).json({
+            status: 'fail',
+            message: 'No review found with that ID'
+        });
+    }
+
+    // Recalculate average rating for the room
+    await Review.calculateAverageRating(review.room);
+
+    res.status(204).json({
+        status: 'success',
+        data: null
+    });
+});

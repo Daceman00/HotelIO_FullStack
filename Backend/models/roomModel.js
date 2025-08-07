@@ -65,15 +65,9 @@ const roomSchema = mongoose.Schema({
 
     averageRating: {
         type: Number,
-        min: [1, "Average rating must be at least 1"],
+        min: [0, "Average rating must be at least 1"],
         max: [5, "Average rating cannot exceed 5"],
-        default: undefined,
-        validate: {
-            validator: function (v) {
-                return v === undefined || v === 0 || (v >= 1 && v <= 5);
-            },
-            message: "Average rating must be 0 or between 1 and 5"
-        }
+        default: 0,
     },
 
     numRatings: {
