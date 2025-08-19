@@ -16,9 +16,9 @@ import {
   format,
   parseISO,
   isAfter,
-  setHours,
+  set,
   subDays,
-} from "date-fns"; // Add isAfter and setHours
+} from "date-fns";
 
 const statusStyles = {
   paid: "bg-green-100 text-green-800",
@@ -70,7 +70,12 @@ function SingleBooking({ booking }) {
 
   const now = new Date();
   const today = new Date();
-  const paymentDeadline = setHours(today, 11, 30, 0);
+  const paymentDeadline = set(today, {
+    hours: 11,
+    minutes: 30,
+    seconds: 0,
+    milliseconds: 0,
+  });
 
   const isDateBooked = () => {
     const checkInDate = parseISO(booking.checkIn);
@@ -88,8 +93,6 @@ function SingleBooking({ booking }) {
   };
 
   const isPaid = booking.paid === "paid" || booking.paid === "missed";
-
-  console.log("Booking:", booking?.user);
 
   return (
     <>
@@ -179,7 +182,10 @@ function SingleBooking({ booking }) {
               >
                 Pay
               </UpdateButton>
-              <WarningButton onClick={() => onBookingModalOpen(booking.id)}>
+              <WarningButton
+                disabled={isDateBooked()}
+                onClick={() => onBookingModalOpen(booking.id)}
+              >
                 Cancel
               </WarningButton>
             </div>

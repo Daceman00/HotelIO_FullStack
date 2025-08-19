@@ -42,7 +42,7 @@ function SingleReview({ review, idx }) {
           <div className="shrink-0">
             {review?.user.photo ? (
               <img
-                src={`${IMAGE_URL_USERS}/${review?.user.photo}`}
+                src={review?.user.photo}
                 alt="User Avatar"
                 className="h-16 w-16 rounded-full border-2 border-white shadow-sm"
               />

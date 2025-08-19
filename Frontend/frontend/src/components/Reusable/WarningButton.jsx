@@ -1,12 +1,14 @@
 import React from "react";
 
-function WarningButton({ onClick, children }) {
+function WarningButton({ onClick, children, disabled }) {
   return (
     <button
-      onClick={onClick}
-      className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 shadow-sm hover:shadow-md active:translate-y-0.5"
+      onClick={disabled ? undefined : onClick}
+      className="flex items-center gap-2 bg-red-500 hover:bg-red-600 disabled:bg-red-300 disabled:hover:bg-red-300 disabled:cursor-not-allowed disabled:opacity-50 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 shadow-sm hover:shadow-md active:translate-y-0.5"
       type="button"
       aria-label="Delete"
+      disabled={disabled}
+      aria-disabled={disabled}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
