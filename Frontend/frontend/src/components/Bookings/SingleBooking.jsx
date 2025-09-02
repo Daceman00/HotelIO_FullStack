@@ -177,7 +177,7 @@ function SingleBooking({ booking }) {
             <div className="flex justify-center gap-3 mt-4">
               <UpdateButton
                 isPaid={isPaid}
-                isPast={isDateBooked(booking.checkIn)}
+                isPast={isDateBooked()}
                 onClick={() => setIsPaymentModalOpen(true)}
               >
                 Pay
