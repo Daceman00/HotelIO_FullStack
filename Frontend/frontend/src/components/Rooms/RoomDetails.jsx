@@ -21,10 +21,12 @@ import useUIStore from "../../stores/UiStore";
 import FeatureItem from "../Reusable/FeatureItem";
 import StarRatingDisplay from "../Reusable/StarRatingDisplay";
 import LoadingSpinner from "../Reusable/LoadingSpinner";
+import { useIsLoggedIn } from "../Auth/useAuth";
 
 const RoomDetails = () => {
   const { isAdmin } = useAuthStore();
   const { room, isPending, error } = useGetRoom();
+  const { user } = useIsLoggedIn();
   const { isRoomUpdateModalOpen } = useUIStore();
   const onRoomUpdateModalOpen = useUIStore(
     (state) => state.onRoomUpdateModalOpen
@@ -344,7 +346,22 @@ const RoomDetails = () => {
             <div className="lg:col-span-1">
               <div className="sticky top-8">
                 <div className="px-6 py-8">
-                  <CreateBookingForm />
+                  {user ? (
+                    <CreateBookingForm />
+                  ) : (
+                    <div className="bg-white rounded-2xl shadow-md p-6 text-center">
+                      <div className="text-3xl text-[#dfa379] mb-3">
+                        <i className="fas fa-lock"></i>
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                        Login required
+                      </h3>
+                      <p className="text-gray-600">
+                        Please log in to reserve this room. Booking is available
+                        to signed-in guests only.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
