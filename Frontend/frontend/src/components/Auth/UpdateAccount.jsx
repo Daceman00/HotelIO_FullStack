@@ -186,7 +186,7 @@ function UpdateAccount() {
                 </p>
               </div>
 
-              <div className="flex items-center pt-3">
+              <div className="flex items-center">
                 <button
                   disabled={isPendingUpdatePhoto}
                   type="submit"
@@ -194,8 +194,7 @@ function UpdateAccount() {
                 >
                   {isPendingUpdatePhoto ? (
                     <span className="flex items-center">
-                      <LoadingSpinner size="sm" />
-                      <span className="ml-2">Updating...</span>
+                      <LoadingSpinner />
                     </span>
                   ) : (
                     "Save Changes"
