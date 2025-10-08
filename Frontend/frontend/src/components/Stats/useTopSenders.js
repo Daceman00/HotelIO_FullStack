@@ -6,9 +6,6 @@ export function useGetTopSpenders() {
         queryKey: ["users"],
         queryFn: getTopSpenders
     })
-
     const topSpendersData = data?.data?.topSpenders ?? []
-    const totalSpent = data?.data?.totalSpent ?? 0
-
-    return { topSpendersData, totalSpent, error, isPending }
+    return { topSpendersData, error, isPending }
 }

@@ -53,7 +53,7 @@ function StatsPage() {
           <div className="col-span-full">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="w-full">
-                <TopSendersDoguhnutChart />
+                <TopSendersDoguhnutChart totalRevenue={totalRevenue} />
               </div>
               <div className="w-full">
                 <TopBookersDoguhnutChart />

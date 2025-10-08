@@ -5,8 +5,8 @@ import { useGetTopSpenders } from "./useTopSenders";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-function TopSendersDoguhnutChart() {
-  const { topSpendersData, totalSpent, error, isPending } = useGetTopSpenders();
+function TopSendersDoguhnutChart({ totalRevenue }) {
+  const { topSpendersData, error, isPending } = useGetTopSpenders();
 
   // Generate beautiful gradient colors based on the theme
   const generateColors = (length) => {
@@ -269,7 +269,7 @@ function TopSendersDoguhnutChart() {
                       lineHeight: "1",
                     }}
                   >
-                    ${totalSpent.toLocaleString()}
+                    ${totalRevenue.data.totalRevenue.toLocaleString("en-US")}
                   </div>
                   <div
                     style={{
@@ -303,7 +303,7 @@ function TopSendersDoguhnutChart() {
               <div className="space-y-3">
                 {topSpendersData.slice(0, 5).map((user, index) => {
                   const percentage = (
-                    (user.totalSpent / totalSpent) *
+                    (user.totalSpent / totalRevenue.data.totalRevenue) *
                     100
                   ).toFixed(1);
                   return (
