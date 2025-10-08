@@ -452,10 +452,13 @@ exports.getTopSpenders = catchAsync(async (req, res, next) => {
         }
     ]);
 
+    const totalSpent = topSpenders.reduce((sum, user) => sum + user.totalSpent, 0);
+
     res.status(200).json({
         status: 'success',
         data: {
-            topSpenders
+            topSpenders,
+            totalSpent
         }
     });
 });

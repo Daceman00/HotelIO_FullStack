@@ -6,9 +6,7 @@ import { useGetTopSpenders } from "./useTopSenders";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 function TopSendersDoguhnutChart() {
-  const { topSpenders, error, isPending } = useGetTopSpenders();
-
-  const topSpendersData = topSpenders?.data?.topSpenders || [];
+  const { topSpendersData, totalSpent, error, isPending } = useGetTopSpenders();
 
   // Generate beautiful gradient colors based on the theme
   const generateColors = (length) => {
@@ -102,12 +100,6 @@ function TopSendersDoguhnutChart() {
       },
     },
   };
-
-  // Calculate total spent for percentage calculations
-  const totalSpent = topSpendersData.reduce(
-    (sum, user) => sum + user.totalSpent,
-    0
-  );
 
   return (
     <div className="relative">

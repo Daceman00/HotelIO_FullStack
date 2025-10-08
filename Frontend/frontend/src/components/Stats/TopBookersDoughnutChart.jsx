@@ -6,9 +6,8 @@ import { useTopBookers } from "./useTopBookers";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 function TopBookersDoughnutChart() {
-  const { topBookers, error, isPending } = useTopBookers();
-
-  const topBookersData = topBookers?.data?.topBookers || [];
+  const { topBookersData, totalPaidBookings, error, isPending } =
+    useTopBookers();
 
   // Generate beautiful gradient colors based on the theme
   const generateColors = (length) => {
@@ -101,12 +100,6 @@ function TopBookersDoughnutChart() {
       },
     },
   };
-
-  // Calculate total bookings for percentage calculations
-  const totalBookings = topBookersData.reduce(
-    (sum, user) => sum + user.totalBookings,
-    0
-  );
 
   return (
     <div className="relative">
@@ -277,7 +270,7 @@ function TopBookersDoughnutChart() {
                       lineHeight: "1",
                     }}
                   >
-                    {totalBookings.toLocaleString()}
+                    {totalPaidBookings.toLocaleString()}
                   </div>
                   <div
                     style={{
@@ -311,7 +304,7 @@ function TopBookersDoughnutChart() {
               <div className="space-y-3">
                 {topBookersData.slice(0, 5).map((user, index) => {
                   const percentage = (
-                    (user.totalBookings / totalBookings) *
+                    (user.totalBookings / totalPaidBookings) *
                     100
                   ).toFixed(1);
                   return (
