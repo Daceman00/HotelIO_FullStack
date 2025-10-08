@@ -395,10 +395,14 @@ exports.getTopBookers = catchAsync(async (req, res, next) => {
         }
     ]);
 
+    // Total number of bookings that are paid (across all users)
+    const totalPaidBookings = await Booking.countDocuments({ paid: 'paid' });
+
     res.status(200).json({
         status: 'success',
         data: {
-            topBookers
+            topBookers,
+            totalPaidBookings
         }
     });
 });
