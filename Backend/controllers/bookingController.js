@@ -504,6 +504,7 @@ exports.getMonthlyBookings = catchAsync(async (req, res, next) => {
     const bookingsByMonth = await Booking.aggregate([
         {
             $match: {
+                paid: 'paid',
                 checkIn: {
                     $gte: new Date(`${year}-01-01`),
                     $lte: new Date(`${year}-12-31`)
