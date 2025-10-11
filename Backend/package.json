@@ -6,7 +6,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:dev": "node server.js",
     "start:prod": "NODE_ENV=production nodemon server.js",
-    "find-circular-deps": "madge . -c"
+    "find-circular-deps": "madge . -c",
+    "migrate:crm": "node scripts/migrateCRM.js",
+    "migrate:crm:dry-run": "DRY_RUN=true node scripts/migrateCRM.js"
   },
   "keywords": [],
   "author": "",

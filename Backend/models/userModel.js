@@ -92,6 +92,71 @@ userSchema.pre('save', async function (next) {
     next()
 })
 
+// Auto-create CRM entry when new user is created
+userSchema.post('save', async function (doc, next) {
+    try {
+        const CRM = mongoose.model('CRM');
+
+        // Check if CRM entry already exists
+        const existingCRM = await CRM.findOne({ user: doc._id });
+
+        if (!existingCRM) {
+            // Generate unique referral code for hotel
+            const referralCode = `HOTEL${doc._id.toString().slice(-8).toUpperCase()}${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
+
+            // Create CRM entry with default values for new users
+            await CRM.create({
+                user: doc._id,
+                referralCode: referralCode,
+                loyaltyPoints: 0,
+                pointsHistory: [],
+                stayStatistics: {
+                    totalStays: 0,
+                    totalNights: 0,
+                    lifetimeValue: 0,
+                    averageStayLength: 0,
+                    lastStayDate: null
+                },
+                reviewStatistics: {
+                    totalReviews: 0,
+                    averageRating: 0,
+                    ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+                    lastReviewDate: null,
+                    featuredReviews: []
+                },
+                guestStatus: 'new',
+                availableDiscounts: [
+                    {
+                        code: `WELCOME${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+                        type: 'percentage',
+                        value: 10,
+                        description: "Welcome discount for new guests",
+                        minimumStayNights: 1,
+                        roomType: 'all',
+                        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+                        used: false,
+                        createdAt: new Date()
+                    }
+                ],
+                guestPreferences: {
+                    room: {
+                        preferredRoomType: 'single',
+                    },
+                    amenities: [], // Empty for new users
+                    amenitiesFrequency: {}, // Empty for new users
+                }
+            });
+
+            console.log(`✓ Auto-created hotel CRM entry for new guest: ${doc.email}`);
+        }
+    } catch (error) {
+        console.error('Error creating hotel CRM entry:', error);
+        // Don't throw error to prevent user creation from failing
+    }
+
+    next();
+});
+
 userSchema.pre('deleteOne', { document: true, query: false }, async function () {
     const userId = this._id;
 
