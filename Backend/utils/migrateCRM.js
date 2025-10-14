@@ -16,7 +16,6 @@ const DB = (process.env.DATABASE || '').includes('<PASSWORD>')
 
 async function migrateExistingUsers() {
     try {
-        console.log('Starting CRM migration for existing users...');
 
         // Find all users without CRM entries
         const usersWithoutCRM = await User.aggregate([
@@ -35,7 +34,6 @@ async function migrateExistingUsers() {
             }
         ]);
 
-        console.log(`Found ${usersWithoutCRM.length} users without CRM entries`);
 
         let migratedCount = 0;
         let errorCount = 0;
@@ -46,7 +44,6 @@ async function migrateExistingUsers() {
                 migratedCount++;
 
                 if (migratedCount % 50 === 0) {
-                    console.log(`Progress: ${migratedCount}/${usersWithoutCRM.length} users migrated`);
                 }
             } catch (error) {
                 console.error(`Error migrating user ${user.email}:`, error.message);
@@ -54,9 +51,6 @@ async function migrateExistingUsers() {
             }
         }
 
-        console.log(`Migration completed!`);
-        console.log(`Successfully migrated: ${migratedCount} users`);
-        console.log(`Errors: ${errorCount} users`);
 
     } catch (error) {
         console.error('Migration failed:', error);
@@ -119,7 +113,6 @@ async function createCRMForExistingUser(user) {
 
     const crmEntry = new CRM(crmData);
     await crmEntry.save();
-    console.log(`✓ Created CRM for: ${user.email} | Stays: ${stayStats.totalStays} | Reviews: ${reviewStats.totalReviews} | Discounts: ${availableDiscounts.length} | Points: ${totalPoints}`);
 }
 
 function calculateStayStatistics(bookings) {
@@ -487,7 +480,6 @@ if (require.main === module) {
 
     mongoose.connect(DB)
         .then(() => {
-            console.log('Connected to database');
             migrateExistingUsers();
         })
         .catch(err => {

@@ -24,7 +24,6 @@ const createSendToken = (user, statusCode, res) => {
 
     // Remove password from output
     user.password = undefined;
-    console.log("Generated Token:", token);
     res.status(statusCode).json({
         status: 'success',
         token,
@@ -36,8 +35,26 @@ const createSendToken = (user, statusCode, res) => {
 }
 
 exports.signup = catchAsync(async (req, res, next) => {
-    const newUser = await User.create(req.body);
-    createSendToken(newUser, 201, res)
+
+    try {
+
+        // Create a new user instance to validate
+        const user = new User(req.body);
+
+        // Validate the user data
+        await user.validate();
+
+        // Save the user
+        const newUser = await user.save();
+
+        createSendToken(newUser, 201, res)
+    } catch (error) {
+        console.error('❌ SIGNUP: Error creating user:', error.message);
+        console.error('❌ SIGNUP: Error type:', error.name);
+        console.error('❌ SIGNUP: Validation errors:', error.errors);
+        console.error('❌ SIGNUP: Full error:', error);
+        throw error; // Re-throw to let catchAsync handle it
+    }
 })
 
 exports.login = catchAsync(async (req, res, next) => {

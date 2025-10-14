@@ -31,26 +31,16 @@ const runCleanupTask = async () => {
             createdAt: { $lte: paymentDeadline } // Only process bookings that existed before the payment deadline
         }).populate('user');
 
-        console.log(`Found ${unpaidBookings.length} unpaid bookings to process`);
 
         for (const booking of unpaidBookings) {
-            console.log(`Processing booking ${booking._id}:`);
-            console.log(`- Check-in date: ${booking.checkIn}`);
-            console.log(`- Check-out date: ${booking.checkOut}`);
-            console.log(`- Payment deadline: ${paymentDeadline}`);
-            console.log(`- User: ${booking.user.email}`);
-            console.log(`- Room: ${booking.room}`);
-            console.log(`- Price: $${booking.price}`);
 
             // Mark the booking as missed
             booking.paid = 'missed';
             await booking.save({ session });
 
-            console.log(`Successfully marked booking ${booking._id} as missed`);
         }
 
         await session.commitTransaction();
-        console.log(`Cleanup task completed. Marked ${unpaidBookings.length} bookings as missed`);
 
         // Moved email sending inside try block after transaction commit
         if (process.env.ADMIN_EMAIL) {
@@ -113,12 +103,10 @@ const runCleanupTask = async () => {
                     message: textReport,
                     html: htmlReport
                 });
-                console.log(`📧 HTML report email sent to ${process.env.ADMIN_EMAIL}`);
             } catch (emailError) {
                 console.error('Failed to send report email:', emailError);
             }
         } else if (unpaidBookings.length === 0) {
-            console.log('No bookings to report');
         }
     } catch (error) {
         await session.abortTransaction();
@@ -130,7 +118,6 @@ const runCleanupTask = async () => {
 // Schedule the task to run every day at 11:45 PM
 const scheduleCleanupTask = () => {
     cron.schedule('45 11 * * *', () => {
-        console.log('Running scheduled cleanup task...');
         runCleanupTask();
     });
 };

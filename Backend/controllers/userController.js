@@ -246,7 +246,6 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
                 };
 
                 await s3.deleteObject(params).promise();
-                console.log(`Deleted user photo from S3: ${key}`);
             } catch (err) {
                 console.error('Failed to delete user photo from S3:', err);
                 // Optionally handle or log error

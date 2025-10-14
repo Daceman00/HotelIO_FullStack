@@ -313,13 +313,13 @@ crmSchema.methods.addStayPoint = function (nights, amount, bookingId, descriptio
         stayNights: nights
     });
 
-    //update stay statistic
+    //update stay statistics
 
-    this.stayStatistic.totalStays += 1;
-    this.stayStatistic.totalNights += nights;
-    this.stayStatisti.lifetimeValue += amount;
-    this.stayStatistic.averageStayLength = this.stayStatistic.totalNights / this.stayStatistic.totalStays;
-    this.stayStatistic.lastStayDate = new Date();
+    this.stayStatistics.totalStays += 1;
+    this.stayStatistics.totalNights += nights;
+    this.stayStatistics.lifetimeValue += amount;
+    this.stayStatistics.averageStayLength = this.stayStatistics.totalNights / this.stayStatistics.totalStays;
+    this.stayStatistics.lastStayDate = new Date();
 
     return this.save();
 }
@@ -331,10 +331,11 @@ crmSchema.methods.createHotelDiscount = function (discountData) {
         type: discountData.type,
         value: discountData.value,
         description: discountData.description,
-        applicableTo: discountData.applicableTo || 'room_rate',
-        minimumStay: discountData.minimumStay || 0,
+        minimumStayNights: discountData.minimumStayNights || 0,
         roomType: discountData.roomType || 'all',
-        expiresAt: discountData.expiresAt
+        expiresAt: discountData.expiresAt,
+        used: false,
+        createdAt: new Date()
     };
 
     this.availableDiscounts.push(discount);
@@ -372,7 +373,6 @@ crmSchema.methods.updateReviewStats = async function (review, action = 'add') {
             this.reviewStatistics.ratingDistribution[roundedRating] += 1;
         }
 
-        this.reviewStatistics.helpfulVotes += review.helpfulCount || 0;
         this.reviewStatistics.lastReviewDate = new Date();
 
         // Add points for review
@@ -394,7 +394,6 @@ crmSchema.methods.updateReviewStats = async function (review, action = 'add') {
                 Math.max(0, this.reviewStatistics.ratingDistribution[roundedRating] - 1);
         }
 
-        this.reviewStatistics.helpfulVotes = Math.max(0, this.reviewStatistics.helpfulVotes - (review.helpfulCount || 0));
     }
 
     await this.save();
@@ -424,7 +423,6 @@ crmSchema.methods.getReviewInsights = function () {
         totalReviews: stats.totalReviews,
         positivePercentage: ((stats.ratingDistribution[4] + stats.ratingDistribution[5]) / stats.totalReviews * 100).toFixed(1),
         responseRate: '0%', // You can track if hotels respond to reviews
-        helpfulnessScore: stats.totalReviews > 0 ? (stats.helpfulVotes / stats.totalReviews).toFixed(1) : 0
     };
 };
 

@@ -2,8 +2,6 @@ const mongoose = require("mongoose")
 const validator = require("validator")
 const bcrypt = require("bcryptjs")
 const crypto = require('crypto');
-const fs = require('fs');
-const path = require('path');
 const s3 = require('../config/s3'); // Import the shared S3 config
 
 const userSchema = mongoose.Schema({
@@ -69,7 +67,10 @@ userSchema.virtual('bookings', {
 
 // Password encryption
 userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
+
+    if (!this.isModified('password')) {
+        return next();
+    }
 
     this.password = await bcrypt.hash(this.password, 12);
 
@@ -86,7 +87,10 @@ userSchema.pre('find', function (next) {
 
 // Update passwordChangedAt when password is changed
 userSchema.pre('save', async function (next) {
-    if (!this.isModified('password') || this.isNew) return next();
+
+    if (!this.isModified('password') || this.isNew) {
+        return next();
+    }
 
     this.passwordChangedAt = Date.now() - 1000;
     next()
@@ -94,18 +98,21 @@ userSchema.pre('save', async function (next) {
 
 // Auto-create CRM entry when new user is created
 userSchema.post('save', async function (doc, next) {
+
     try {
-        const CRM = mongoose.model('CRM');
+
+        const CRM = require('./crmModel')
 
         // Check if CRM entry already exists
         const existingCRM = await CRM.findOne({ user: doc._id });
 
         if (!existingCRM) {
+
             // Generate unique referral code for hotel
             const referralCode = `HOTEL${doc._id.toString().slice(-8).toUpperCase()}${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
 
             // Create CRM entry with default values for new users
-            await CRM.create({
+            const crmData = {
                 user: doc._id,
                 referralCode: referralCode,
                 loyaltyPoints: 0,
@@ -143,15 +150,19 @@ userSchema.post('save', async function (doc, next) {
                         preferredRoomType: 'single',
                     },
                     amenities: [], // Empty for new users
-                    amenitiesFrequency: {}, // Empty for new users
+                    amenitiesFrequency: {} // Empty for new users
                 }
-            });
-
-            console.log(`✓ Auto-created hotel CRM entry for new guest: ${doc.email}`);
+            };
+            await CRM.create(crmData);
+        } else {
         }
     } catch (error) {
-        console.error('Error creating hotel CRM entry:', error);
-        // Don't throw error to prevent user creation from failing
+        console.error('❌ ERROR creating hotel CRM entry for user:', doc.email);
+        console.error('❌ Error details:', error.message);
+        console.error('❌ Full error:', error);
+
+        // Throw the error so you can see what's happening
+        throw error;
     }
 
     next();
@@ -176,7 +187,6 @@ userSchema.pre('deleteOne', { document: true, query: false }, async function () 
             };
 
             await s3.deleteObject(params).promise();
-            console.log(`Deleted user photo from S3: ${key}`);
         } catch (err) {
             console.error('Failed to delete user photo from S3:', err);
             // Consider adding error handling or monitoring here
@@ -214,7 +224,6 @@ userSchema.methods.createPasswordResetToken = function () {
 
     return resetToken
 }
-
 
 const User = mongoose.model('User', userSchema)
 

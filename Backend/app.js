@@ -6,6 +6,7 @@ const roomRouter = require('./routes/roomRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
 const paymentRouter = require('./routes/paymentRoutes');
+const crmRouter = require('./routes/crmRoutes');
 const AppError = require('./utils/appError');
 const { runCleanupTask } = require('./utils/scheduledTasks');
 const rateLimit = require('express-rate-limit');
@@ -25,7 +26,6 @@ app.use(express.static(`${__dirname}/public/img`));
 app.use(cors())
 
 app.use((req, res, next) => {
-    console.log('Hello from the middleware 👋');
     next();
 });
 
@@ -64,7 +64,6 @@ app.get('/cron/wake-up', standardLimiter, (req, res) => {
 if (process.env.NODE_ENV === 'development') {
     setInterval(() => {
         fetch(`https://hotelio-fullstack.onrender.com/cron/wake-up`)
-            .then(() => console.log('Self-wake completed'))
             .catch(err => console.error('Wake failed:', err));
     }, 11 * 60 * 1000); // Every 11 minutes
 }
@@ -80,7 +79,6 @@ app.get('/cron/cleanup-bookings', cleanupLimiter, async (req, res, next) => {
     }
 
     try {
-        console.log(`[${new Date().toISOString()}] Cleanup triggered via cron endpoint`);
         await runCleanupTask();
         res.json({
             status: 'success',
@@ -101,6 +99,7 @@ app.use('/api/v1/rooms', roomRouter);
 app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/bookings', bookingRouter);
 app.use('/api/v1/payments', paymentRouter);
+app.use('/api/v1/crms', crmRouter)
 
 app.all('*', (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

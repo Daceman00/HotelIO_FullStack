@@ -71,15 +71,12 @@ exports.getAll = (Model, popOptions) =>
         // If a roomId parameter is present in the request, filter by roomId
         if (req.params.roomId) filter = { tour: req.params.roomId };
 
-        // Count total documents
-        const total = await Model.countDocuments(filter);
+        // Get pagination parameters from query string
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = parseInt(req.query.limit, 10) || 10;
 
-        // Calculate total pages and current page
-        // Pagination parameters
-        // page: current page number (default: 1)
-        // limit: number of documents per page (default: 100)
-        const page = req.query.page * 1 || 1;
-        const limit = req.query.limit * 1 || 100;
+        // Count total documents matching the filter
+        const total = await Model.countDocuments(filter);
         const totalPages = Math.ceil(total / limit);
 
         let features = new APIFeatures(Model.find(filter), req.query)

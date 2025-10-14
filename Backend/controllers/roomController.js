@@ -222,8 +222,6 @@ exports.deleteRoom = catchAsync(async (req, res, next) => {
         }
 
         // Debug logging
-        console.log("Keys to delete:", keysToDelete);
-        console.log("Room before save:", room);
 
         // Delete from S3 (try both with and without leading slash for legacy files)
         if (keysToDelete.length > 0) {
@@ -232,7 +230,6 @@ exports.deleteRoom = catchAsync(async (req, res, next) => {
                 ...keysToDelete.map(k => k.startsWith('/') ? k : '/' + k)
             ];
             await deleteS3Files(allKeys);
-            console.log("Files deleted from S3:", allKeys);
         }
 
         // Save updated room document

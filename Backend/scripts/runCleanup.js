@@ -10,12 +10,9 @@ const DB = process.env.DATABASE.replace(
 mongoose
     .connect(DB)
     .then(() => {
-        console.log('DB connection successful!');
-        console.log('Running cleanup task...');
         return runCleanupTask();
     })
     .then(() => {
-        console.log('Cleanup task completed');
         process.exit(0);
     })
     .catch(err => {

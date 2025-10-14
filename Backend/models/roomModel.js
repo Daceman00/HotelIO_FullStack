@@ -162,14 +162,12 @@ roomSchema.pre('deleteOne', { document: true, query: false }, async function () 
     // Delete images from S3
     const deleteFromS3 = async (key) => {
         if (!key) return;
-        console.log(key)
 
         try {
             await s3.deleteObject({
                 Bucket: process.env.AWS_BUCKET_NAME,
                 Key: key
             }).promise();
-            console.log(`Deleted S3 object: ${key}`);
         } catch (err) {
             console.error(`Error deleting S3 object ${key}:`, err);
         }

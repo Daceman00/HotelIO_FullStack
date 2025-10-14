@@ -16,7 +16,6 @@ exports.deleteS3Files = async (keys) => {
             throw new Error(`Partial deletion failure: ${errors.join(', ')}`);
         }
 
-        console.log('S3 Deletion Successful:', response.Deleted.map(d => d.Key));
         return true;
     } catch (err) {
         console.error('S3 Deletion Error:', err);

@@ -4,7 +4,6 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
 exports.getPublishableKey = catchAsync(async (req, res, next) => {
-    console.log(process.env.STRIPE_PUBLISHABLE_KEY);
     res.status(200).json({
         status: 'success',
         publishableKey: process.env.STRIPE_PUBLISHABLE_KEY
