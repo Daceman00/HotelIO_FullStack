@@ -132,7 +132,7 @@ function AddRoomImages({ roomId, isOpen, onClose, opacity }) {
                     </h3>
                     <p className="text-sm text-gray-500">
                       This will be the main image displayed. Recommended size:
-                      2000x1333px
+                      1200x738px
                     </p>
                   </div>
                   <CoverImageUpload

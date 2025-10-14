@@ -8,9 +8,7 @@ export function useUpdateRoomGallery() {
     const { mutate: updateRoomGallery, error, isPending } = useMutation({
         mutationFn: ({ roomId, formData }) => updateRoomGalleryPhotos(roomId, formData),
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["rooms"],
-            });
+            queryClient.invalidateQueries(["rooms"], ["room"]);
             toast.success('Room gallery updated successfully');
         },
         onError: (error) => {

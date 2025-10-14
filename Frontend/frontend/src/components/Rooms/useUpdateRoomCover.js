@@ -7,9 +7,7 @@ export function useUpdateRoomCover() {
     const { mutate: updateRoomCover, error, isPending } = useMutation({
         mutationFn: ({ roomId, formData }) => updateRoomCoverPhoto(roomId, formData),
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["rooms"],
-            })
+            queryClient.invalidateQueries(["rooms"], ["room"])
             toast.success('Room photo updated successfully');
         },
         onError: (error) => {

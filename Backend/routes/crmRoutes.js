@@ -13,4 +13,5 @@ router.
 router.
     route('/:id')
     .get(crmController.getCrmEntry)
+
 module.exports = router;
