@@ -1,4 +1,5 @@
 const Review = require('./../models/reviewModel');
+const CRM = require('./../models/crmModel');
 const factory = require('./handlerFactory');
 const catchAsync = require('./../utils/catchAsync');
 const APIFeatures = require('./../utils/apiFeatures');
@@ -140,7 +141,7 @@ exports.getTopReviewers = catchAsync(async (req, res, next) => {
 });
 
 exports.getReview = factory.getOne(Review);
-exports.createReview = factory.createOne(Review);
+
 exports.updateReview = factory.updateOne(Review);
 
 exports.deleteReview = catchAsync(async (req, res, next) => {
@@ -153,11 +154,46 @@ exports.deleteReview = catchAsync(async (req, res, next) => {
         });
     }
 
+    // Update CRM review statistics
+    try {
+        const crmEntry = await CRM.findOne({ user: review.user });
+        if (crmEntry) {
+            await crmEntry.updateReviewStats(review, 'remove');
+        }
+    } catch (error) {
+        // Log error but don't fail the review creation
+        console.error('Error updating CRM review stats:', error);
+    }
+
     // Recalculate average rating for the room
     await Review.calculateAverageRating(review.room);
 
     res.status(204).json({
         status: 'success',
         data: null
+    });
+});
+
+
+exports.createReview = catchAsync(async (req, res, next) => {
+    // Create the review
+    const review = await Review.create(req.body);
+
+    // Update CRM review statistics
+    try {
+        const crmEntry = await CRM.findOne({ user: review.user });
+        if (crmEntry) {
+            await crmEntry.updateReviewStats(review, 'add');
+        }
+    } catch (error) {
+        // Log error but don't fail the review creation
+        console.error('Error updating CRM review stats:', error);
+    }
+
+    res.status(201).json({
+        status: 'success',
+        data: {
+            data: review
+        }
     });
 });

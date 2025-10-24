@@ -1,5 +1,6 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Booking = require('../models/bookingModel');
+const CRM = require('../models/crmModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
@@ -115,6 +116,31 @@ exports.confirmPayment = catchAsync(async (req, res, next) => {
 
     await booking.save();
 
+    // Award loyalty points after successful payment (idempotent)
+    if (paymentIntent.status === 'succeeded') {
+        try {
+            const userId = booking.user; // ObjectId
+
+            let crm = await CRM.findOne({ user: userId });
+            if (!crm) {
+                crm = await CRM.create({ user: userId });
+            }
+
+            const alreadyCredited = crm.pointsHistory.some(
+                (p) => String(p.booking) === String(booking._id) && p.reason === 'stay'
+            );
+
+            if (!alreadyCredited) {
+                const nights = booking.numOfNights;
+                const amount = booking.price || 0;
+                await crm.addStayPoint(nights, amount, booking._id, `${nights} night stay`);
+            }
+        } catch (e) {
+            // Do not block payment confirmation on CRM errors
+            console.error('[CRM Payment] Failed to credit CRM points after payment:', e);
+        }
+    }
+
     res.status(200).json({
         status: 'success',
         paymentStatus: paymentIntent.status,
@@ -152,6 +178,31 @@ exports.processPaymentWithDetails = catchAsync(async (req, res, next) => {
     booking.paid = paymentIntent.status === 'succeeded' ? 'paid' : 'unpaid';
     if (booking.paid === 'paid') booking.paidAt = new Date();
     await booking.save();
+
+    // Award loyalty points after successful payment (idempotent)
+    if (paymentIntent.status === 'succeeded') {
+        try {
+            const userId = booking.user; // ObjectId
+
+            let crm = await CRM.findOne({ user: userId });
+            if (!crm) {
+                crm = await CRM.create({ user: userId });
+            }
+
+            const alreadyCredited = crm.pointsHistory.some(
+                (p) => String(p.booking) === String(booking._id) && p.reason === 'stay'
+            );
+
+            if (!alreadyCredited) {
+                const nights = booking.numOfNights;
+                const amount = booking.price || 0;
+                await crm.addStayPoint(nights, amount, booking._id, `${nights} night stay`);
+            }
+        } catch (e) {
+            // Do not block payment processing on CRM errors
+            console.error('[CRM Payment Details] Failed to credit CRM points after payment:', e);
+        }
+    }
 
     res.status(200).json({
         status: 'success',

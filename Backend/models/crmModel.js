@@ -375,6 +375,9 @@ crmSchema.methods.updateReviewStats = async function (review, action = 'add') {
 
         this.reviewStatistics.lastReviewDate = new Date();
 
+        // Add review to featured reviews array
+        this.reviewStatistics.featuredReviews.push(review._id);
+
         // Add points for review
         await this.addPoints(50, 'review', `Review for booking`, null, review._id);
 
@@ -393,6 +396,11 @@ crmSchema.methods.updateReviewStats = async function (review, action = 'add') {
             this.reviewStatistics.ratingDistribution[roundedRating] =
                 Math.max(0, this.reviewStatistics.ratingDistribution[roundedRating] - 1);
         }
+
+        // Remove review from featured reviews array
+        this.reviewStatistics.featuredReviews = this.reviewStatistics.featuredReviews.filter(
+            reviewId => reviewId.toString() !== review._id.toString()
+        );
 
     }
 
