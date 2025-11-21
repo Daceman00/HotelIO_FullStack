@@ -1,5 +1,6 @@
 const catchAsync = require('../utils/catchAsync')
 const User = require('./../models/userModel')
+const CRM = require('./../models/crmModel');
 const AppError = require('../utils/appError')
 const jwt = require('jsonwebtoken')
 const sendEmail = require('./../utils/email');
@@ -37,6 +38,8 @@ const createSendToken = (user, statusCode, res) => {
 exports.signup = catchAsync(async (req, res, next) => {
 
     try {
+        // Extract referral code from request body
+        const { referralCode } = req.body;
 
         // Create a new user instance to validate
         const user = new User(req.body);
@@ -47,12 +50,29 @@ exports.signup = catchAsync(async (req, res, next) => {
         // Save the user
         const newUser = await user.save();
 
+        // Handle referral if code was provided
+        if (referralCode) {
+
+            // Find the referrer's CRM by their referral code
+            const referrerCRM = await CRM.findOne({ referralCode: referralCode });
+
+            if (referrerCRM) {
+                // Get the newly created CRM for this user
+                const newUserCRM = await CRM.findOne({ user: newUser._id });
+
+                // Link the new user to their referrer
+                newUserCRM.referredBy = referrerCRM.user;
+                await newUserCRM.save();
+
+                // Update referrer's stats and give bonus
+                referrerCRM.referralsMade += 1;
+                await referrerCRM.addPoints(100, 'referral', 'Referral bonus - new signup');
+                await referrerCRM.save();
+            }
+        }
+
         createSendToken(newUser, 201, res)
     } catch (error) {
-        console.error('❌ SIGNUP: Error creating user:', error.message);
-        console.error('❌ SIGNUP: Error type:', error.name);
-        console.error('❌ SIGNUP: Validation errors:', error.errors);
-        console.error('❌ SIGNUP: Full error:', error);
         throw error; // Re-throw to let catchAsync handle it
     }
 })

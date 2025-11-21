@@ -28,7 +28,7 @@ const crmSchema = new mongoose.Schema({
         reason: {
             type: String,
             required: true,
-            enum: ['stay', 'review', 'other']
+            enum: ['stay', 'review', 'referral', 'other']
         },
         description: String,
         date: {

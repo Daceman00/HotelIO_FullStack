@@ -15,6 +15,7 @@ exports.getAllCrmEntrys = factory.getAll(CRM, [
         path: 'pointsHistory.booking',
         select: 'checkIn checkOut createdAt'
     }])
+
 exports.getCrmEntry = factory.getOne(CRM, [
     {
         path: 'user',
@@ -24,6 +25,7 @@ exports.getCrmEntry = factory.getOne(CRM, [
         path: 'pointsHistory.booking',
         select: 'checkIn checkOut createdAt'
     }])
+
 exports.createCrmEntry = factory.createOne(CRM)
 exports.updateCrmEntry = factory.updateOne(CRM)
 exports.deleteCrmEntry = factory.deleteOne(CRM)
