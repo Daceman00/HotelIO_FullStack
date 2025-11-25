@@ -48,6 +48,13 @@ const bookingSchema = new mongoose.Schema({
     },
     paymentIntentId: {
         type: String
+    },
+    referralSuccessProcessed: {
+        type: Boolean,
+        default: false
+    },
+    referralSuccessProcessedAt: {
+        type: Date
     }
 },
     {

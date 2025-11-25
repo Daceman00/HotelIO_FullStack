@@ -2,6 +2,7 @@ const cron = require('node-cron');
 const mongoose = require('mongoose');
 const Booking = require('../models/bookingModel');
 const Review = require('../models/reviewModel');
+const CRM = require('../models/crmModel');
 const sendEmail = require('./email');
 
 // Function to run the cleanup task
@@ -115,15 +116,83 @@ const runCleanupTask = async () => {
         session.endSession();
     }
 };
-// Schedule the task to run every day at 11:45 PM
+// Function to process referral successes when stays are completed
+const processReferralSuccessesTask = async () => {
+    const now = new Date();
+
+    try {
+        // Find completed stays (check-out date has passed) that are paid and haven't been processed
+        const eligibleBookings = await Booking.find({
+            paid: 'paid',
+            checkOut: { $lte: now }, // Stay is completed when check-out date has passed
+            referralSuccessProcessed: { $ne: true }
+        }).populate('user');
+
+        let processedCount = 0;
+
+        for (const booking of eligibleBookings) {
+            const guestUserId = booking.user && booking.user._id ? booking.user._id : booking.user;
+            const guestCRM = await CRM.findOne({ user: guestUserId });
+
+            if (!guestCRM || !guestCRM.referredBy || guestCRM.referralSuccessAwarded) {
+                booking.referralSuccessProcessed = true;
+                booking.referralSuccessProcessedAt = new Date();
+                await booking.save({ validateBeforeSave: false });
+                continue;
+            }
+
+            const referrerCRM = await CRM.findOne({ user: guestCRM.referredBy });
+
+            if (!referrerCRM) {
+                booking.referralSuccessProcessed = true;
+                booking.referralSuccessProcessedAt = new Date();
+                await booking.save({ validateBeforeSave: false });
+                continue;
+            }
+
+            // Award points to referrer for successful referral (completed stay)
+            referrerCRM.successfulReferrals += 1;
+            await referrerCRM.addPoints(250, 'referral', `Referral bonus - booking ${booking._id}`);
+
+            // Mark guest's referral success as awarded
+            guestCRM.referralSuccessAwarded = true;
+            guestCRM.referralSuccessBooking = booking._id;
+            await guestCRM.addPoints(100, 'referral', 'Thanks for completing your first stay');
+
+            // Mark booking as processed
+            booking.referralSuccessProcessed = true;
+            booking.referralSuccessProcessedAt = new Date();
+            await booking.save({ validateBeforeSave: false });
+
+            processedCount += 1;
+        }
+
+        if (processedCount > 0) {
+            console.log(`Processed ${processedCount} referral successes`);
+        }
+    } catch (error) {
+        console.error('Error processing referral successes:', error.message);
+    }
+};
+
+// Schedule the cleanup task to run every day at 11:45 PM
 const scheduleCleanupTask = () => {
     cron.schedule('45 11 * * *', () => {
         runCleanupTask();
     });
 };
 
-// Export both the schedule function and the run function for manual execution
+// Schedule the referral processing task to run daily at midnight
+const scheduleReferralProcessingTask = () => {
+    cron.schedule('0 12 * * *', () => {
+        processReferralSuccessesTask();
+    });
+};
+
+// Export both the schedule functions and the run functions for manual execution
 module.exports = {
     scheduleCleanupTask,
-    runCleanupTask
+    runCleanupTask,
+    processReferralSuccessesTask,
+    scheduleReferralProcessingTask
 };

@@ -620,3 +620,58 @@ exports.deleteUnpaidBookingsAtCheckIn = catchAsync(async (req, res, next) => {
     }
 });
 
+exports.processReferralSuccesses = catchAsync(async (req, res, next) => {
+    const now = new Date();
+    // Find completed stays (check-out date has passed) that are paid and haven't been processed
+    const eligibleBookings = await Booking.find({
+        paid: 'paid',
+        checkOut: { $lte: now }, // Stay is completed when check-out date has passed
+        referralSuccessProcessed: { $ne: true }
+    }).populate('user');
+
+    let processedCount = 0;
+
+    for (const booking of eligibleBookings) {
+        const guestUserId = booking.user && booking.user._id ? booking.user._id : booking.user;
+        const guestCRM = await CRM.findOne({ user: guestUserId });
+
+        if (!guestCRM || !guestCRM.referredBy || guestCRM.referralSuccessAwarded) {
+            booking.referralSuccessProcessed = true;
+            booking.referralSuccessProcessedAt = new Date();
+            await booking.save({ validateBeforeSave: false });
+            continue;
+        }
+
+        const referrerCRM = await CRM.findOne({ user: guestCRM.referredBy });
+
+        if (!referrerCRM) {
+            booking.referralSuccessProcessed = true;
+            booking.referralSuccessProcessedAt = new Date();
+            await booking.save({ validateBeforeSave: false });
+            continue;
+        }
+
+        referrerCRM.successfulReferrals += 1;
+        await referrerCRM.addPoints(250, 'referral', `Referral bonus - booking ${booking._id}`);
+
+        guestCRM.referralSuccessAwarded = true;
+        guestCRM.referralSuccessBooking = booking._id;
+        await guestCRM.addPoints(100, 'referral', 'Thanks for completing your first stay');
+
+        booking.referralSuccessProcessed = true;
+        booking.referralSuccessProcessedAt = new Date();
+        await booking.save({ validateBeforeSave: false });
+
+        processedCount += 1;
+    }
+
+    res.status(200).json({
+        status: 'success',
+        message: `Processed ${processedCount} referral successes`,
+        data: {
+            processed: processedCount,
+            scanned: eligibleBookings.length
+        }
+    });
+});
+

@@ -181,6 +181,14 @@ const crmSchema = new mongoose.Schema({
         default: 0,
         min: 0
     },
+    referralSuccessAwarded: {
+        type: Boolean,
+        default: false
+    },
+    referralSuccessBooking: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Booking'
+    },
 
 }, {
     timestamps: true,

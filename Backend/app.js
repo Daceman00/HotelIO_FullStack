@@ -8,7 +8,7 @@ const bookingRouter = require('./routes/bookingRoutes');
 const paymentRouter = require('./routes/paymentRoutes');
 const crmRouter = require('./routes/crmRoutes');
 const AppError = require('./utils/appError');
-const { runCleanupTask } = require('./utils/scheduledTasks');
+const { runCleanupTask, processReferralSuccessesTask } = require('./utils/scheduledTasks');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
@@ -89,6 +89,31 @@ app.get('/cron/cleanup-bookings', cleanupLimiter, async (req, res, next) => {
         res.status(500).json({
             status: 'error',
             message: error.message || 'Cleanup task failed'
+        });
+    }
+});
+
+// Referral processing endpoint with rate limiting
+app.get('/cron/process-referrals', cleanupLimiter, async (req, res, next) => {
+    // Verify secret key
+    if (req.query.secret !== process.env.CRON_SECRET) {
+        return res.status(403).json({
+            status: 'error',
+            message: 'Invalid cron secret'
+        });
+    }
+
+    try {
+        await processReferralSuccessesTask();
+        res.json({
+            status: 'success',
+            message: 'Referral processing completed successfully'
+        });
+    } catch (error) {
+        console.error('Cron endpoint error:', error);
+        res.status(500).json({
+            status: 'error',
+            message: error.message || 'Referral processing task failed'
         });
     }
 });

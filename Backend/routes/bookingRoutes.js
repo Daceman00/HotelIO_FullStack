@@ -57,4 +57,8 @@ router
     .route('/room/:id')
     .get(bookingController.getBookingsByRoom);
 
+router
+    .route('/process-referrals')
+    .post(authController.restrictTo("admin"), bookingController.processReferralSuccesses);
+
 module.exports = router;

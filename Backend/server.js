@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const { scheduleCleanupTask } = require('./utils/scheduledTasks');
+const { scheduleCleanupTask, scheduleReferralProcessingTask } = require('./utils/scheduledTasks');
 
 dotenv.config({ path: './.env' });
 const app = require('./app');
@@ -15,6 +15,7 @@ mongoose
     .then(() => {
         // Initialize scheduled tasks after DB connection is established
         scheduleCleanupTask();
+        scheduleReferralProcessingTask();
     });
 
 const port = process.env.PORT || 3000;
