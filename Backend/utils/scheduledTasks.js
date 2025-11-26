@@ -116,6 +116,7 @@ const runCleanupTask = async () => {
         session.endSession();
     }
 };
+
 // Function to process referral successes when stays are completed
 const processReferralSuccessesTask = async () => {
     const now = new Date();

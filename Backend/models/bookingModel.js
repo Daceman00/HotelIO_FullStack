@@ -87,6 +87,13 @@ bookingSchema.pre('save', function (next) {
 
 // Pre-save middleware to check for past dates, overlapping dates, and calculate price
 bookingSchema.pre('save', async function (next) {
+    // Skip validation if only referral processing fields are being updated (for completed bookings)
+    if (this.isModified('referralSuccessProcessed') || this.isModified('referralSuccessProcessedAt')) {
+        if (!this.isModified('checkIn') && !this.isModified('checkOut') && !this.isModified('paid') && !this.isModified('price')) {
+            return next();
+        }
+    }
+
     const currentDate = new Date();
     const currentHour = currentDate.getHours();
 
