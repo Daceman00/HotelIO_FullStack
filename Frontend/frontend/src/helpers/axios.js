@@ -2,8 +2,8 @@
 import axios from "axios";
 
 // Set the base URL for all requests
-//axios.defaults.baseURL = "http://localhost:3000/api/v1";
-axios.defaults.baseURL = "https://hotelio-fullstack.onrender.com/api/v1"
+axios.defaults.baseURL = "http://localhost:3000/api/v1";
+//axios.defaults.baseURL = "https://hotelio-fullstack.onrender.com/api/v1"
 
 // Dynamically set the Authorization header
 axios.interceptors.request.use((config) => {

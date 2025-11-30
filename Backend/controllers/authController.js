@@ -13,7 +13,7 @@ const signToken = id => {
     })
 }
 
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, res, warning = null) => {
     const token = signToken(user._id);
     const cookieOptions = {
         expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 1000),
@@ -25,13 +25,20 @@ const createSendToken = (user, statusCode, res) => {
 
     // Remove password from output
     user.password = undefined;
-    res.status(statusCode).json({
+    const response = {
         status: 'success',
         token,
         data: {
             user
         }
-    });
+    };
+
+    // Add warning if provided
+    if (warning) {
+        response.warning = warning;
+    }
+
+    res.status(statusCode).json(response);
 
 }
 
@@ -51,6 +58,7 @@ exports.signup = catchAsync(async (req, res, next) => {
         const newUser = await user.save();
 
         // Handle referral if code was provided
+        let warning = null;
         if (referralCode) {
 
             // Find the referrer's CRM by their referral code
@@ -68,10 +76,14 @@ exports.signup = catchAsync(async (req, res, next) => {
                 referrerCRM.referralsMade += 1;
                 await referrerCRM.addPoints(100, 'referral', 'Referral bonus - new signup');
                 await referrerCRM.save();
+            } else {
+                // Referral code was provided but doesn't exist
+                warning = 'The referral code you entered is invalid. Your account has been created successfully, but the referral was not applied.';
+                console.log(warning)
             }
         }
 
-        createSendToken(newUser, 201, res)
+        createSendToken(newUser, 201, res, warning)
     } catch (error) {
         throw error; // Re-throw to let catchAsync handle it
     }

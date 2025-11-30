@@ -157,6 +157,29 @@ function Signup() {
                 />
               </motion.div>
 
+              {/* Name Input */}
+              <motion.div
+                variants={formVariants}
+                className="space-y-2 md:space-y-1 lg:space-y-2"
+              >
+                <motion.label className="text-sm md:text-xs lg:text-sm font-medium text-gray-700">
+                  Your referral code
+                </motion.label>
+                <motion.input
+                  variants={inputVariants}
+                  whileFocus="focus"
+                  animate="blur"
+                  type="text"
+                  name="name"
+                  className="w-full px-4 md:px-2 lg:px-4 py-2 md:py-1.5 lg:py-2 text-sm md:text-xs lg:text-sm rounded-lg border border-gray-200 focus:border-[#dfa974] focus:ring-2 focus:ring-[#dfa974]/20 transition-all duration-200 bg-white/50"
+                  placeholder="Enter your referral code"
+                  required
+                  disabled={isPending}
+                  value={formData.referralCode}
+                  onChange={(e) => updateForm("referralCode", e.target.value)}
+                />
+              </motion.div>
+
               {/* Submit Button */}
               <motion.button
                 variants={formVariants}
