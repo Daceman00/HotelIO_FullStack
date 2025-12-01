@@ -11,11 +11,20 @@ export function useSignup() {
     const { mutate: signup, isPending, error } = useMutation({
         mutationFn: signupApi,
 
-        onSuccess: (user) => {
-            const token = user.token
+        onSuccess: (response) => {
+            const token = response.token
             if (token) {
                 localStorage.setItem('token', token)
                 setUserLoggedIn(true);
+                console.log(response)
+                // Show warning if referral code was invalid
+                if (response.warning) {
+                    toast(response.warning, {
+                        icon: '⚠️',
+                        duration: 5000,
+                    });
+                }
+
                 toast.success("Account succesfully created!")
             } else {
                 toast.error("Token missing in response")
