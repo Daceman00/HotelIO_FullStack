@@ -266,7 +266,15 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
     }
 });
 
-exports.getUser = factory.getOne(User)
+exports.getUser = catchAsync(async (req, res, next) => {
+    const popOptions = {
+        path: 'crm',
+        select: '_id referralCode loyaltyPoints' // whatever fields you want
+    };
+
+    return factory.getOne(User, popOptions)(req, res, next);
+});
+
 exports.updateUser = factory.updateOne(User)
 exports.createUser = factory.createOne(User)
 

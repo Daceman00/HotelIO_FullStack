@@ -65,6 +65,12 @@ userSchema.virtual('bookings', {
     localField: '_id'
 })
 
+userSchema.virtual('crm', {
+    ref: 'CRM',
+    foreignField: 'user',
+    localField: '_id'
+})
+
 // Password encryption
 userSchema.pre('save', async function (next) {
 
