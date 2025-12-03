@@ -198,9 +198,13 @@ const crmSchema = new mongoose.Schema({
 
 // Virtual for total available discounts
 crmSchema.virtual('activeDiscounts',).get(function () {
-    return this.availableDiscounts.filter(
+    const discounts = Array.isArray(this.availableDiscounts)
+        ? this.availableDiscounts
+        : [];
+
+    return discounts.filter(
         discount => !discount.used && (!discount.expiresAt || discount.expiresAt > new Date())
-    )
+    );
 })
 
 // Virtual for next loyalty tier
@@ -405,8 +409,13 @@ crmSchema.methods.updateReviewStats = async function (review, action = 'add') {
                 Math.max(0, this.reviewStatistics.ratingDistribution[roundedRating] - 1);
         }
 
+        // Ensure featuredReviews is an array before filtering
+        const featured = Array.isArray(this.reviewStatistics.featuredReviews)
+            ? this.reviewStatistics.featuredReviews
+            : [];
+
         // Remove review from featured reviews array
-        this.reviewStatistics.featuredReviews = this.reviewStatistics.featuredReviews.filter(
+        this.reviewStatistics.featuredReviews = featured.filter(
             reviewId => reviewId.toString() !== review._id.toString()
         );
 

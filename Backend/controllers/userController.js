@@ -200,6 +200,20 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
         .limitFields()
         .paginate();
 
+    // Populate CRM virtual so each user includes their CRM document (e.g. CRM ID)
+    features.query = features.query.populate({
+        path: 'crm',
+        select: `
+    _id
+    referralCode
+    loyaltyPoints
+    availableDiscounts
+    stayStatistics.lastStayDate
+    reviewStatistics.totalReviews
+    reviewStatistics.ratingDistribution
+  `
+    });
+
     // Execute query
     const users = await features.query;
     // Calculate pagination details
@@ -266,14 +280,7 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
     }
 });
 
-exports.getUser = catchAsync(async (req, res, next) => {
-    const popOptions = {
-        path: 'crm',
-        select: '_id referralCode loyaltyPoints' // whatever fields you want
-    };
-
-    return factory.getOne(User, popOptions)(req, res, next);
-});
+exports.getUser = factory.getOne(User)
 
 exports.updateUser = factory.updateOne(User)
 exports.createUser = factory.createOne(User)
