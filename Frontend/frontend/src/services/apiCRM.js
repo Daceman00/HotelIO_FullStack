@@ -2,7 +2,7 @@ import axios from "../helpers/axios";
 
 export async function getAllCRMEntries(params = {}) {
     try {
-        const { data } = await axios.get(`/crm`, { params });
+        const { data } = await axios.get(`/crms`, { params });
         return data;
     } catch (error) {
         console.error("Error fetching CRM entries:", error);
@@ -17,7 +17,7 @@ export async function getAllCRMEntries(params = {}) {
 
 export async function getCRMEntryById(id) {
     try {
-        const { data } = await axios.get(`/crm/${id}`)
+        const { data } = await axios.get(`/crms/${id}`)
         return data;
     } catch (error) {
         console.error("Error fetching CRM entry:", error);

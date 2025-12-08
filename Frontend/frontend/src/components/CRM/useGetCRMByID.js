@@ -6,5 +6,5 @@ export function useGetCRMByID(id) {
         queryKey: ['crm', id],
         queryFn: () => getCRMEntryById(id)
     })
-    return { crm, isPending, error }
+    return { crm: crm?.data?.data, isPending, error }
 }
