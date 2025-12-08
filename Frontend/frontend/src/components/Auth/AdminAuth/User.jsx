@@ -6,8 +6,6 @@ import Modal from "../../Reusable/Modal";
 import { UserIcon } from "@heroicons/react/24/outline";
 import { useChangeRole } from "./useChangeRole";
 import ChangeRole from "./ChangeRole";
-import { useGetCRMByID } from "../../CRM/useGetCRMByID";
-import { getCRMEntryById } from "../../../services/apiCRM";
 import CRMDetailsModal from "../../CRM/CRMDetailsModal";
 
 function User({ user }) {

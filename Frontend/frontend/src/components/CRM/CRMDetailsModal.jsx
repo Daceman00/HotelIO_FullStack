@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import {
   X,
@@ -21,6 +21,18 @@ import StatCard from "../Reusable/StatCard";
 
 function CRMDetailsModal({ crmId, isOpen, onClose }) {
   const { crm, isPending, error } = useGetCRMByID(crmId);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
