@@ -1,19 +1,28 @@
 import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
-function StatCard({ icon: Icon, label, value, subtext }) {
+function StatCard({ icon: Icon, label, value, index }) {
   return (
-    <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-      <div className="flex items-start gap-3">
-        <div className="p-2 rounded-lg" style={{ backgroundColor: "#dfa974" }}>
-          <Icon className="w-5 h-5 text-white" />
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05, duration: 0.3 }}
+      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+      className="bg-white rounded-lg p-6 shadow-sm border border-gray-200"
+    >
+      <div className="flex items-center gap-3">
+        <div
+          className="p-3 rounded-lg"
+          style={{ backgroundColor: "#dfa974", opacity: 0.1 }}
+        >
+          <Icon className="w-6 h-6" />
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm text-gray-600 mb-1">{label}</p>
-          <p className="text-2xl font-bold text-gray-900 truncate">{value}</p>
-          {subtext && <p className="text-xs text-gray-500 mt-1">{subtext}</p>}
+        <div>
+          <p className="text-sm text-gray-600">{label}</p>
+          <p className="text-xl font-bold text-gray-900">{value}</p>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { useUsers } from "./useUsers";
 import User from "./User";
 import useUIStore from "../../../stores/UiStore";
@@ -67,6 +68,26 @@ function Users() {
     setUserSearchQuery("");
     setCurrentPage(1);
   }, [setUserSearchQuery, setCurrentPage, location.pathname]);
+
+  //Basic Container + Children Pattern
+  const containerVariants1 = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1, // Delay between each child
+      },
+    },
+  };
+
+  const itemVariants1 = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.3 },
+    },
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 p-4 sm:p-6 lg:p-8">
@@ -358,7 +379,12 @@ function Users() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200/50 dark:divide-gray-600/50 bg-white dark:bg-gray-800">
+                <motion.tbody
+                  className="divide-y divide-gray-200/50 dark:divide-gray-600/50 bg-white dark:bg-gray-800"
+                  variants={containerVariants1}
+                  initial="hidden"
+                  animate="visible"
+                >
                   {isPending ? (
                     <tr>
                       <td colSpan="4" className="px-6 py-16 text-center">
@@ -372,7 +398,11 @@ function Users() {
                     </tr>
                   ) : users?.data?.length > 0 ? (
                     users.data.map((user, index) => (
-                      <User key={user._id} user={user} />
+                      <User
+                        key={user._id}
+                        user={user}
+                        variants={itemVariants1}
+                      />
                     ))
                   ) : (
                     <tr>
@@ -407,7 +437,7 @@ function Users() {
                       </td>
                     </tr>
                   )}
-                </tbody>
+                </motion.tbody>
               </table>
             </div>
 

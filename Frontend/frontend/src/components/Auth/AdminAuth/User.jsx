@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { useDeleteUser } from "./useDeleteUser";
 import WarningButton from "../../Reusable/WarningButton";
 import useUIStore from "../../../stores/UiStore";
@@ -6,11 +7,10 @@ import Modal from "../../Reusable/Modal";
 import { UserIcon } from "@heroicons/react/24/outline";
 import { useChangeRole } from "./useChangeRole";
 import ChangeRole from "./ChangeRole";
-import { useGetCRMByID } from "../../CRM/useGetCRMByID";
-import { getCRMEntryById } from "../../../services/apiCRM";
 import CRMDetailsModal from "../../CRM/CRMDetailsModal";
+import CRMButton from "../../Reusable/CRMButton";
 
-function User({ user }) {
+function User({ user, variants }) {
   const { deleteUser, error, isPending } = useDeleteUser();
   const { isCrmModalOpen, selectedCrmId } = useUIStore();
   const { isModalOpen, selectedId, onCrmModalClose, onCrmModalOpen } =
@@ -61,7 +61,10 @@ function User({ user }) {
       )}
 
       {/* User Row - removed tbody wrapper */}
-      <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200">
+      <motion.tr
+        className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200"
+        variants={variants}
+      >
         {/* Name Column - matches w-2/5 from header */}
         <td className="w-2/5 px-6 py-4">
           <div className="flex items-center">
@@ -118,29 +121,13 @@ function User({ user }) {
           </div>
         </td>
         {/* CRM Info Column */}
-        <td className="w-1/6 px-6 py-4">
-          <button
+        <td className="w-1/5 px-6 py-4">
+          <CRMButton
             onClick={() => onCrmModalOpen(user.crm?.[0]?._id)}
             disabled={!user.crm?.[0]?._id}
-            className="disabled:cursor-not-allowed disabled:opacity-50 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 shadow-sm hover:shadow-md active:translate-y-0.5 inline-flex items-center justify-center"
-            style={{ backgroundColor: "#4f89d8" }}
-            title="View CRM Details"
           >
-            <svg
-              className="w-4 h-4 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            <span className="text-sm font-medium">View CRM</span>
-          </button>
+            View CRM
+          </CRMButton>
         </td>
 
         {/* Actions Column - matches w-1/5 from header */}
@@ -149,7 +136,7 @@ function User({ user }) {
             Delete
           </WarningButton>
         </td>
-      </tr>
+      </motion.tr>
     </>
   );
 }

@@ -92,10 +92,84 @@ const RoomDetails = () => {
 
       {/* Hero Section with Gallery */}
       <div className="relative h-96 md:h-screen/2 lg:h-screen/2 w-full overflow-hidden">
+        <style>{`
+        @keyframes fadeSlideIn {
+          from {
+            opacity: 0;
+            transform: scale(1.1);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        @keyframes overlayPulse {
+          0%, 100% {
+            opacity: 0.2;
+          }
+          50% {
+            opacity: 0.3;
+          }
+        }
+
+        .swiper-slide-active img {
+          animation: fadeSlideIn 1s ease-out;
+        }
+
+        .swiper-slide-active .overlay-animate {
+          animation: overlayPulse 3s ease-in-out infinite;
+        }
+
+        .swiper-pagination-bullet {
+          width: 10px;
+          height: 10px;
+          background: white;
+          opacity: 0.5;
+          transition: all 0.3s ease;
+        }
+
+        .swiper-pagination-bullet-active {
+          width: 30px;
+          border-radius: 5px;
+          opacity: 1;
+          background: white;
+        }
+
+        .nav-button {
+          opacity: 0;
+          transform: translateX(0);
+          transition: all 0.3s ease;
+        }
+
+        .swiper:hover .nav-button {
+          opacity: 1;
+        }
+
+        .swiper:hover .swiper-button-next-custom {
+          transform: translateX(0);
+        }
+
+        .swiper:hover .swiper-button-prev-custom {
+          transform: translateX(0);
+        }
+
+        .swiper-button-next-custom:hover,
+        .swiper-button-prev-custom:hover {
+          background-color: rgba(255, 255, 255, 0.6) !important;
+          transform: scale(1.1);
+        }
+
+        .swiper-button-next-custom:active,
+        .swiper-button-prev-custom:active {
+          transform: scale(0.95);
+        }
+      `}</style>
         {room?.data.room.images.length > 0 && (
           <Swiper
             modules={[Pagination, Navigation, EffectFade, Autoplay]}
             effect="fade"
+            fadeEffect={{ crossFade: true }}
             pagination={{
               clickable: true,
               dynamicBullets: true,
@@ -106,9 +180,14 @@ const RoomDetails = () => {
               nextEl: ".swiper-button-next-custom",
               prevEl: ".swiper-button-prev-custom",
             }}
-            autoplay={{ delay: 5000, disableOnInteraction: false }}
+            autoplay={{
+              delay: 5000,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
+            }}
             loop={room?.data.room.images.length > 1}
             slidesPerView={1}
+            speed={1000}
             className="h-full w-full"
             style={{ zIndex: 0 }}
           >
@@ -120,16 +199,40 @@ const RoomDetails = () => {
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+                <div className="overlay-animate absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
               </SwiperSlide>
             ))}
 
-            <div className="swiper-button-next-custom absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-white bg-opacity-30 backdrop-blur-sm p-3 rounded-full text-white hover:bg-opacity-50 transition duration-300">
-              <i className="fas fa-chevron-right"></i>
+            <div className="swiper-button-next-custom nav-button absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/30 backdrop-blur-sm p-3 rounded-full text-white cursor-pointer">
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
             </div>
 
-            <div className="swiper-button-prev-custom absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-white bg-opacity-30 backdrop-blur-sm p-3 rounded-full text-white hover:bg-opacity-50 transition duration-300">
-              <i className="fas fa-chevron-left"></i>
+            <div className="swiper-button-prev-custom nav-button absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/30 backdrop-blur-sm p-3 rounded-full text-white cursor-pointer">
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
             </div>
           </Swiper>
         )}
