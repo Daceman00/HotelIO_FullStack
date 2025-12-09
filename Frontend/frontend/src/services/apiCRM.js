@@ -25,3 +25,13 @@ export async function getCRMEntryById(id) {
 
     }
 }
+
+export async function getUserCRMProfile() {
+    try {
+        const { data } = await axios.get(`/crms/getMyCrm`)
+        return data;
+    } catch (error) {
+        console.error("Error fetching CRM entry:", error);
+        throw new Error(error.response?.data?.message || "Failed to fetch CRM entry");
+    }
+}

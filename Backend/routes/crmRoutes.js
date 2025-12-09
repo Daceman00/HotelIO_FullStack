@@ -11,6 +11,10 @@ router.
     .get(crmController.getAllCrmEntrys)
 
 router.
+    route('/getMyCrm')
+    .get(crmController.getMyCrmEntry)
+
+router.
     route('/:id')
     .get(crmController.getCrmEntry)
 

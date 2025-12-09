@@ -599,7 +599,9 @@ function CRMDetailsModal({ crmId, isOpen, onClose }) {
                       </span>
                     </>
                   ) : (
-                    <span className="text-gray-400">Loading...</span>
+                    <span className="text-gray-400">
+                      <LoadingSpinner />
+                    </span>
                   )}
                 </p>
                 <motion.button
