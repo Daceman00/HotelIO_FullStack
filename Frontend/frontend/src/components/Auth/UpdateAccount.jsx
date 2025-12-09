@@ -14,6 +14,9 @@ import UserCRMProfile from "../CRM/UserCRMProfile";
 
 function UpdateAccount() {
   const { user, isPending } = useIsLoggedIn();
+  const isUserCrmModalOpen = useUIStore((state) => state.isUserCrmModalOpen);
+  const onUserCrmModalOpen = useUIStore((state) => state.onUserCrmModalOpen);
+  const onUserCrmModalClose = useUIStore((state) => state.onUserCrmModalClose);
   const { updateAccountFormData } = useFormStore();
   const setUpdateAccountFormData = useFormStore(
     (state) => state.setUpdateAccountFormData
@@ -211,7 +214,14 @@ function UpdateAccount() {
                   <Lock size={16} className="mr-1" />
                   Change Password
                 </Link>
-
+                <button
+                  type="button"
+                  onClick={() => onUserCrmModalOpen()}
+                  className="text-sm text-blue-600 hover:text-blue-700 flex items-center transition-colors duration-200"
+                >
+                  <User className="w-4 h-4" />
+                  View CRM Profile
+                </button>
                 <button
                   type="button"
                   onClick={onModalOpen}
@@ -235,6 +245,13 @@ function UpdateAccount() {
           onConfirm={handleConfirmModal}
           isPending={isPendingDelete}
           opacity="50"
+        />
+      )}
+
+      {isUserCrmModalOpen && (
+        <UserCRMProfile
+          isOpen={isUserCrmModalOpen}
+          onClose={onUserCrmModalClose}
         />
       )}
     </section>
