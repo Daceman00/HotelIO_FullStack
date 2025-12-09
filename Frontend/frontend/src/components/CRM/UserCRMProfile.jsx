@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useGetCRMProfile } from "./useGetMyCrm";
 import LoadingSpinner from "../Reusable/LoadingSpinner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,6 +22,7 @@ import StatCard from "../Reusable/StatCard";
 
 function UserCRMProfile({ isOpen, onClose }) {
   const { crm, isPending, error } = useGetCRMProfile();
+  const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -35,8 +36,6 @@ function UserCRMProfile({ isOpen, onClose }) {
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   const formatDate = (date) => {
     if (!date) return "N/A";
     return new Date(date).toLocaleDateString("en-US", {
@@ -44,6 +43,14 @@ function UserCRMProfile({ isOpen, onClose }) {
       month: "short",
       day: "numeric",
     });
+  };
+
+  const handleClose = () => {
+    setIsClosing(true);
+    // Wait for animation to complete before calling parent's onClose
+    setTimeout(() => {
+      onClose();
+    }, 300); // Match this to your exit animation duration
   };
 
   const getTierColor = (tier) => {
@@ -57,17 +64,19 @@ function UserCRMProfile({ isOpen, onClose }) {
   };
 
   const modalContent = (
-    <AnimatePresence>
-      {isOpen && (
+    <AnimatePresence mode="wait">
+      {isOpen && !isClosing && (
         <motion.div
+          key="modal-overlay"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
-          onClick={onClose}
+          onClick={handleClose}
         >
           <motion.div
+            key="modal-content"
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -95,7 +104,7 @@ function UserCRMProfile({ isOpen, onClose }) {
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
                 transition={{ duration: 0.2 }}
-                onClick={onClose}
+                onClick={handleClose}
                 className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
               >
                 <X className="w-6 h-6 text-white" />
@@ -607,7 +616,7 @@ function UserCRMProfile({ isOpen, onClose }) {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={onClose}
+                  onClick={handleClose}
                   className="px-6 py-2 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity"
                   style={{ backgroundColor: "#dfa974" }}
                 >

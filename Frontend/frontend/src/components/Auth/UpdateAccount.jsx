@@ -11,6 +11,7 @@ import FileUploadInput from "../Reusable/FileUploadInput";
 import LoadingSpinner from "../Reusable/LoadingSpinner";
 import { Camera, Trash2, Mail, User, Lock } from "lucide-react";
 import UserCRMProfile from "../CRM/UserCRMProfile";
+import { AnimatePresence } from "framer-motion";
 
 function UpdateAccount() {
   const { user, isPending } = useIsLoggedIn();
@@ -248,12 +249,14 @@ function UpdateAccount() {
         />
       )}
 
-      {isUserCrmModalOpen && (
-        <UserCRMProfile
-          isOpen={isUserCrmModalOpen}
-          onClose={onUserCrmModalClose}
-        />
-      )}
+      <AnimatePresence mode="wait">
+        {isUserCrmModalOpen && (
+          <UserCRMProfile
+            isOpen={isUserCrmModalOpen}
+            onClose={onUserCrmModalClose}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 }
