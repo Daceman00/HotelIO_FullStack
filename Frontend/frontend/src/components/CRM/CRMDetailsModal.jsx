@@ -200,7 +200,7 @@ function CRMDetailsModal({ crmId, isOpen, onClose }) {
                         icon={TrendingUp}
                         label="Avg Stay Length"
                         value={`${
-                          crm.stayStatistics?.averageStayLength || 0
+                          crm.stayStatistics?.averageStayLength.toFixed(2) || 0
                         } nights`}
                         index={3}
                       />
