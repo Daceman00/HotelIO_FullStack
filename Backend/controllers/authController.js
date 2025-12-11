@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken')
 const sendEmail = require('./../utils/email');
 const crypto = require('crypto')
 const { promisify } = require('util');
+const { getReferralNotificationEmail } = require('../utils/signupReferralNotificationEmail');
 
 const signToken = id => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -59,6 +60,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
         // Handle referral if code was provided
         let warning = null;
+        let referrerUser = null; // Store referrer user info for email
         if (referralCode) {
 
             // Find the referrer's CRM by their referral code
@@ -68,6 +70,8 @@ exports.signup = catchAsync(async (req, res, next) => {
                 // Get the newly created CRM for this user
                 const newUserCRM = await CRM.findOne({ user: newUser._id });
 
+                referrerUser = await User.findById(referrerCRM.user)
+
                 // Link the new user to their referrer
                 newUserCRM.referredBy = referrerCRM.user;
                 await newUserCRM.save();
@@ -76,6 +80,26 @@ exports.signup = catchAsync(async (req, res, next) => {
                 referrerCRM.referralsMade += 1;
                 await referrerCRM.addPoints(100, 'referral', 'Referral bonus - new signup');
                 await referrerCRM.save();
+
+                // ✅ Send email notification to referrer
+                if (referrerUser && referrerUser.email) {
+                    try {
+                        const emailTemplate = getReferralNotificationEmail(newUser);
+
+                        await sendEmail({
+                            email: referrerUser.email,
+                            subject: emailTemplate.subject,
+                            message: emailTemplate.text,
+                            html: emailTemplate.html
+                        });
+
+                        console.log(`✅ Referral notification email sent to ${referrerUser.email}`);
+                    } catch (emailError) {
+                        console.error('❌ Failed to send referral notification email:', emailError);
+                        // Don't throw error here - email failure shouldn't break signup
+                    }
+                }
+
             } else {
                 // Referral code was provided but doesn't exist
                 warning = 'The referral code you entered is invalid. Your account has been created successfully, but the referral was not applied.';

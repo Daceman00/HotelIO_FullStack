@@ -106,26 +106,6 @@ exports.createBooking = catchAsync(async (req, res, next) => {
     const newBooking = await Booking.create(req.body);
     const populatedBooking = await Booking.findById(newBooking._id).populate('user').populate('room');
 
-    // Award loyalty points in CRM 
-    try {
-        if (populatedBooking && populatedBooking.user && populatedBooking.user._id) {
-            const userId = populatedBooking.user._id;
-            let crm = await CRM.findOne({ user: userId });
-
-            if (!crm) {
-                crm = await CRM.create({ user: userId });
-            }
-
-            const nights = populatedBooking.numOfNights;
-            const amount = populatedBooking.price || 0;
-            await crm.addStayPoint(nights, amount, populatedBooking._id, `${nights} night stay`);
-        }
-    } catch (err) {
-        // Intentionally do not block booking creation if CRM update fails
-        // You may replace with a logger if available
-        console.error('Failed to update CRM loyalty points:', err);
-    }
-
     res.status(201).json({
         status: 'success',
         data: {
