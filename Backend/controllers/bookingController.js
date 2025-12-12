@@ -292,14 +292,64 @@ exports.deleteBooking = catchAsync(async (req, res, next) => {
     session.startTransaction();
 
     try {
-        const booking = await Booking.findByIdAndDelete(req.params.id).session(session);
+        const booking = await Booking.findById(req.params.id).session(session);
 
         if (!booking) {
+            await session.abortTransaction();
             return next(new AppError('No booking found with that ID', 404));
         }
 
+        const userId = booking.user._id || booking.user;
+        const user = await User.findById(userId).session(session);
+
+        if (!user || !user.crmId) {
+            await session.abortTransaction();
+            return next(new AppError('User or CRM not found for this booking', 404));
+        }
+
+        // Calculate values from booking
+        const stayLengthInNights = booking.checkOut && booking.checkIn
+            ? Math.ceil((new Date(booking.checkOut) - new Date(booking.checkIn)) / (1000 * 60 * 60 * 24))
+            : 0;
+        const bookingValue = booking.price || 0;
+
         // Delete associated reviews in transaction
         await Review.deleteMany({ booking: booking._id }).session(session);
+
+        // Delete the booking
+        await Booking.findByIdAndDelete(req.params.id).session(session);
+
+        // Get the CRM document to update
+        const crm = await CRM.findById(user.crmId).session(session);
+
+        if (!crm) {
+            await session.abortTransaction();
+            return next(new AppError('CRM document not found', 404));
+        }
+
+        // Calculate new statistics
+        const newTotalStays = crm.stayStatistics.totalStays - 1;
+        const newTotalNights = crm.stayStatistics.totalNights - stayLengthInNights;
+        const newLifetimeValue = crm.stayStatistics.lifetimeValue - bookingValue;
+        const newAverageStayLength = newTotalStays > 0 ? newTotalNights / newTotalStays : 0;
+
+        // Get last remaining booking for lastStayDate update
+        const lastRemainingBooking = await Booking.findOne({ user: userId })
+            .sort({ checkOut: -1 })
+            .session(session);
+
+        // Update CRM with all statistics
+        await CRM.findByIdAndUpdate(
+            user.crmId,
+            {
+                'stayStatistics.totalStays': newTotalStays,
+                'stayStatistics.totalNights': newTotalNights,
+                'stayStatistics.lifetimeValue': newLifetimeValue,
+                'stayStatistics.averageStayLength': newAverageStayLength,
+                'stayStatistics.lastStayDate': lastRemainingBooking ? lastRemainingBooking.checkOut : null
+            },
+            { session }
+        );
 
         await session.commitTransaction();
 
