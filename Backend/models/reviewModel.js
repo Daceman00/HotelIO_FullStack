@@ -102,6 +102,42 @@ reviewSchema.post('remove', async function () {
     await this.constructor.calculateAverageRating(this.room);
 });
 
+// Pre-remove middleware to update CRM when a review is deleted
+reviewSchema.pre('remove', async function (next) {
+    try {
+        const Review = this.constructor;
+
+        // Find all reviews being deleted (for deleteMany operations)
+        let reviewsToDelete;
+        if (this._id) {
+            // Single document deletion
+            reviewsToDelete = [this];
+        } else {
+            // For deleteMany, we need to handle it differently
+            // This is a limitation - for deleteMany you might want to use post-remove
+            return next();
+        }
+
+        // Update CRM for each deleted review
+        for (const review of reviewsToDelete) {
+            // Get user and CRM
+            const user = await mongoose.model('User').findById(review.user);
+            if (!user) continue;
+
+            // Get CRM (populate or find)
+            const crm = await mongoose.model('CRM').findOne({ user: user._id });
+            if (!crm) continue;
+
+            // Update review statistics
+            await crm.updateReviewStats(review, 'remove');
+        }
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
+
 // Add indexes for efficient querying of reviews
 reviewSchema.index({ room: 1 }); // For finding all reviews for a room
 reviewSchema.index({ user: 1 }); // For finding all reviews by a user

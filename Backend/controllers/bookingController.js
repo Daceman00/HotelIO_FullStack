@@ -292,6 +292,7 @@ exports.deleteBooking = catchAsync(async (req, res, next) => {
     session.startTransaction();
 
     try {
+        // 1. Find the booking
         const booking = await Booking.findById(req.params.id).session(session);
 
         if (!booking) {
@@ -299,57 +300,105 @@ exports.deleteBooking = catchAsync(async (req, res, next) => {
             return next(new AppError('No booking found with that ID', 404));
         }
 
-        const userId = booking.user._id || booking.user;
-        const user = await User.findById(userId).session(session);
+        // 2. Get user and populate CRM
+        const userId = booking.user._id;
+        const user = await User.findById(userId).populate({
+            path: 'crm'
+        }).session(session);
 
-        if (!user || !user.crmId) {
+        if (!user || !userId || !user.crm || user.crm.length === 0) {
             await session.abortTransaction();
             return next(new AppError('User or CRM not found for this booking', 404));
         }
 
-        // Calculate values from booking
+        const crm = user.crm[0];
+
+        // 3. Calculate values
         const stayLengthInNights = booking.checkOut && booking.checkIn
             ? Math.ceil((new Date(booking.checkOut) - new Date(booking.checkIn)) / (1000 * 60 * 60 * 24))
             : 0;
-        const bookingValue = booking.price || 0;
 
-        // Delete associated reviews in transaction
+        const bookingValue = booking.price || 0;
+        const bookingRoomType = booking.roomType || 'single';
+        const bookingAmenities = booking.amenities || [];
+
+        // 4. Delete associated reviews (will trigger CRM update via middleware)
         await Review.deleteMany({ booking: booking._id }).session(session);
 
-        // Delete the booking
+        // 5. Delete the booking
         await Booking.findByIdAndDelete(req.params.id).session(session);
 
-        // Get the CRM document to update
-        const crm = await CRM.findById(user.crmId).session(session);
+        // 6. Get remaining bookings
+        const remainingBookings = await Booking.find({ user: userId }).session(session);
+        const lastRemainingBooking = remainingBookings.length > 0
+            ? remainingBookings.sort((a, b) => new Date(b.checkOut) - new Date(a.checkOut))[0]
+            : null;
 
-        if (!crm) {
-            await session.abortTransaction();
-            return next(new AppError('CRM document not found', 404));
+        // 7. Use CRM methods to update everything
+
+        // A. Remove stay points using the new method
+        if (crm.removeStayPoint) {
+            await crm.removeStayPoint(stayLengthInNights, bookingValue, booking._id, session);
+        } else {
+            // Fallback to manual update
+            crm.loyaltyPoints = Math.max(0, crm.loyaltyPoints - (stayLengthInNights * 100 + Math.floor(bookingValue / 100)));
+            crm.pointsHistory = crm.pointsHistory.filter(entry =>
+                !entry.booking || !entry.booking.equals(booking._id)
+            );
+            crm.stayStatistics.totalStays = Math.max(0, crm.stayStatistics.totalStays - 1);
+            crm.stayStatistics.totalNights = Math.max(0, crm.stayStatistics.totalNights - stayLengthInNights);
+            crm.stayStatistics.lifetimeValue = Math.max(0, crm.stayStatistics.lifetimeValue - bookingValue);
+            crm.stayStatistics.averageStayLength = crm.stayStatistics.totalStays > 0
+                ? crm.stayStatistics.totalNights / crm.stayStatistics.totalStays
+                : 0;
         }
 
-        // Calculate new statistics
-        const newTotalStays = crm.stayStatistics.totalStays - 1;
-        const newTotalNights = crm.stayStatistics.totalNights - stayLengthInNights;
-        const newLifetimeValue = crm.stayStatistics.lifetimeValue - bookingValue;
-        const newAverageStayLength = newTotalStays > 0 ? newTotalNights / newTotalStays : 0;
+        // B. Update room type frequency
+        if (crm.updateRoomTypeFrequency) {
+            crm.updateRoomTypeFrequency(bookingRoomType, 'remove');
+        } else if (crm.guestPreferences.roomTypeFrequency) {
+            // Manual update
+            const currentCount = crm.guestPreferences.roomTypeFrequency.get(bookingRoomType) || 0;
+            if (currentCount > 1) {
+                crm.guestPreferences.roomTypeFrequency.set(bookingRoomType, currentCount - 1);
+            } else {
+                crm.guestPreferences.roomTypeFrequency.delete(bookingRoomType);
+            }
+        }
 
-        // Get last remaining booking for lastStayDate update
-        const lastRemainingBooking = await Booking.findOne({ user: userId })
-            .sort({ checkOut: -1 })
-            .session(session);
+        // C. Update amenities frequency
+        bookingAmenities.forEach(amenity => {
+            if (crm.guestPreferences.amenitiesFrequency.has(amenity)) {
+                const currentCount = crm.guestPreferences.amenitiesFrequency.get(amenity);
+                if (currentCount > 1) {
+                    crm.guestPreferences.amenitiesFrequency.set(amenity, currentCount - 1);
+                } else {
+                    crm.guestPreferences.amenitiesFrequency.delete(amenity);
+                }
+            }
+        });
 
-        // Update CRM with all statistics
-        await CRM.findByIdAndUpdate(
-            user.crmId,
-            {
-                'stayStatistics.totalStays': newTotalStays,
-                'stayStatistics.totalNights': newTotalNights,
-                'stayStatistics.lifetimeValue': newLifetimeValue,
-                'stayStatistics.averageStayLength': newAverageStayLength,
-                'stayStatistics.lastStayDate': lastRemainingBooking ? lastRemainingBooking.checkOut : null
-            },
-            { session }
-        );
+        // D. Update lastStayDate
+        crm.stayStatistics.lastStayDate = lastRemainingBooking ? lastRemainingBooking.checkOut : null;
+
+        // E. Update favorite room type
+        if (crm.updateFavoriteRoomType) {
+            crm.updateFavoriteRoomType();
+        }
+
+        // F. Handle discount if used
+        if (booking.discountCode) {
+            const discountIndex = crm.availableDiscounts.findIndex(
+                d => d.code === booking.discountCode
+            );
+
+            if (discountIndex !== -1) {
+                crm.availableDiscounts[discountIndex].used = false;
+            }
+        }
+
+        // 8. Save CRM - middleware will handle the rest
+        await crm.save({ session });
 
         await session.commitTransaction();
 

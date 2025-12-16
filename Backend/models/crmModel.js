@@ -94,6 +94,12 @@ const crmSchema = new mongoose.Schema({
             of: Number,
             default: {}
         },
+        // Add room type frequency tracking
+        roomTypeFrequency: {
+            type: Map,
+            of: Number,
+            default: {}
+        }
     },
 
     // Stay History & Statistics
@@ -333,6 +339,7 @@ crmSchema.methods.addStayPoint = function (nights, amount, bookingId, descriptio
     this.stayStatistics.averageStayLength = this.stayStatistics.totalNights / this.stayStatistics.totalStays;
     this.stayStatistics.lastStayDate = new Date();
 
+
     return this.save();
 }
 
@@ -448,6 +455,124 @@ crmSchema.methods.getReviewInsights = function () {
         totalReviews: stats.totalReviews,
         positivePercentage: ((stats.ratingDistribution[4] + stats.ratingDistribution[5]) / stats.totalReviews * 100).toFixed(1),
         responseRate: '0%', // You can track if hotels respond to reviews
+    };
+};
+
+//  More flexible method that can handle session
+crmSchema.methods.removeStayPoint = async function (nights, amount, bookingId, session = null) {
+    // Calculate points that were originally added
+    const basePoints = nights * 100;
+    const spendingPoints = Math.floor(amount / 100);
+    const totalPoints = basePoints + spendingPoints;
+
+    // Remove points
+    this.loyaltyPoints = Math.max(0, this.loyaltyPoints - totalPoints);
+
+    // Filter out pointsHistory for this booking
+    this.pointsHistory = this.pointsHistory.filter(entry =>
+        !entry.booking || !entry.booking.equals(bookingId)
+    );
+
+    // Update stay statistics
+    this.stayStatistics.totalStays = Math.max(0, this.stayStatistics.totalStays - 1);
+    this.stayStatistics.totalNights = Math.max(0, this.stayStatistics.totalNights - nights);
+    this.stayStatistics.lifetimeValue = Math.max(0, this.stayStatistics.lifetimeValue - amount);
+
+    if (this.stayStatistics.totalStays > 0) {
+        this.stayStatistics.averageStayLength =
+            this.stayStatistics.totalNights / this.stayStatistics.totalStays;
+    } else {
+        this.stayStatistics.averageStayLength = 0;
+    }
+
+    // Save with session if provided
+    if (session) {
+        return this.save({ session });
+    }
+    return this.save();
+};
+
+// Method to update room type frequency
+crmSchema.methods.updateRoomTypeFrequency = function (roomType, action = 'add') {
+    if (!this.guestPreferences.roomTypeFrequency) {
+        this.guestPreferences.roomTypeFrequency = new Map();
+    }
+
+    const currentCount = this.guestPreferences.roomTypeFrequency.get(roomType) || 0;
+
+    if (action === 'add') {
+        this.guestPreferences.roomTypeFrequency.set(roomType, currentCount + 1);
+
+        // Update preferred room type if this becomes the most frequent
+        let maxCount = 0;
+        let mostFrequentType = 'single';
+
+        this.guestPreferences.roomTypeFrequency.forEach((count, type) => {
+            if (count > maxCount) {
+                maxCount = count;
+                mostFrequentType = type;
+            }
+        });
+
+        this.guestPreferences.room.preferredRoomType = mostFrequentType;
+    } else if (action === 'remove') {
+        if (currentCount > 1) {
+            this.guestPreferences.roomTypeFrequency.set(roomType, currentCount - 1);
+        } else {
+            this.guestPreferences.roomTypeFrequency.delete(roomType);
+        }
+
+        // Recalculate preferred room type after removal
+        if (this.guestPreferences.roomTypeFrequency.size > 0) {
+            let maxCount = 0;
+            let mostFrequentType = 'single';
+
+            this.guestPreferences.roomTypeFrequency.forEach((count, type) => {
+                if (count > maxCount) {
+                    maxCount = count;
+                    mostFrequentType = type;
+                }
+            });
+
+            this.guestPreferences.room.preferredRoomType = mostFrequentType;
+        } else {
+            this.guestPreferences.room.preferredRoomType = 'single';
+        }
+    }
+
+    return this;
+};
+
+// Method to get room type statistics
+crmSchema.methods.getRoomTypeStats = function () {
+    if (!this.guestPreferences.roomTypeFrequency) {
+        return {
+            preferredRoomType: 'single',
+            distribution: {},
+            totalBookingsByType: 0
+        };
+    }
+
+    const distribution = {};
+    let total = 0;
+
+    this.guestPreferences.roomTypeFrequency.forEach((count, type) => {
+        distribution[type] = count;
+        total += count;
+    });
+
+    // Calculate percentages
+    Object.keys(distribution).forEach(type => {
+        distribution[type] = {
+            count: distribution[type],
+            percentage: total > 0 ? Math.round((distribution[type] / total) * 100) : 0
+        };
+    });
+
+    return {
+        preferredRoomType: this.guestPreferences.room.preferredRoomType,
+        distribution,
+        totalBookingsByType: total
     };
 };
 
