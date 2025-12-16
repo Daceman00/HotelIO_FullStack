@@ -1,6 +1,7 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Booking = require('../models/bookingModel');
 const CRM = require('../models/crmModel');
+const Room = require('../models/roomModel')
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
@@ -130,10 +131,21 @@ exports.confirmPayment = catchAsync(async (req, res, next) => {
                 (p) => String(p.booking) === String(booking._id) && p.reason === 'stay'
             );
 
+            let roomFeatures = [];
+            const roomId = booking.room._id
+            const room = await Room.findById(roomId).select('features');
+
+            if (room && room.features) {
+                roomFeatures = room.features;
+            }
+
+            const preferences = room.features
+
+
             if (!alreadyCredited) {
                 const nights = booking.numOfNights;
                 const amount = booking.price || 0;
-                await crm.addStayPoint(nights, amount, booking._id, `${nights} night stay`);
+                await crm.addStayPoint(nights, amount, booking._id, roomFeatures, `${nights} night stay`);
             }
         } catch (e) {
             // Do not block payment confirmation on CRM errors

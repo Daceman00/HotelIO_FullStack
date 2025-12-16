@@ -315,7 +315,7 @@ crmSchema.pre('save', async function (next) {
     next();
 });
 
-crmSchema.methods.addStayPoint = function (nights, amount, bookingId, description = '') {
+crmSchema.methods.addStayPoint = function (nights, amount, bookingId, roomFeatures, description = '') {
     // Calculate points: base points per night + bonus for amount spent
     const basePoints = nights * 100; // 100 points per night
     const spendingPoints = Math.floor(amount / 100); // 1 point per $10 spent
@@ -339,6 +339,52 @@ crmSchema.methods.addStayPoint = function (nights, amount, bookingId, descriptio
     this.stayStatistics.averageStayLength = this.stayStatistics.totalNights / this.stayStatistics.totalStays;
     this.stayStatistics.lastStayDate = new Date();
 
+    // Update amenities frequency
+    if (roomFeatures && roomFeatures.length > 0) {
+        console.log('Updating amenities frequency for:', roomFeatures);
+
+        // Ensure amenitiesFrequency is a Map
+        if (!(this.guestPreferences.amenitiesFrequency instanceof Map)) {
+            this.guestPreferences.amenitiesFrequency = new Map();
+        }
+
+        // Ensure amenities array exists
+        if (!Array.isArray(this.guestPreferences.amenities)) {
+            this.guestPreferences.amenities = [];
+        }
+
+        // Normalize all existing amenities for comparison
+        const normalizedExistingAmenities = this.guestPreferences.amenities.map(amenity =>
+            amenity.toLowerCase().trim()
+        );
+
+        roomFeatures.forEach(amenity => {
+            // Normalize the incoming amenity
+            const normalizedAmenity = amenity.toLowerCase().trim();
+            const originalAmenity = amenity.trim(); // Store original for display
+
+            // Find if a similar amenity already exists (case-insensitive)
+            const existingIndex = normalizedExistingAmenities.findIndex(existing =>
+                existing === normalizedAmenity
+            );
+
+            if (existingIndex !== -1) {
+                // Amenity already exists, get its original form
+                const existingOriginalAmenity = this.guestPreferences.amenities[existingIndex];
+
+                // Update frequency count using original form
+                const currentCount = this.guestPreferences.amenitiesFrequency.get(existingOriginalAmenity) || 0;
+                this.guestPreferences.amenitiesFrequency.set(existingOriginalAmenity, currentCount + 1);
+
+            } else {
+                // Amenity doesn't exist, add it with original case
+                this.guestPreferences.amenities.push(originalAmenity);
+                this.guestPreferences.amenitiesFrequency.set(originalAmenity, 1);
+                normalizedExistingAmenities.push(normalizedAmenity); // Update normalized array
+
+            }
+        });
+    }
 
     return this.save();
 }
