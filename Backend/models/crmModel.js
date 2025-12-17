@@ -505,7 +505,7 @@ crmSchema.methods.getReviewInsights = function () {
 };
 
 //  More flexible method that can handle session
-crmSchema.methods.removeStayPoint = async function (nights, amount, bookingId, session = null) {
+crmSchema.methods.removeStayPoint = async function (nights, amount, bookingId, session = null, roomFeatures = []) {
     // Calculate points that were originally added
     const basePoints = nights * 100;
     const spendingPoints = Math.floor(amount / 100);
@@ -531,11 +531,79 @@ crmSchema.methods.removeStayPoint = async function (nights, amount, bookingId, s
         this.stayStatistics.averageStayLength = 0;
     }
 
+    // Update amenities frequency if roomFeatures provided
+    if (roomFeatures && roomFeatures.length > 0) {
+        console.log('Decrementing amenities frequency for:', roomFeatures);
+
+        // Ensure amenitiesFrequency is a Map
+        if (!(this.guestPreferences.amenitiesFrequency instanceof Map)) {
+            this.guestPreferences.amenitiesFrequency = new Map();
+        }
+
+        // Ensure amenities array exists
+        if (!Array.isArray(this.guestPreferences.amenities)) {
+            this.guestPreferences.amenities = [];
+        }
+
+        // Create a normalized map of existing amenities for case-insensitive lookup
+        const normalizedAmenitiesMap = new Map();
+        this.guestPreferences.amenities.forEach((amenity, index) => {
+            if (amenity && typeof amenity === 'string') {
+                const normalized = amenity.toLowerCase().trim();
+                normalizedAmenitiesMap.set(normalized, { index, original: amenity });
+            }
+        });
+
+        roomFeatures.forEach(amenity => {
+            if (!amenity || typeof amenity !== 'string') return;
+
+            const normalized = amenity.toLowerCase().trim();
+
+            if (normalizedAmenitiesMap.has(normalized)) {
+                // Found the amenity (case-insensitive match)
+                const existing = normalizedAmenitiesMap.get(normalized);
+                const currentCount = this.guestPreferences.amenitiesFrequency.get(existing.original) || 0;
+
+                if (currentCount > 1) {
+                    // Decrement frequency count
+                    this.guestPreferences.amenitiesFrequency.set(existing.original, currentCount - 1);
+                    console.log(`Decremented "${existing.original}" frequency: ${currentCount} -> ${currentCount - 1}`);
+                } else {
+                    // Remove from frequency map since count reaches 0
+                    this.guestPreferences.amenitiesFrequency.delete(existing.original);
+                    console.log(`Removed "${existing.original}" from frequency map (count reached 0)`);
+
+                    // Check if this amenity is used in any other bookings
+                    // We'll keep it in the amenities array for now
+                    // (Could add logic to check if it's used elsewhere)
+                }
+            } else {
+                console.log(`Amenity "${amenity}" not found in existing amenities`);
+            }
+        });
+
+        // Clean up amenities that have 0 frequency
+        this.cleanupUnusedAmenities();
+    }
+
     // Save with session if provided
     if (session) {
         return this.save({ session });
     }
     return this.save();
+};
+
+// Optional helper method to clean up unused amenities
+crmSchema.methods.cleanupUnusedAmenities = function () {
+    if (!Array.isArray(this.guestPreferences.amenities)) return;
+
+    // Filter amenities to keep only those with frequency > 0
+    this.guestPreferences.amenities = this.guestPreferences.amenities.filter(amenity => {
+        const frequency = this.guestPreferences.amenitiesFrequency.get(amenity) || 0;
+        return frequency > 0;
+    });
+
+    return this;
 };
 
 // Method to update room type frequency

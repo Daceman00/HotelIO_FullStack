@@ -313,6 +313,14 @@ exports.deleteBooking = catchAsync(async (req, res, next) => {
 
         const crm = user.crm[0];
 
+        let bookingAmenities = [];
+        const roomId = booking.room._id
+        const room = await Room.findById(roomId).select('features');
+
+        if (room && room.features) {
+            bookingAmenities = room.features;
+        }
+
         // 3. Calculate values
         const stayLengthInNights = booking.checkOut && booking.checkIn
             ? Math.ceil((new Date(booking.checkOut) - new Date(booking.checkIn)) / (1000 * 60 * 60 * 24))
@@ -320,7 +328,6 @@ exports.deleteBooking = catchAsync(async (req, res, next) => {
 
         const bookingValue = booking.price || 0;
         const bookingRoomType = booking.roomType || 'single';
-        const bookingAmenities = booking.amenities || [];
 
         // 4. Delete associated reviews (will trigger CRM update via middleware)
         await Review.deleteMany({ booking: booking._id }).session(session);
@@ -338,7 +345,7 @@ exports.deleteBooking = catchAsync(async (req, res, next) => {
 
         // A. Remove stay points using the new method
         if (crm.removeStayPoint) {
-            await crm.removeStayPoint(stayLengthInNights, bookingValue, booking._id, session);
+            await crm.removeStayPoint(stayLengthInNights, bookingValue, booking._id, session, bookingAmenities);
         } else {
             // Fallback to manual update
             crm.loyaltyPoints = Math.max(0, crm.loyaltyPoints - (stayLengthInNights * 100 + Math.floor(bookingValue / 100)));
@@ -365,18 +372,6 @@ exports.deleteBooking = catchAsync(async (req, res, next) => {
                 crm.guestPreferences.roomTypeFrequency.delete(bookingRoomType);
             }
         }
-
-        // C. Update amenities frequency
-        bookingAmenities.forEach(amenity => {
-            if (crm.guestPreferences.amenitiesFrequency.has(amenity)) {
-                const currentCount = crm.guestPreferences.amenitiesFrequency.get(amenity);
-                if (currentCount > 1) {
-                    crm.guestPreferences.amenitiesFrequency.set(amenity, currentCount - 1);
-                } else {
-                    crm.guestPreferences.amenitiesFrequency.delete(amenity);
-                }
-            }
-        });
 
         // D. Update lastStayDate
         crm.stayStatistics.lastStayDate = lastRemainingBooking ? lastRemainingBooking.checkOut : null;

@@ -139,9 +139,6 @@ exports.confirmPayment = catchAsync(async (req, res, next) => {
                 roomFeatures = room.features;
             }
 
-            const preferences = room.features
-
-
             if (!alreadyCredited) {
                 const nights = booking.numOfNights;
                 const amount = booking.price || 0;
