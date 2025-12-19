@@ -132,6 +132,8 @@ exports.confirmPayment = catchAsync(async (req, res, next) => {
             );
 
             let roomFeatures = [];
+            let roomType = null;
+
             const roomId = booking.room._id
             const room = await Room.findById(roomId).select('features');
 
@@ -139,10 +141,19 @@ exports.confirmPayment = catchAsync(async (req, res, next) => {
                 roomFeatures = room.features;
             }
 
+            if (booking.room.roomType) {
+                roomType = booking.room.roomType
+            }
+
             if (!alreadyCredited) {
                 const nights = booking.numOfNights;
                 const amount = booking.price || 0;
                 await crm.addStayPoint(nights, amount, booking._id, roomFeatures, `${nights} night stay`);
+            }
+
+            if (roomType) {
+                crm.updateRoomTypeFrequency(roomType, 'add')
+                await crm.save()
             }
         } catch (e) {
             // Do not block payment confirmation on CRM errors
