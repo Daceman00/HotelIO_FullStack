@@ -607,7 +607,7 @@ crmSchema.methods.cleanupUnusedAmenities = function () {
 };
 
 // Method to update room type frequency
-crmSchema.methods.updateRoomTypeFrequency = function (roomType, action = 'add') {
+crmSchema.methods.updateRoomTypeFrequency = function (roomType, action) {
     if (!this.guestPreferences.roomTypeFrequency) {
         this.guestPreferences.roomTypeFrequency = new Map();
     }
@@ -630,6 +630,7 @@ crmSchema.methods.updateRoomTypeFrequency = function (roomType, action = 'add') 
 
         this.guestPreferences.room.preferredRoomType = mostFrequentType;
     } else if (action === 'remove') {
+        console.log("Currentcount", currentCount)
         if (currentCount > 1) {
             this.guestPreferences.roomTypeFrequency.set(roomType, currentCount - 1);
         } else {
@@ -647,7 +648,7 @@ crmSchema.methods.updateRoomTypeFrequency = function (roomType, action = 'add') 
                     mostFrequentType = type;
                 }
             });
-
+            console.log(mostFrequentType)
             this.guestPreferences.room.preferredRoomType = mostFrequentType;
         } else {
             this.guestPreferences.room.preferredRoomType = 'single';

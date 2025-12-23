@@ -311,6 +311,8 @@ exports.deleteBooking = catchAsync(async (req, res, next) => {
             return next(new AppError('User or CRM not found for this booking', 404));
         }
 
+        let crmMethod = await CRM.findOne({ user: userId });
+
         const crm = user.crm[0];
 
         let bookingAmenities = [];
@@ -361,25 +363,11 @@ exports.deleteBooking = catchAsync(async (req, res, next) => {
         }
 
         // B. Update room type frequency
-        if (crm.updateRoomTypeFrequency) {
-            crm.updateRoomTypeFrequency(bookingRoomType, 'remove');
-        } else if (crm.guestPreferences.roomTypeFrequency) {
-            // Manual update
-            const currentCount = crm.guestPreferences.roomTypeFrequency.get(bookingRoomType) || 0;
-            if (currentCount > 1) {
-                crm.guestPreferences.roomTypeFrequency.set(bookingRoomType, currentCount - 1);
-            } else {
-                crm.guestPreferences.roomTypeFrequency.delete(bookingRoomType);
-            }
+        if (crmMethod.updateRoomTypeFrequency) {
+            crmMethod.updateRoomTypeFrequency(bookingRoomType, 'remove');
         }
-
         // D. Update lastStayDate
         crm.stayStatistics.lastStayDate = lastRemainingBooking ? lastRemainingBooking.checkOut : null;
-
-        // E. Update favorite room type
-        if (crm.updateFavoriteRoomType) {
-            crm.updateFavoriteRoomType();
-        }
 
         // F. Handle discount if used
         if (booking.discountCode) {
