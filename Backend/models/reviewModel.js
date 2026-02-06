@@ -105,8 +105,6 @@ reviewSchema.post('remove', async function () {
 // Pre-remove middleware to update CRM when a review is deleted
 reviewSchema.pre('remove', async function (next) {
     try {
-        const Review = this.constructor;
-
         // Find all reviews being deleted (for deleteMany operations)
         let reviewsToDelete;
         if (this._id) {
