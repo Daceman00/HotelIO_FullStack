@@ -315,11 +315,15 @@ crmSchema.pre('save', async function (next) {
     next();
 });
 
-crmSchema.methods.addStayPoint = function (nights, amount, bookingId, roomFeatures, description = '') {
-    // Calculate points: base points per night + bonus for amount spent
+crmSchema.methods.static.calculateStayPoints = function (night, amount) {
     const basePoints = nights * 100; // 100 points per night
     const spendingPoints = Math.floor(amount / 100); // 1 point per $10 spent
-    const totalPoints = basePoints + spendingPoints;
+    return basePoints + spendingPoints;
+}
+
+crmSchema.methods.addStayPoint = function (nights, amount, bookingId, roomFeatures, description = '') {
+    // Calculate points: base points per night + bonus for amount spent
+    const totalPoints = this.constructor.calculateStayPoints(nights, amount)
 
     this.loyaltyPoints += totalPoints;
 
@@ -507,9 +511,7 @@ crmSchema.methods.getReviewInsights = function () {
 //  More flexible method that can handle session
 crmSchema.methods.removeStayPoint = async function (nights, amount, bookingId, session = null, roomFeatures = []) {
     // Calculate points that were originally added
-    const basePoints = nights * 100;
-    const spendingPoints = Math.floor(amount / 100);
-    const totalPoints = basePoints + spendingPoints;
+    const totalPoints = this.constructor.calculateStayPoints(nights, amount)
 
     // Remove points
     this.loyaltyPoints = Math.max(0, this.loyaltyPoints - totalPoints);
