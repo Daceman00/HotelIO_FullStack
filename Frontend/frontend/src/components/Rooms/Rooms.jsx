@@ -19,7 +19,7 @@ function Rooms() {
   const top4ratedRooms = useMemo(
     () =>
       rooms?.filter((room) => room.status === "available")?.slice(0, 8) || [],
-    [rooms]
+    [rooms],
   );
 
   return (

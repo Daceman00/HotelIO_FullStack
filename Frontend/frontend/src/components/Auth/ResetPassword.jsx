@@ -1,16 +1,17 @@
 import React from "react";
+import { motion } from "framer-motion";
 import useFormStore from "../../stores/FormStore";
 import { useResetPassword } from "./useResetPassword";
 import { useParams } from "react-router-dom";
 
 function ResetPassword() {
-  const { resetPassword, isPending, error } = useResetPassword();
+  const { resetPassword, isPending } = useResetPassword();
   const { resetPasswordData } = useFormStore();
   const updateResetPasswordData = useFormStore(
-    (state) => state.updateResetPasswordData
+    (state) => state.updateResetPasswordData,
   );
   const resetResetPasswordData = useFormStore(
-    (state) => state.resetResetPasswordData
+    (state) => state.resetResetPasswordData,
   );
   const { token } = useParams();
 
@@ -21,75 +22,136 @@ function ResetPassword() {
       { token, passwordData: resetPasswordData },
       {
         onSettled: () => resetResetPasswordData(),
-      }
+      },
     );
   };
 
-  return (
-    <section className="flex flex-col items-center pt-6 pb-24">
-      <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0">
-        <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-          <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-            Enter your new password
-          </h1>
-          <form
-            className="space-y-4 md:space-y-6"
-            onSubmit={handleResetPassword}
-          >
-            <div>
-              <label
-                htmlFor="password"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                New password
-              </label>
-              <input
-                type="password"
-                name="password"
-                id="password"
-                placeholder="••••••••"
-                className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-yellow-500 dark:focus:border-yellow-500"
-                required
-                disabled={isPending}
-                value={resetPasswordData.password}
-                onChange={(e) =>
-                  updateResetPasswordData("password", e.target.value)
-                }
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="passwordConfirm"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Confirm your new password
-              </label>
-              <input
-                type="password"
-                name="passwordConfirm"
-                id="passwordConfirm"
-                placeholder="••••••••"
-                className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-yellow-500 dark:focus:border-yellow-500"
-                required
-                disabled={isPending}
-                value={resetPasswordData.passwordConfirm}
-                onChange={(e) =>
-                  updateResetPasswordData("passwordConfirm", e.target.value)
-                }
-              />
-            </div>
+  const formVariants = {
+    hidden: { opacity: 0, y: 24 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        staggerChildren: 0.08,
+        delayChildren: 0.1,
+      },
+    },
+  };
 
-            <button
-              type="submit"
-              className="w-full text-white bg-[#dfa974] hover:bg-yellow-600 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800"
-              disabled={isPending}
+  const cardVariants = {
+    hidden: { opacity: 0, scale: 0.96, y: 16 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] },
+    },
+  };
+
+  const inputClass =
+    "w-full px-4 py-2.5 text-sm rounded-xl border border-gray-200/80 focus:border-[#dfa974] focus:ring-2 focus:ring-[#dfa974]/25 focus:ring-offset-1 transition-all duration-300 bg-gray-50/80 hover:bg-gray-50 placeholder:text-gray-400 dark:bg-gray-700/50 dark:border-gray-600 dark:focus:border-[#dfa974] dark:focus:ring-[#dfa974]/25 dark:text-white dark:placeholder-gray-400";
+
+  return (
+    <motion.section
+      initial="hidden"
+      animate="visible"
+      variants={formVariants}
+      className="flex flex-col items-center pt-6 pb-24 min-h-[60vh] bg-gradient-to-br from-amber-50/80 via-orange-50/60 to-amber-100/80"
+    >
+      <motion.div
+        variants={cardVariants}
+        className="w-full max-w-md relative rounded-2xl overflow-hidden shadow-2xl"
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-400/10 via-transparent to-orange-500/10 pointer-events-none" />
+        <div className="relative bg-white/90 backdrop-blur-xl border border-white/60 rounded-2xl dark:bg-gray-800/90 dark:border-gray-700/50">
+          <div className="p-6 md:p-6 lg:p-8 space-y-5">
+            <motion.h1
+              variants={formVariants}
+              className="text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent dark:text-white"
             >
-              Submit
-            </button>
-          </form>
+              Enter your new password
+            </motion.h1>
+            <form className="space-y-5" onSubmit={handleResetPassword}>
+              <motion.div variants={formVariants}>
+                <label
+                  htmlFor="password"
+                  className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  New password
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  id="password"
+                  placeholder="••••••••"
+                  className={inputClass}
+                  required
+                  disabled={isPending}
+                  value={resetPasswordData.password}
+                  onChange={(e) =>
+                    updateResetPasswordData("password", e.target.value)
+                  }
+                />
+              </motion.div>
+              <motion.div variants={formVariants}>
+                <label
+                  htmlFor="passwordConfirm"
+                  className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Confirm your new password
+                </label>
+                <input
+                  type="password"
+                  name="passwordConfirm"
+                  id="passwordConfirm"
+                  placeholder="••••••••"
+                  className={inputClass}
+                  required
+                  disabled={isPending}
+                  value={resetPasswordData.passwordConfirm}
+                  onChange={(e) =>
+                    updateResetPasswordData("passwordConfirm", e.target.value)
+                  }
+                />
+              </motion.div>
+
+              <motion.button
+                variants={formVariants}
+                whileHover={{
+                  scale: 1.02,
+                  boxShadow: "0 8px 25px -5px rgba(223, 169, 116, 0.35)",
+                }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                className="w-full py-3 px-6 text-sm text-white rounded-xl font-medium
+                         bg-gradient-to-r from-[#dfa974] to-[#c68a5e] shadow-lg shadow-amber-500/20
+                         hover:shadow-xl hover:shadow-amber-500/25 transition-all duration-300
+                         disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                disabled={isPending}
+              >
+                {isPending ? (
+                  <>
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        duration: 1,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                      className="w-5 h-5 border-2 border-white border-t-transparent rounded-full mr-2"
+                    />
+                    Submitting...
+                  </>
+                ) : (
+                  "Submit"
+                )}
+              </motion.button>
+            </form>
+          </div>
         </div>
-      </div>
-    </section>
+      </motion.div>
+    </motion.section>
   );
 }
 

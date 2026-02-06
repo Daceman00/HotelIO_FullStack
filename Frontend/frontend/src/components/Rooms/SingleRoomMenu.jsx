@@ -19,13 +19,13 @@ function SingleRoomMenu({ room }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const isDeleteRoomModalOpen = useUIStore(
-    (state) => state.isDeleteRoomModalOpen
+    (state) => state.isDeleteRoomModalOpen,
   );
   const onDeleteRoomModalOpen = useUIStore(
-    (state) => state.onDeleteRoomModalOpen
+    (state) => state.onDeleteRoomModalOpen,
   );
   const onDeleteRoomModalClose = useUIStore(
-    (state) => state.onDeleteRoomModalClose
+    (state) => state.onDeleteRoomModalClose,
   );
   const selectedRoomId = useUIStore((state) => state.selectedRoomId);
 
@@ -116,7 +116,7 @@ function SingleRoomMenu({ room }) {
               {/* Status Badge */}
               <div
                 className={`absolute top-3 right-3 px-3 py-1 text-xs font-semibold text-white rounded-full ${getStatusColor(
-                  room.status
+                  room.status,
                 )}`}
               >
                 {room.status.toUpperCase()}
@@ -152,7 +152,7 @@ function SingleRoomMenu({ room }) {
                           <span className="font-medium">Current Status: </span>
                           <span
                             className={`${getStatusColor(
-                              room.status
+                              room.status,
                             )} px-2 py-1 rounded-full text-white text-xs`}
                           >
                             {room.status.toUpperCase()}
@@ -172,7 +172,7 @@ function SingleRoomMenu({ room }) {
                             <span className="flex items-center gap-2">
                               <span
                                 className={`w-2 h-2 rounded-full ${getStatusColor(
-                                  option.value
+                                  option.value,
                                 )}`}
                               ></span>
                               {option.label}
