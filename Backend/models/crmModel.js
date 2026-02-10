@@ -153,6 +153,23 @@ const crmSchema = new mongoose.Schema({
         featuredReviews: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Review'
+        }],
+        // Store all review ratings
+        allReviewRatings: [{
+            reviewId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Review'
+            },
+            rating: {
+                type: Number,
+                required: true,
+                min: 1,
+                max: 5
+            },
+            date: {
+                type: Date,
+                default: Date.now
+            }
         }]
     },
 
@@ -315,8 +332,8 @@ crmSchema.pre('save', async function (next) {
     next();
 });
 
-crmSchema.methods.static.calculateStayPoints = function (night, amount) {
-    const basePoints = nights * 100; // 100 points per night
+crmSchema.methods.calculateStayPoints = function (night, amount) {
+    const basePoints = night * 100; // 100 points per night
     const spendingPoints = Math.floor(amount / 100); // 1 point per $10 spent
     return basePoints + spendingPoints;
 }
@@ -428,43 +445,61 @@ crmSchema.methods.updatePreferences = function (preferenceUpdates) {
     return this.save()
 }
 
+crmSchema.methods.recalculateReviewstats = function () {
+    const ratings = this.reviewStatistics.allReviewRatings
+
+    //Total reviews
+    this.reviewStatistics.totalReviews = ratings.length
+
+    // Average ratings
+    if (ratings.length > 0) {
+        const sum = ratings.reduce((total, r) => total + r.rating, 0)
+        this.reviewStatistics.averageRating = sum / ratings.length
+    } else {
+        this.reviewStatistics.averageRating = 0
+    }
+
+    // Rating distribution 
+
+    this.reviewStatistics.ratingDistribution = {
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0
+    }
+
+    ratings.forEach(r => {
+        const rounded = Math.round(r.rating)
+        if (rounded >= 1 && rounded <= 5) {
+            this.reviewStatistics.ratingDistribution[rounded] += 1
+        }
+    })
+}
+
 // Method to update review statistics when a new review is added
 crmSchema.methods.updateReviewStats = async function (review, action = 'add') {
 
     if (action === 'add') {
-        this.reviewStatistics.totalReviews += 1;
-        this.reviewStatistics.averageRating =
-            ((this.reviewStatistics.averageRating * (this.reviewStatistics.totalReviews - 1)) + review.rating) /
-            this.reviewStatistics.totalReviews;
-
-        const roundedRating = Math.round(review.rating);
-        if (roundedRating >= 1 && roundedRating <= 5) {
-            this.reviewStatistics.ratingDistribution[roundedRating] += 1;
-        }
-
-        this.reviewStatistics.lastReviewDate = new Date();
+        // Add review rating to the array
+        this.reviewStatistics.allReviewRatings.push({
+            reviewId: review._id,
+            rating: review.rating,
+            date: new Date()
+        })
 
         // Add review to featured reviews array
         this.reviewStatistics.featuredReviews.push(review._id);
+        this.reviewStatistics.lastReviewDate = new Date();
 
         // Add points for review
         await this.addPoints(50, 'review', `Review for booking`, null, review._id);
 
     } else if (action === 'remove') {
-        this.reviewStatistics.totalReviews -= 1;
-        if (this.reviewStatistics.totalReviews > 0) {
-            this.reviewStatistics.averageRating =
-                ((this.reviewStatistics.averageRating * (this.reviewStatistics.totalReviews + 1)) - review.rating) /
-                this.reviewStatistics.totalReviews;
-        } else {
-            this.reviewStatistics.averageRating = 0;
-        }
-
-        const roundedRating = Math.round(review.rating);
-        if (roundedRating >= 1 && roundedRating <= 5) {
-            this.reviewStatistics.ratingDistribution[roundedRating] =
-                Math.max(0, this.reviewStatistics.ratingDistribution[roundedRating] - 1);
-        }
+        // Remove the review rating from array
+        this.reviewStatistics.allReviewRatings = this.reviewStatistics.allReviewRatings.filter((r) => {
+            r.reviewId.toString() !== review._id.toString()
+        })
 
         // Ensure featuredReviews is an array before filtering
         const featured = Array.isArray(this.reviewStatistics.featuredReviews)
@@ -477,7 +512,8 @@ crmSchema.methods.updateReviewStats = async function (review, action = 'add') {
         );
 
     }
-
+    // REecalculate everything from stored ratings
+    this.recalculateReviewstats()
     await this.save();
 };
 
