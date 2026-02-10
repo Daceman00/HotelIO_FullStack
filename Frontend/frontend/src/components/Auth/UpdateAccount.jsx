@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useIsLoggedIn } from "./useAuth";
 import useFormStore from "../../stores/FormStore";
 import { Link } from "react-router-dom";
@@ -7,11 +8,9 @@ import useUIStore from "../../stores/UiStore";
 import { useDeleteAccount } from "./useDeleteAccount";
 import useFileStore from "../../stores/FileStore";
 import { useUpdateAccountPhoto } from "./useUpdateAccountPhoto";
-import FileUploadInput from "../Reusable/FileUploadInput";
 import LoadingSpinner from "../Reusable/LoadingSpinner";
 import { Camera, Trash2, Mail, User, Lock } from "lucide-react";
 import UserCRMProfile from "../CRM/UserCRMProfile";
-import { AnimatePresence } from "framer-motion";
 
 function UpdateAccount() {
   const { user, isPending } = useIsLoggedIn();
@@ -20,7 +19,7 @@ function UpdateAccount() {
   const onUserCrmModalClose = useUIStore((state) => state.onUserCrmModalClose);
   const { updateAccountFormData } = useFormStore();
   const setUpdateAccountFormData = useFormStore(
-    (state) => state.setUpdateAccountFormData
+    (state) => state.setUpdateAccountFormData,
   );
   const { previewUrl, selectedFile } = useFileStore();
   const {
@@ -63,12 +62,27 @@ function UpdateAccount() {
     onModalClose();
   };
 
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.4, staggerChildren: 0.06, delayChildren: 0.1 },
+    },
+  };
+
   // Custom file upload preview component
   const PhotoPreview = () => {
     return (
-      <div className="flex flex-col items-center mb-6 ">
+      <motion.div
+        variants={cardVariants}
+        className="flex flex-col items-center mb-6"
+      >
         <div className="relative mb-4">
-          <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-[#dfa379] shadow-lg">
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            className="w-24 h-24 rounded-full overflow-hidden border-4 border-[#dfa379] shadow-lg ring-2 ring-amber-200/50"
+          >
             {previewUrl ? (
               <img
                 src={previewUrl}
@@ -85,10 +99,12 @@ function UpdateAccount() {
                 <User size={32} className="text-gray-400" />
               </div>
             )}
-          </div>
-          <label
+          </motion.div>
+          <motion.label
             htmlFor="file-upload"
-            className="absolute bottom-0 right-0 bg-[#dfa379] p-2 rounded-full cursor-pointer shadow-md hover:bg-[#c48960] transition-colors duration-200"
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.95 }}
+            className="absolute bottom-0 right-0 bg-gradient-to-br from-[#dfa379] to-[#c48960] p-2 rounded-full cursor-pointer shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/30 transition-shadow duration-200"
           >
             <Camera size={16} className="text-white" />
             <input
@@ -111,33 +127,47 @@ function UpdateAccount() {
                 }
               }}
             />
-          </label>
+          </motion.label>
         </div>
         {previewUrl && (
-          <button
+          <motion.button
             type="button"
-            className="text-sm text-red-500 hover:text-red-700 flex items-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
+            className="text-sm text-red-500 hover:text-red-700 flex items-center transition-colors duration-200"
             onClick={() =>
               useFileStore.setState({ previewUrl: null, selectedFile: null })
             }
           >
             <Trash2 size={14} className="mr-1" />
             Remove
-          </button>
+          </motion.button>
         )}
-      </div>
+      </motion.div>
     );
   };
 
   return (
-    <section className="flex flex-col items-center pt-8 pb-8 px-4 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <motion.section
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="flex flex-col items-center pt-8 pb-8 px-4 min-h-[60vh] bg-gradient-to-br from-amber-50/90 via-orange-50/70 to-yellow-50/90"
+    >
       {isPending ? (
         <div className="flex items-center justify-center min-h-[400px]">
           <LoadingSpinner />
         </div>
       ) : (
-        <div className="w-full bg-white rounded-2xl shadow-xl dark:bg-gray-800 overflow-hidden md:mt-0 sm:max-w-md">
-          <div className="bg-gradient-to-r from-[#dfa379] to-[#c48960] p-6 text-white">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="w-full bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl dark:bg-gray-800 overflow-hidden md:mt-0 sm:max-w-md border border-white/60 dark:border-gray-700/50"
+        >
+          <div className="bg-gradient-to-r from-[#dfa379] via-amber-500/90 to-[#c48960] p-6 text-white shadow-lg">
             <h1 className="text-2xl font-bold">Profile Settings</h1>
             <p className="text-sm opacity-90 mt-1">
               Update your personal information
@@ -148,10 +178,10 @@ function UpdateAccount() {
             <form className="space-y-5" onSubmit={handleSubmit}>
               <PhotoPreview />
 
-              <div>
+              <motion.div variants={cardVariants}>
                 <label
                   htmlFor="name"
-                  className=" mb-2 text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center"
+                  className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center"
                 >
                   <User size={16} className="mr-2" />
                   Full Name
@@ -160,7 +190,7 @@ function UpdateAccount() {
                   type="text"
                   name="name"
                   id="name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-[#dfa379] focus:border-[#dfa379] block w-full p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  className="bg-gray-50/80 border border-gray-200/80 text-gray-900 rounded-xl focus:ring-2 focus:ring-[#dfa379]/25 focus:border-[#dfa379] focus:ring-offset-1 block w-full p-3 transition-all duration-300 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                   placeholder="Your name"
                   value={updateAccountFormData.name}
                   onChange={(e) =>
@@ -168,9 +198,9 @@ function UpdateAccount() {
                   }
                   disabled={isPendingUpdatePhoto}
                 />
-              </div>
+              </motion.div>
 
-              <div>
+              <motion.div variants={cardVariants}>
                 <label
                   htmlFor="email"
                   className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center"
@@ -189,13 +219,18 @@ function UpdateAccount() {
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Contact support to change your email address
                 </p>
-              </div>
+              </motion.div>
 
-              <div className="flex items-center">
-                <button
+              <motion.div variants={cardVariants} className="flex items-center">
+                <motion.button
                   disabled={isPendingUpdatePhoto}
                   type="submit"
-                  className="w-full text-white bg-[#dfa379] hover:bg-[#c48960] focus:ring-4 focus:outline-none focus:ring-[#dfa379]/30 font-medium rounded-lg px-5 py-3 text-center transition-all duration-200 flex items-center justify-center"
+                  whileHover={{
+                    scale: 1.01,
+                    boxShadow: "0 8px 25px -5px rgba(223, 169, 116, 0.35)",
+                  }}
+                  whileTap={{ scale: 0.99 }}
+                  className="w-full text-white bg-gradient-to-r from-[#dfa379] to-[#c48960] shadow-lg shadow-amber-500/20 font-medium rounded-xl px-5 py-3 text-center transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isPendingUpdatePhoto ? (
                     <span className="flex items-center">
@@ -204,8 +239,8 @@ function UpdateAccount() {
                   ) : (
                     "Save Changes"
                   )}
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
 
               <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700 mt-6">
                 <Link
@@ -234,7 +269,7 @@ function UpdateAccount() {
               </div>
             </form>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {isModalOpen && (
@@ -257,7 +292,7 @@ function UpdateAccount() {
           />
         )}
       </AnimatePresence>
-    </section>
+    </motion.section>
   );
 }
 

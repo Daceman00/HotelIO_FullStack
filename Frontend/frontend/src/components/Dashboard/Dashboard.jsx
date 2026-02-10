@@ -119,8 +119,12 @@ function Dashboard() {
                 </div>
               </div>
 
-              <div className="min-h-[420px] md:min-h-[380px] lg:min-h-[420px] flex flex-col">
-                {authTab === "signup" ? <Signup /> : <Login />}
+              <div className="min-h-[420px] md:min-h-[380px] lg:min-h-[420px] flex flex-col overflow-y-auto">
+                {authTab === "signup" ? (
+                  <Signup embedded />
+                ) : (
+                  <Login embedded />
+                )}
               </div>
             </motion.div>
           )}
