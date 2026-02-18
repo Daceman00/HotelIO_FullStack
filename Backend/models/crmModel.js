@@ -445,7 +445,8 @@ crmSchema.methods.updatePreferences = function (preferenceUpdates) {
     return this.save()
 }
 
-crmSchema.methods.recalculateReviewstats = function () {
+// Recalculate review statistics from stored ratings
+crmSchema.methods.recalculateReviewStats = function () {
     const ratings = this.reviewStatistics.allReviewRatings
 
     //Total reviews
@@ -460,7 +461,6 @@ crmSchema.methods.recalculateReviewstats = function () {
     }
 
     // Rating distribution 
-
     this.reviewStatistics.ratingDistribution = {
         1: 0,
         2: 0,
@@ -475,45 +475,69 @@ crmSchema.methods.recalculateReviewstats = function () {
             this.reviewStatistics.ratingDistribution[rounded] += 1
         }
     })
-}
+};
 
 // Method to update review statistics when a new review is added
-crmSchema.methods.updateReviewStats = async function (review, action = 'add') {
+crmSchema.methods.updateReviewStats = async function (review, action) {
 
     if (action === 'add') {
-        // Add review rating to the array
+        // Ensure array exists
+        if (!Array.isArray(this.reviewStatistics.allReviewRatings)) {
+            this.reviewStatistics.allReviewRatings = [];
+        }
+
+        // Step 1: Add review to array
         this.reviewStatistics.allReviewRatings.push({
             reviewId: review._id,
             rating: review.rating,
             date: new Date()
-        })
+        });
+        this.markModified('reviewStatistics.allReviewRatings');
 
-        // Add review to featured reviews array
+        // Step 2: Update featured reviews
+        if (!Array.isArray(this.reviewStatistics.featuredReviews)) {
+            this.reviewStatistics.featuredReviews = [];
+        }
         this.reviewStatistics.featuredReviews.push(review._id);
+        this.markModified('reviewStatistics.featuredReviews');
+
+        // Step 3: Update last review date
         this.reviewStatistics.lastReviewDate = new Date();
 
-        // Add points for review
-        await this.addPoints(50, 'review', `Review for booking`, null, review._id);
+        // Step 4: Award points (doesn't save)
+        this.addPoints(50, 'review', `Review for booking`, null, review._id);
+
+        // Step 5: Recalculate stats AFTER all modifications
+        this.recalculateReviewStats();
 
     } else if (action === 'remove') {
-        // Remove the review rating from array
-        this.reviewStatistics.allReviewRatings = this.reviewStatistics.allReviewRatings.filter((r) => {
-            r.reviewId.toString() !== review._id.toString()
-        })
+        // Ensure array exists
+        if (!Array.isArray(this.reviewStatistics.allReviewRatings)) {
+            this.reviewStatistics.allReviewRatings = [];
+        }
 
-        // Ensure featuredReviews is an array before filtering
+        // Step 1: Remove review from array
+        this.reviewStatistics.allReviewRatings = this.reviewStatistics.allReviewRatings.filter(
+            r => r.reviewId && r.reviewId.toString() !== review._id.toString()
+        );
+        this.markModified('reviewStatistics.allReviewRatings');
+
+        // Step 2: Remove from featured reviews
         const featured = Array.isArray(this.reviewStatistics.featuredReviews)
             ? this.reviewStatistics.featuredReviews
             : [];
 
-        // Remove review from featured reviews array
         this.reviewStatistics.featuredReviews = featured.filter(
             reviewId => reviewId.toString() !== review._id.toString()
         );
+        this.markModified('reviewStatistics.featuredReviews');
+
+        // Step 4: Recalculate stats AFTER all modifications
+        this.recalculateReviewStats();
 
     }
     // REecalculate everything from stored ratings
-    this.recalculateReviewstats()
+
     await this.save();
 };
 

@@ -363,7 +363,7 @@ function UserCRMProfile({ isOpen, onClose }) {
                               style={{ color: "#dfa974" }}
                             >
                               {crm.reviewStatistics?.averageRating?.toFixed(
-                                1
+                                2
                               ) || "0.0"}
                             </motion.div>
                             <div className="flex gap-1 mt-1">
@@ -401,7 +401,7 @@ function UserCRMProfile({ isOpen, onClose }) {
                             <p className="text-sm text-gray-600">
                               Positive:{" "}
                               <span className="font-semibold text-gray-900">
-                                {crm.positiveReviewPercentage || 0}%
+                                {crm.positiveReviewPercentage.toFixed(2) || 0}%
                               </span>
                             </p>
                             {crm.reviewStatistics?.lastReviewDate && (
