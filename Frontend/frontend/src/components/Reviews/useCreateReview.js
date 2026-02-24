@@ -8,7 +8,7 @@ export function useCreateReview() {
         mutationFn: ({ roomId, reviewData }) => createReviewApi(roomId, reviewData),
         onSuccess: () => {
             toast.success("Review created successfully");
-            queryClient.invalidateQueries(["reviews"]);
+            queryClient.invalidateQueries(["reviews"], ["crm"]);
         },
         onError: (error) => {
             console.error(error);
