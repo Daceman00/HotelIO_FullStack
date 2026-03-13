@@ -29,25 +29,28 @@ const sgMail = require('@sendgrid/mail');
 };
  */
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD
+    }
+});
 
 const sendEmail = async (options) => {
-    const msg = {
+    const mailOptions = {
+        from: `HotelIO <${process.env.GMAIL_USER}>`,
         to: options.email,
-        from: {
-            email: process.env.SENDGRID_FROM_EMAIL,
-            name: 'HotelIO'
-        },
         subject: options.subject,
         text: options.message,
         html: options.html
     };
 
     try {
-        await sgMail.send(msg);
+        await transporter.sendMail(mailOptions);
         console.log(`Email sent successfully to ${options.email}`);
     } catch (error) {
-        console.error('SendGrid error:', error.response.body.errors || error.message);
+        console.error('Gmail error:', error.message);
         throw error;
     }
 };
