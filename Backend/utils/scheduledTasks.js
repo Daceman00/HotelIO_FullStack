@@ -232,13 +232,18 @@ const processReferralSuccessesTask = async () => {
 const scheduleCleanupTask = () => {
     cron.schedule('45 11 * * *', () => {
         runCleanupTask();
-    });
+    }, {
+        timezone: 'Europe/Sarajevo'
+    }
+    );
 };
 
 // Schedule the referral processing task to run daily at midnight
 const scheduleReferralProcessingTask = () => {
     cron.schedule('0 12 * * *', () => {
         processReferralSuccessesTask();
+    }, {
+        timezone: 'Europe/Sarajevo'
     });
 };
 

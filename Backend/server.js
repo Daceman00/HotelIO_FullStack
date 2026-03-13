@@ -1,3 +1,11 @@
+process.on('uncaughtException', (err) => {
+    console.error('UNCAUGHT EXCEPTION:', err.message);
+    console.error(err.stack);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('UNHANDLED REJECTION:', reason);
+});
 const mongoose = require('mongoose');
 const path = require('path');
 const dotenv = require('dotenv');
