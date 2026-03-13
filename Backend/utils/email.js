@@ -29,13 +29,32 @@ const sgMail = require('@sendgrid/mail');
 };
  */
 
+console.log('GMAIL_USER:', process.env.GMAIL_USER);
+console.log('GMAIL_APP_PASSWORD:', process.env.GMAIL_APP_PASSWORD ? 'loaded' : 'UNDEFINED');
+
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    requireTLS: true,
     auth: {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_APP_PASSWORD
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+});
+
+
+// Add this - verify connection on startup
+transporter.verify((error, success) => {
+    if (error) {
+        console.error('Gmail connection error:', error.message);
+    } else {
+        console.log('Gmail connection successful ✓');
     }
 });
+
 
 const sendEmail = async (options) => {
     const mailOptions = {
