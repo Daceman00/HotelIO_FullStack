@@ -49,7 +49,7 @@ const transporter = nodemailer.createTransport({
 // Add this - verify connection on startup
 transporter.verify((error, success) => {
     if (error) {
-        console.error('Gmail connection error:', error.message);
+        console.error('Gmail connection errorr!!!!:', error.message);
     } else {
         console.log('Gmail connection successful ✓');
     }
