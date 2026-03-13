@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
+const path = require('path');
 const dotenv = require('dotenv');
 const { scheduleCleanupTask, scheduleReferralProcessingTask } = require('./utils/scheduledTasks');
 
-dotenv.config({ path: './.env' });
+dotenv.config({ path: path.join(__dirname, '.env') });
+
 const app = require('./app');
 
 const DB = process.env.DATABASE.replace(
