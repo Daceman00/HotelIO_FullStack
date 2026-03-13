@@ -217,24 +217,42 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 })
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
-    console.log('Raw token from URL:', req.params.token);
-
-    const hasehdToken = crypto
+    const rawToken = req.params.token;
+    const hashedToken = crypto
         .createHash('sha256')
-        .update(req.params.token)
+        .update(rawToken)
         .digest('hex');
 
-    console.log('Hashed token:', hasehdToken);
+    // Debug info – remove when done
+    const userByHashed = await User.findOne({ passwordResetToken: hashedToken });
+    const userByRaw = await User.findOne({ passwordResetToken: rawToken });
 
-    const user = await User.findOne({ passwordResetToken: hasehdToken });
-    console.log('User found for this token (ignoring expiry):', !!user);
+    console.log({
+        rawToken,
+        hashedToken,
+        userByHashed: !!userByHashed,
+        userByRaw: !!userByRaw,
+    });
 
-    const userWithExpiry = await User.findOne({
-        passwordResetToken: hasehdToken,
+    // Original logic (uses hashed token + expiry)
+    const user = await User.findOne({
+        passwordResetToken: hashedToken,
         passwordResetExpires: { $gt: Date.now() }
     });
-    console.log('User found with non‑expired token:', !!userWithExpiry);
-})
+
+    if (!user) {
+        return next(new AppError('Token is invalid or has expired', 400));
+    }
+
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.passwordConfirm;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+
+    await user.save();
+
+    createSendToken(user, 200, res);
+});
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
     const user = await User.findById(req.user.id).select('+password')
