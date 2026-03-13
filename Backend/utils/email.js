@@ -1,7 +1,8 @@
 // utils/email.js
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const nodemailer = require('nodemailer');
 const sgMail = require('@sendgrid/mail');
-
 
 /* const sendEmail = async (options) => {
     const transporter = nodemailer.createTransport({
@@ -31,6 +32,9 @@ const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const sendEmail = async (options) => {
+    console.log('SENDGRID_API_KEY in email.js:', !!process.env.SENDGRID_API_KEY);
+    console.log(process.env.SENDGRID_API_KEY);
+    console.log(process.env.SENDGRID_FROM_EMAIL);
     const msg = {
         to: options.email,
         from: {
