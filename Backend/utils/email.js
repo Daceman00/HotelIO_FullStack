@@ -28,13 +28,13 @@ const sgMail = require('@sendgrid/mail');
 };
  */
 
-sgMail.setApiKey('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');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const sendEmail = async (options) => {
     const msg = {
         to: options.email,
         from: {
-            email: 'dariomandic2000@gmail.com',
+            email: process.env.SENDGRID_FROM_EMAIL,
             name: 'HotelIO'
         },
         subject: options.subject,
