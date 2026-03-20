@@ -9,7 +9,9 @@ process.on('unhandledRejection', (reason, promise) => {
 const mongoose = require('mongoose');
 const path = require('path');
 const dotenv = require('dotenv');
+const http = require('http');
 const { scheduleCleanupTask, scheduleReferralProcessingTask } = require('./utils/scheduledTasks');
+const { initSocket } = require("./utils/socket-setup")
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 
@@ -29,7 +31,18 @@ mongoose
     });
 
 const port = process.env.PORT || 3000;
-const server = app.listen(port, () => {
+
+// Create HTTP server (required for Socket.IO)
+const server = http.createServer(app);
+// Initialize Socket.IO
+const io = initSocket(server);
+
+// Make io available globally if needed (optional)
+app.set('io', io);
+
+server.listen(port, () => {
+    console.log(`🚀 Server running on port ${port}`);
+    console.log(`📡 Socket.IO initialized and ready`);
 });
 
 // Handle unhandled promise rejections

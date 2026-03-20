@@ -7,6 +7,7 @@ const sendEmail = require('./../utils/email');
 const crypto = require('crypto')
 const { promisify } = require('util');
 const { getReferralNotificationEmail } = require('../utils/signupReferralNotificationEmail');
+const { emitUserActivity } = require("../utils/socket-setup")
 
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -107,6 +108,8 @@ exports.signup = catchAsync(async (req, res, next) => {
       }
     }
 
+    emitUserActivity("signup", newUser)
+
     createSendToken(newUser, 201, res, warning)
   } catch (error) {
     throw error; // Re-throw to let catchAsync handle it
@@ -125,6 +128,8 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect email or password', 401))
   }
+
+  emitUserActivity("login", user)
 
   createSendToken(user, 200, res)
 })
