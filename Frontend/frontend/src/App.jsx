@@ -14,6 +14,7 @@ import Payments from "./components/Payments/Payments";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import {SocketProvider} from "./services/SocketProvider" ;
 import Login from "./components/Auth/Login";
 import ProtectedRoute from "./components/Reusable/ProtectedRoute";
 import ForgotPassword from "./components/Auth/ForgotPassword";
@@ -45,6 +46,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient} contextSharing={true}>
       <ReactQueryDevtools initialIsOpen={false} />
+      <SocketProvider>
       <BrowserRouter>
         <div className="flex min-h-screen">
           <Sidebar />
@@ -131,6 +133,7 @@ function App() {
           },
         }}
       />
+      </SocketProvider>
     </QueryClientProvider>
   );
 }

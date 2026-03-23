@@ -9,6 +9,7 @@ import { useChangeRole } from "./useChangeRole";
 import ChangeRole from "./ChangeRole";
 import CRMDetailsModal from "../../CRM/CRMDetailsModal";
 import CRMButton from "../../Reusable/CRMButton";
+import useSocketStore from "../../../stores/useSocketStore";
 
 function User({ user, variants }) {
   const { deleteUser, error, isPending } = useDeleteUser();
@@ -35,6 +36,11 @@ function User({ user, variants }) {
       });
     }
   };
+
+    // Add this line to get online status
+    const onlineUsers = useSocketStore((state) => state.onlineUsers);
+    const isOnline = onlineUsers.has(user._id);
+    console.log(user.id)
 
   return (
     <>
@@ -80,10 +86,21 @@ function User({ user, variants }) {
                   <UserIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
                 </div>
               )}
+
+               {/* Online indicator badge */}
+              {isOnline && (
+                <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-500 ring-2 ring-white dark:ring-gray-800"></span>
+              )}
             </div>
+            
             <div className="ml-4 min-w-0 flex-1">
               <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                 {user.name}
+                {isOnline && (
+                <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                  Online
+                </span>
+              )}
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
                 {user.email}
