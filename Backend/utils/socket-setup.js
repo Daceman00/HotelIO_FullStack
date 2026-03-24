@@ -69,6 +69,7 @@ const initSocket = (server) => {
             connectedAt: new Date()
         });
 
+
         // If user is admin, add them to the admin room
         if (socket.user.role === 'admin') {
             socket.join('admins');
@@ -170,7 +171,7 @@ const initSocket = (server) => {
             console.error(`Socket error for user ${socket.user.email}:`, error);
         });
     });
-
+    console.log("Online users at backend", onlineUsers)
     console.log('📡 Socket.IO initialized successfully');
     return io;
 };

@@ -17,9 +17,9 @@ export const SocketProvider = ({ children }) => {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    // Only connect if user is logged in and is admin
-    if (!isUserLoggedIn || !isAdmin || !token) {
-      console.log('Socket not connecting: Not admin or not logged in');
+    // Only connect if user is logged in 
+    if (!isUserLoggedIn || !token) {
+      console.log('Socket not connecting: Not logged in');
       return;
     }
 

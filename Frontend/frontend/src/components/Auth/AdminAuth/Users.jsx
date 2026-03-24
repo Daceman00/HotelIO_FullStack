@@ -8,6 +8,7 @@ import Pagination from "../../Reusable/Pagination";
 import SearchInput from "../../Reusable/SearchInput";
 import { useLocation, useSearchParams } from "react-router-dom";
 import LoadingSpinner from "../../Reusable/LoadingSpinner";
+import useSocketStore from "../../../stores/useSocketStore";
 
 function Users() {
   const location = useLocation();
@@ -22,6 +23,8 @@ function Users() {
 
   const { users, total, error, isPending, hasNextPage, hasPrevPage } =
     useUsers();
+
+  const onlineUsers = useSocketStore((state) => state.onlineUsers);
 
   const itemsPerPage = 10;
   const totalPages = Math.ceil(total / itemsPerPage);
@@ -171,6 +174,37 @@ function Users() {
                 </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {total || 0}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-4 shadow-sm">
+            <div className="flex items-center">
+              <div
+                className="p-2 rounded-lg"
+                style={{ backgroundColor: "#dfa379" }}
+              >
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Online Users
+                </p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {onlineUsers.size}
                 </p>
               </div>
             </div>
