@@ -40,8 +40,6 @@ function User({ user, variants }) {
     // Add this line to get online status
     const onlineUsers = useSocketStore((state) => state.onlineUsers);
     const isOnline = onlineUsers.has(user.id);
-    console.log("Online USers", onlineUsers)
-    console.log("USer id", user.id)
 
   return (
     <>
