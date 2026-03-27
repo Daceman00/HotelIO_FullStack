@@ -136,6 +136,8 @@ const initSocket = (server) => {
             }
         });
 
+        const usersLastSeen = new Map()
+
         // Handle disconnect
         socket.on('disconnect', () => {
             console.log(`❌ User disconnected: ${socket.user.email}`);
@@ -154,6 +156,13 @@ const initSocket = (server) => {
                     role: socket.user.role
                 },
                 timestamp: new Date()
+            });
+
+            // Emit to admins
+            usersLastSeen.set(userId, new Date());
+            io.to('admins').emit('user:last_seen', {
+                userId,
+                lastSeen: new Date()
             });
 
             if (socket.user.role === 'admin') {

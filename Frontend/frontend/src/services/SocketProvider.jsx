@@ -7,7 +7,7 @@ import useAuthStore from '../stores/AuthStore';
 let socket = null;
 
 export const SocketProvider = ({ children }) => {
-  const { setIsConnected, setOnlineUsers, addOnlineUser, removeOnlineUser } = useSocketStore();
+  const { setIsConnected, setOnlineUsers, addOnlineUser, removeOnlineUser, setUsersLastSeen } = useSocketStore();
   
   // Get auth state from your existing store
   const isAdmin = useAuthStore((state) => state.isAdmin);
@@ -86,6 +86,12 @@ export const SocketProvider = ({ children }) => {
         });
       }
     });
+
+    socket.on("user:last_seen", (data) => {
+        setUsersLastSeen(data.UserId, data.usersLastSeen)
+        console.log(data.userId)
+        console.log(data.timestamp)
+    })
 
     // Cleanup on unmount or when dependencies change
     return () => {
