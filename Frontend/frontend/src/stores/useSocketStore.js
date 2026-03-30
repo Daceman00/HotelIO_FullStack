@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 
-const useSocketStore = create((set) => ({
+const useSocketStore = create((set, get) => ({
     isConnected: false,
     onlineUsers: new Set(),
-    lastSeen: new Map(),
+    lastSeenMap: new Map(),
 
     setIsConnected: (connected) => set({ isConnected: connected }),
 
@@ -19,7 +19,7 @@ const useSocketStore = create((set) => ({
         return { onlineUsers: newSet };
     }),
 
-    // NEW: Set last seen for a user
+    // Set last seen for a user
     setUserLastSeen: (userId, timestamp) => {
         set((state) => {
             const newMap = new Map(state.lastSeenMap);
@@ -28,7 +28,7 @@ const useSocketStore = create((set) => ({
         });
     },
 
-    // NEW: Set multiple last seen at once
+    // Set multiple last seen at once
     setLastSeenList: (lastSeenArray) => {
         set((state) => {
             const newMap = new Map(state.lastSeenMap);
@@ -39,7 +39,7 @@ const useSocketStore = create((set) => ({
         });
     },
 
-    // NEW: Get last seen for a user
+    // Get last seen for a user
     getUserLastSeen: (userId) => {
         const state = get();
         return state.lastSeenMap.get(userId) || null;

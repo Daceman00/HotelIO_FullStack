@@ -10,7 +10,7 @@ import ChangeRole from "./ChangeRole";
 import CRMDetailsModal from "../../CRM/CRMDetailsModal";
 import CRMButton from "../../Reusable/CRMButton";
 import useSocketStore from "../../../stores/useSocketStore";
-import timeAgo from "../../../helpers/timeAgo"
+import { formatTimeAgo } from "../../../helpers/timeAgo";
 
 function User({ user, variants }) {
   const { deleteUser, error, isPending } = useDeleteUser();
@@ -38,10 +38,13 @@ function User({ user, variants }) {
     }
   };
 
-    // Add this line to get online status
-    const onlineUsers = useSocketStore((state) => state.onlineUsers);
-    const usersLastSeen = useSocketStore((state) => state.usersLastSeen)
-    const isOnline = onlineUsers.has(user.id);
+  // Add this line to get online status
+  const onlineUsers = useSocketStore((state) => state.onlineUsers);
+  const getUserLastSeen = useSocketStore((state) => state.getUserLastSeen);
+  const isOnline = onlineUsers.has(user.id);
+
+  const lastSeenTimestamp = getUserLastSeen(user.id);
+  const lastSeenText = formatTimeAgo(lastSeenTimestamp);
 
   return (
     <>
@@ -88,25 +91,29 @@ function User({ user, variants }) {
                 </div>
               )}
 
-               {/* Online indicator badge */}
+              {/* Online indicator badge */}
               {isOnline && (
-                <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-500 ring-2 ring-white dark:ring-gray-800">
-                </span>
+                <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-500 ring-2 ring-white dark:ring-gray-800"></span>
               )}
             </div>
-            
+
             <div className="ml-4 min-w-0 flex-1">
               <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                 {user.name}
-                {isOnline && usersLastSeen && (
-                <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                   {usersLastSeen[user._id] ? `Last seen: ${timeAgo(usersLastSeen[user._id])}` : "Online"}
-                </span>
-              )}
+                {isOnline && (
+                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                    Online
+                  </span>
+                )}
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
                 {user.email}
               </div>
+              {!isOnline && lastSeenText && (
+                <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                  Last seen {lastSeenText}
+                </div>
+              )}
             </div>
           </div>
         </td>
