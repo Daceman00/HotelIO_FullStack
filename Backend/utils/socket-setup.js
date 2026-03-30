@@ -4,6 +4,7 @@ const User = require('../models/userModel'); // Adjust path based on your struct
 
 let io;
 const onlineUsers = new Map(); // Map of userId -> { socketId, name, email, role, connectedAt }
+const userLastSeen = new Map(); // Map of userId -> { timestamp, name, email }
 
 /**
  * Initialize Socket.IO server
@@ -69,6 +70,11 @@ const initSocket = (server) => {
             connectedAt: new Date()
         });
 
+        // Remove from last seen when user comes online
+        if (userLastSeen.has(userId)) {
+            userLastSeen.delete(userId);
+            console.log(`🔄 Cleared last seen for user: ${socket.user.email}`);
+        }
 
         // If user is admin, add them to the admin room
         if (socket.user.role === 'admin') {
@@ -92,6 +98,9 @@ const initSocket = (server) => {
 
             // Send current online users list to the newly connected admin
             socket.emit('users:online_list', getOnlineUsersList());
+
+            // Send last seen data for all offline users
+            socket.emit('users:last_seen_list', getLastSeenList());
         }
 
         // Broadcast to all admins that this user is now online
@@ -107,7 +116,7 @@ const initSocket = (server) => {
             timestamp: new Date()
         });
 
-        // Handle custom events (optional)
+        // Handle custom events
         socket.on('admin:request_stats', async () => {
             if (socket.user.role === 'admin') {
                 try {
@@ -136,16 +145,33 @@ const initSocket = (server) => {
             }
         });
 
-        const usersLastSeen = new Map()
+        // Admin requests last seen list
+        socket.on('admin:request_last_seen', () => {
+            if (socket.user.role === 'admin') {
+                socket.emit('users:last_seen_list', getLastSeenList());
+            }
+        });
 
         // Handle disconnect
         socket.on('disconnect', () => {
             console.log(`❌ User disconnected: ${socket.user.email}`);
 
+            const disconnectTime = new Date();
+
+            // Store last seen information
+            userLastSeen.set(userId, {
+                timestamp: disconnectTime,
+                name: socket.user.name,
+                email: socket.user.email,
+                role: socket.user.role
+            });
+
+            console.log(`💾 Stored last seen for user: ${socket.user.email} at ${disconnectTime.toISOString()}`);
+
             // Remove user from online users map
             onlineUsers.delete(userId);
 
-            // Broadcast to all admins that this user is now offline
+            // Broadcast to all admins that this user is now offline (with last seen)
             io.to('admins').emit('user:status_change', {
                 userId: userId,
                 status: 'offline',
@@ -155,14 +181,8 @@ const initSocket = (server) => {
                     email: socket.user.email,
                     role: socket.user.role
                 },
-                timestamp: new Date()
-            });
-
-            // Emit to admins
-            usersLastSeen.set(userId, new Date());
-            io.to('admins').emit('user:last_seen', {
-                userId,
-                lastSeen: new Date()
+                lastSeen: disconnectTime,
+                timestamp: disconnectTime
             });
 
             if (socket.user.role === 'admin') {
@@ -170,7 +190,7 @@ const initSocket = (server) => {
                 socket.to('admins').emit('admin:left', {
                     userName: socket.user.name,
                     email: socket.user.email,
-                    timestamp: new Date()
+                    timestamp: disconnectTime
                 });
             }
         });
@@ -180,7 +200,7 @@ const initSocket = (server) => {
             console.error(`Socket error for user ${socket.user.email}:`, error);
         });
     });
-    console.log("Online users at backend", onlineUsers)
+
     console.log('📡 Socket.IO initialized successfully');
     return io;
 };
@@ -197,12 +217,33 @@ const getOnlineUsersList = () => {
 };
 
 /**
+ * Get list of users with last seen timestamps
+ * @returns {Array} Array of users with last seen data
+ */
+const getLastSeenList = () => {
+    return Array.from(userLastSeen.entries()).map(([userId, data]) => ({
+        userId,
+        ...data
+    }));
+};
+
+/**
  * Check if a user is currently online
  * @param {string} userId - User ID to check
  * @returns {boolean} True if user is online
  */
 const isUserOnline = (userId) => {
     return onlineUsers.has(userId.toString());
+};
+
+/**
+ * Get last seen timestamp for a user
+ * @param {string} userId - User ID to check
+ * @returns {Date|null} Last seen timestamp or null if never seen offline
+ */
+const getUserLastSeen = (userId) => {
+    const lastSeenData = userLastSeen.get(userId.toString());
+    return lastSeenData ? lastSeenData.timestamp : null;
 };
 
 /**
@@ -313,6 +354,8 @@ module.exports = {
     emitToAll,
     emitToUser,
     isUserOnline,
+    getUserLastSeen,
     getOnlineUsersList,
+    getLastSeenList,
     getOnlineUsersCount
 };

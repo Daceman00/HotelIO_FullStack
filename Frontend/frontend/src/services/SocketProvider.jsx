@@ -7,7 +7,13 @@ import useAuthStore from '../stores/AuthStore';
 let socket = null;
 
 export const SocketProvider = ({ children }) => {
-  const { setIsConnected, setOnlineUsers, addOnlineUser, removeOnlineUser, setUsersLastSeen } = useSocketStore();
+
+  const { setIsConnected, 
+          setOnlineUsers, 
+          addOnlineUser, 
+          removeOnlineUser, 
+          setUserLastSeen, 
+          setLastSeenList } = useSocketStore();
   
   // Get auth state from your existing store
   const isAdmin = useAuthStore((state) => state.isAdmin);
@@ -37,7 +43,10 @@ export const SocketProvider = ({ children }) => {
       setIsConnected(true);
       
       // Request online users list when connected
-      socket.emit('admin:request_online_users');
+      if (isAdmin) {
+        socket.emit('admin:request_online_users');
+        socket.emit('admin:request_last_seen'); 
+      }
     });
 
     socket.on('disconnect', () => {
@@ -62,6 +71,12 @@ export const SocketProvider = ({ children }) => {
       setOnlineUsers(onlineUserIds);
     });
 
+    // Last seen list
+    socket.on('users:last_seen_list', (lastSeenList) => {
+      console.log('⏰ Received last seen list:', lastSeenList);
+      setLastSeenList(lastSeenList);
+    });
+
     // User status changes (online/offline)
     socket.on('user:status_change', (data) => {
       console.log(`👤 User ${data.status}:`, data.user.name);
@@ -70,6 +85,12 @@ export const SocketProvider = ({ children }) => {
         addOnlineUser(data.userId);
       } else {
         removeOnlineUser(data.userId);
+      }
+
+      // Store last seen timestamp when user goes offline
+      if (data.lastSeen) {
+        console.log(`⏰ User last seen: ${data.user.name} at ${data.lastSeen}`);
+        setUserLastSeen(data.userId, data.lastSeen);
       }
     });
 
@@ -102,7 +123,16 @@ export const SocketProvider = ({ children }) => {
         setIsConnected(false);
       }
     };
-  }, [isAdmin, isUserLoggedIn, token, setIsConnected, setOnlineUsers, addOnlineUser, removeOnlineUser]);
+  }, [isAdmin, 
+      isUserLoggedIn, 
+      token, 
+      setIsConnected, 
+      setOnlineUsers, 
+      addOnlineUser,
+      removeOnlineUser, 
+      setUserLastSeen, 
+      setLastSeenList
+    ]);
 
   return children;
 };
