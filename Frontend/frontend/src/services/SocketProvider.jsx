@@ -31,8 +31,11 @@ export const SocketProvider = ({ children }) => {
 
     console.log('🔌 Initializing Socket.IO connection...');
 
+    //const VITE_API_URL = 'http://localhost:3000'
+    const VITE_API_URL = 'https://hotelio-fullstack.onrender.com'
+
     // Connect to Socket.IO server
-    socket = io(import.meta.env.VITE_API_URL || 'http://localhost:3000', {
+    socket = io(VITE_API_URL , {
       auth: { token },
       transports: ['websocket', 'polling']
     });
