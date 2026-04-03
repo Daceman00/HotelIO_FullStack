@@ -27,6 +27,7 @@ import useAuthStore from "./stores/AuthStore";
 import ReviewsForSingleRoom from "./components/Reviews/ReviewsForSingleRoom";
 import StatsPage from "./pages/StatsPage";
 import About from "./components/Reusable/About";
+import { NotificationPermission } from "./services/NotificationsPermissions";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -113,6 +114,7 @@ function App() {
           </div>
         </div>
       </BrowserRouter>
+      <NotificationPermission />
       <Toaster
         position="top-center"
         gutter={12}

@@ -259,6 +259,93 @@ const getIO = () => {
 };
 
 /**
+ * Send notification to specific user
+ * @param {string} userId - User ID to notify
+ * @param {Object} notification - Notification data
+ */
+const sendUserNotification = (userId, notification) => {
+    try {
+        const io = getIO();
+        const userIdStr = userId.toString();
+
+        const notificationData = {
+            id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            type: notification.type, // 'booking', 'discount', 'payment', 'cancellation', etc.
+            title: notification.title,
+            message: notification.message,
+            data: notification.data || {}, // Additional data (booking details, discount info, etc.)
+            timestamp: new Date(),
+            read: false,
+            link: notification.link || null // Optional: Link to navigate to
+        };
+
+        // Emit to user's personal room
+        io.to(`user:${userIdStr}`).emit('notification:new', notificationData);
+
+        // Also emit to admins for monitoring
+        io.to('admins').emit('notification:sent', {
+            userId: userIdStr,
+            notification: notificationData
+        });
+
+        console.log(`🔔 Sent ${notification.type} notification to user: ${userIdStr}`);
+        return notificationData;
+    } catch (error) {
+        console.error('❌ Failed to send user notification:', error.message);
+        return null;
+    }
+};
+
+/**
+ * Send notification to multiple users
+ * @param {Array} userIds - Array of user IDs
+ * @param {Object} notification - Notification data
+ */
+const sendBulkNotification = (userIds, notification) => {
+    try {
+        const results = userIds.map(userId =>
+            sendUserNotification(userId, notification)
+        );
+
+        console.log(`🔔 Sent bulk notification to ${userIds.length} users`);
+        return results;
+    } catch (error) {
+        console.error('❌ Failed to send bulk notification:', error.message);
+        return [];
+    }
+};
+
+/**
+ * Send notification to all online users
+ * @param {Object} notification - Notification data
+ */
+const sendBroadcastNotification = (notification) => {
+    try {
+        const io = getIO();
+
+        const notificationData = {
+            id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            type: notification.type,
+            title: notification.title,
+            message: notification.message,
+            data: notification.data || {},
+            timestamp: new Date(),
+            read: false,
+            link: notification.link || null
+        };
+
+        // Send to all connected clients
+        io.emit('notification:new', notificationData);
+
+        console.log(`📢 Broadcast notification sent to all users`);
+        return notificationData;
+    } catch (error) {
+        console.error('❌ Failed to send broadcast notification:', error.message);
+        return null;
+    }
+};
+
+/**
  * Emit user activity to admins only
  * @param {string} eventType - 'signup' or 'login'
  * @param {Object} userData - User data to send
@@ -357,5 +444,8 @@ module.exports = {
     getUserLastSeen,
     getOnlineUsersList,
     getLastSeenList,
-    getOnlineUsersCount
+    getOnlineUsersCount,
+    sendBulkNotification,
+    sendBroadcastNotification,
+    sendUserNotification
 };

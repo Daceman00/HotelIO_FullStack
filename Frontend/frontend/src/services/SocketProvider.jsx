@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 import useSocketStore from '../stores/useSocketStore';
 import useAuthStore from '../stores/AuthStore'; 
+import useNotificationStore from '../stores/NotificationStore';
+import toast from "react-hot-toast";
 
 let socket = null;
 
@@ -14,6 +16,8 @@ export const SocketProvider = ({ children }) => {
           removeOnlineUser, 
           setUserLastSeen, 
           setLastSeenList } = useSocketStore();
+        
+  const {addNotification} = useNotificationStore()
   
   // Get auth state from your existing store
   const isAdmin = useAuthStore((state) => state.isAdmin);
@@ -31,8 +35,8 @@ export const SocketProvider = ({ children }) => {
 
     console.log('🔌 Initializing Socket.IO connection...');
 
-    //const VITE_API_URL = 'http://localhost:3000'
-    const VITE_API_URL = 'https://hotelio-fullstack.onrender.com'
+    const VITE_API_URL = 'http://localhost:3000'
+    //const VITE_API_URL = 'https://hotelio-fullstack.onrender.com'
 
     // Connect to Socket.IO server
     socket = io(VITE_API_URL , {
@@ -61,6 +65,45 @@ export const SocketProvider = ({ children }) => {
       console.error('❌ Socket connection error:', error.message);
       setIsConnected(false);
     });
+
+    // 🔔 NEW: Listen for notifications (ALL USERS)
+    socket.on('notification:new', (notification) => {
+      showNotification(notification)
+    });
+    0
+      const showNotification = (notification) => {
+        const { type, title, message, link } = notification;
+  
+        // Success notifications (green)
+        if (type === 'booking' || type === 'payment' || type === 'discount') {
+          toast.success(
+            <div onClick={() => link && (window.location.href = link)}>
+              <div className="font-semibold">{title}</div>
+              <div className="text-sm">{message}</div>
+              {link && <div className="text-xs text-blue-600 mt-1">Click to view →</div>}
+            </div>
+          );
+        }
+        // Error notifications (red)
+        else if (type === 'cancellation') {
+          toast.error(
+            <div>
+              <div className="font-semibold">{title}</div>
+              <div className="text-sm">{message}</div>
+            </div>
+          );
+        }
+        // Default notifications
+        else {
+          toast(
+            <div>
+              <div className="font-semibold">{title}</div>
+              <div className="text-sm">{message}</div>
+            </div>
+          );
+        S}
+      }
+    
 
     // Admin events
     socket.on('admin:connected', (data) => {

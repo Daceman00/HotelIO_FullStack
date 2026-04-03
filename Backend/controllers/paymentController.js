@@ -4,6 +4,7 @@ const CRM = require('../models/crmModel');
 const Room = require('../models/roomModel')
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const { sendUserNotification } = require('../utils/socket-setup')
 
 exports.getPublishableKey = catchAsync(async (req, res, next) => {
     res.status(200).json({
@@ -116,6 +117,20 @@ exports.confirmPayment = catchAsync(async (req, res, next) => {
     }
 
     await booking.save();
+
+    sendUserNotification(req.user.id, {
+        type: 'booking',
+        title: 'Booking Confirmed! 🎉',
+        message: `Your booking for ${booking.room.roomNumber} has been confirmed.`,
+        data: {
+            bookingId: booking._id,
+            roomNumber: booking.room.roomNumber,
+            checkIn: booking.checkIn,
+            checkOut: booking.checkOut,
+            price: booking.price
+        },
+        link: `/bookings?tab=upcoming` // Frontend route
+    })
 
     // Award loyalty points after successful payment (idempotent)
     if (paymentIntent.status === 'succeeded') {
