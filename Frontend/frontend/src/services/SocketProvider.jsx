@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 import useSocketStore from '../stores/useSocketStore';
 import useAuthStore from '../stores/AuthStore'; 
-import useNotificationStore from '../stores/NotificationStore';
 import toast from "react-hot-toast";
 
 let socket = null;
@@ -17,7 +16,6 @@ export const SocketProvider = ({ children }) => {
           setUserLastSeen, 
           setLastSeenList } = useSocketStore();
         
-  const {addNotification} = useNotificationStore()
   
   // Get auth state from your existing store
   const isAdmin = useAuthStore((state) => state.isAdmin);
@@ -68,40 +66,70 @@ export const SocketProvider = ({ children }) => {
 
     // 🔔 NEW: Listen for notifications (ALL USERS)
     socket.on('notification:new', (notification) => {
+      console.log(notification)
       showNotification(notification)
     });
-    0
+
       const showNotification = (notification) => {
         const { type, title, message, link } = notification;
   
-        // Success notifications (green)
-        if (type === 'booking' || type === 'payment' || type === 'discount') {
-          toast.success(
-            <div onClick={() => link && (window.location.href = link)}>
-              <div className="font-semibold">{title}</div>
-              <div className="text-sm">{message}</div>
-              {link && <div className="text-xs text-blue-600 mt-1">Click to view →</div>}
+        // Create clickable toast content
+        const toastContent = (
+          <div 
+            className="cursor-pointer w-full"
+            onClick={() => {
+              if (link) {
+                window.location.href = link;
+                toast.dismiss(); // Close all toasts when navigating
+              }
+            }}
+          >
+            <div className="font-semibold text-gray-900">
+              {title}
             </div>
-          );
+            <div className="text-sm text-gray-600 mt-1">
+              {message}
+            </div>
+            {link && (
+              <div className="text-xs text-blue-600 mt-2 font-medium">
+                Click to view details →
+              </div>
+            )}
+          </div>
+        );
+
+        // Show different toast types based on notification type
+        switch (type) {
+          case 'booking':
+            toast.success(toastContent, { icon: '🎉', duration: 6000 });
+            break;
+          case 'discount':
+            toast.success(toastContent, { icon: '🎁', duration: 6000 });
+            break;
+          case 'payment':
+            toast.success(toastContent, { icon: '💳', duration: 6000 });
+            break;
+          case 'points':
+            toast.success(toastContent, { icon: '⭐', duration: 6000 });
+            break;
+          case 'referral':
+            toast.success(toastContent, { icon: '🎊', duration: 6000 });
+            break;
+          case 'promotion':
+            toast(toastContent, { icon: '📢', duration: 6000 });
+            break;
+          case 'welcome':
+            toast.success(toastContent, { icon: '👋', duration: 6000 });
+            break;
+          case 'cancellation':
+            toast.error(toastContent, { icon: '❌', duration: 6000 });
+            break;
+          case 'booking_update':
+            toast(toastContent, { icon: '🔔', duration: 6000 });
+            break;
+          default:
+            toast(toastContent, { icon: 'ℹ️', duration: 6000 });
         }
-        // Error notifications (red)
-        else if (type === 'cancellation') {
-          toast.error(
-            <div>
-              <div className="font-semibold">{title}</div>
-              <div className="text-sm">{message}</div>
-            </div>
-          );
-        }
-        // Default notifications
-        else {
-          toast(
-            <div>
-              <div className="font-semibold">{title}</div>
-              <div className="text-sm">{message}</div>
-            </div>
-          );
-        S}
       }
     
 
@@ -155,7 +183,7 @@ export const SocketProvider = ({ children }) => {
     });
 
     socket.on("user:last_seen", (data) => {
-        setUsersLastSeen(data.UserId, data.usersLastSeen)
+        setUserLastSeen(data.UserId, data.usersLastSeen)
         console.log(data.userId)
         console.log(data.timestamp)
     })

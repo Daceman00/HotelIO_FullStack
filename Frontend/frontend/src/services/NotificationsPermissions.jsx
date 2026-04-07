@@ -1,4 +1,3 @@
-// components/NotificationPermission.jsx
 import { useEffect, useState } from 'react';
 
 export const NotificationPermission = () => {

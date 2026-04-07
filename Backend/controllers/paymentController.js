@@ -170,6 +170,7 @@ exports.confirmPayment = catchAsync(async (req, res, next) => {
                 crm.updateRoomTypeFrequency(roomType, 'add')
                 await crm.save()
             }
+
         } catch (e) {
             // Do not block payment confirmation on CRM errors
             console.error('[CRM Payment] Failed to credit CRM points after payment:', e);
@@ -206,6 +207,20 @@ exports.processPaymentWithDetails = catchAsync(async (req, res, next) => {
     const paymentIntent = await stripe.paymentIntents.confirm(paymentIntentId, {
         payment_method: paymentMethod
     });
+
+    sendUserNotification(req.user.id, {
+        type: 'booking',
+        title: 'Booking Confirmed! 🎉',
+        message: `Your booking for ${booking.room.roomNumber} has been confirmed.`,
+        data: {
+            bookingId: booking._id,
+            roomNumber: booking.room.roomNumber,
+            checkIn: booking.checkIn,
+            checkOut: booking.checkOut,
+            price: booking.price
+        },
+        link: `/bookings?tab=upcoming` // Frontend route
+    })
 
     // Find and update booking
     const booking = await Booking.findOne({ paymentIntentId });
