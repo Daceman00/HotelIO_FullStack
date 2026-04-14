@@ -4,6 +4,7 @@ import { useIsLoggedIn } from "../Auth/useAuth";
 import useAuthStore from "../../stores/AuthStore";
 import useUIStore from "../../stores/UiStore";
 import Logo from "./Logo";
+import { NotificationBell } from "../Notifications/NotificationBell";
 
 const Header = React.memo(function Header() {
   const { user, isPending } = useIsLoggedIn();
@@ -135,6 +136,10 @@ const Header = React.memo(function Header() {
               >
                 Book Now
               </Link>
+            </div>
+
+            <div className="hidden md:block">
+              <NotificationBell />
             </div>
 
             {/* Mobile menu button */}

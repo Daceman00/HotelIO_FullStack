@@ -1,161 +1,101 @@
 // components/SocketProvider.jsx
-import { useEffect } from 'react';
-import { io } from 'socket.io-client';
-import useSocketStore from '../stores/useSocketStore';
-import useAuthStore from '../stores/AuthStore'; 
+import { useEffect } from "react";
+import { io } from "socket.io-client";
+import useSocketStore from "../stores/useSocketStore";
+import useAuthStore from "../stores/AuthStore";
 import toast from "react-hot-toast";
+import useNotificationStore from "../stores/NotificationStore";
 
 let socket = null;
 
 export const SocketProvider = ({ children }) => {
+  const {
+    setIsConnected,
+    setOnlineUsers,
+    addOnlineUser,
+    removeOnlineUser,
+    setUserLastSeen,
+    setLastSeenList,
+  } = useSocketStore();
 
-  const { setIsConnected, 
-          setOnlineUsers, 
-          addOnlineUser, 
-          removeOnlineUser, 
-          setUserLastSeen, 
-          setLastSeenList } = useSocketStore();
-        
-  
+  const { addNotification } = useNotificationStore();
+
   // Get auth state from your existing store
   const isAdmin = useAuthStore((state) => state.isAdmin);
   const isUserLoggedIn = useAuthStore((state) => state.isUserLoggedIn);
-  
-  // Get token from localStorage 
-  const token = localStorage.getItem('token');
+
+  // Get token from localStorage
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    // Only connect if user is logged in 
+    // Only connect if user is logged in
     if (!isUserLoggedIn || !token) {
-      console.log('Socket not connecting: Not logged in');
+      console.log("Socket not connecting: Not logged in");
       return;
     }
 
-    console.log('🔌 Initializing Socket.IO connection...');
+    console.log("🔌 Initializing Socket.IO connection...");
 
-    const VITE_API_URL = 'http://localhost:3000'
+    const VITE_API_URL = "http://localhost:3000";
     //const VITE_API_URL = 'https://hotelio-fullstack.onrender.com'
 
     // Connect to Socket.IO server
-    socket = io(VITE_API_URL , {
+    socket = io(VITE_API_URL, {
       auth: { token },
-      transports: ['websocket', 'polling']
+      transports: ["websocket", "polling"],
     });
 
     // Connection events
-    socket.on('connect', () => {
-      console.log('✅ Connected to Socket.IO');
+    socket.on("connect", () => {
+      console.log("✅ Connected to Socket.IO");
       setIsConnected(true);
-      
+
       // Request online users list when connected
       if (isAdmin) {
-        socket.emit('admin:request_online_users');
-        socket.emit('admin:request_last_seen'); 
+        socket.emit("admin:request_online_users");
+        socket.emit("admin:request_last_seen");
       }
     });
 
-    socket.on('disconnect', () => {
-      console.log('❌ Disconnected from Socket.IO');
+    socket.on("disconnect", () => {
+      console.log("❌ Disconnected from Socket.IO");
       setIsConnected(false);
     });
 
-    socket.on('connect_error', (error) => {
-      console.error('❌ Socket connection error:', error.message);
+    socket.on("connect_error", (error) => {
+      console.error("❌ Socket connection error:", error.message);
       setIsConnected(false);
     });
 
     // 🔔 NEW: Listen for notifications (ALL USERS)
-    socket.on('notification:new', (notification) => {
-      console.log(notification)
-      showNotification(notification)
+    socket.on("notification:new", (notification) => {
+      // Add to notification store (shows in bell dropdown)
+      addNotification(notification);
     });
 
-      const showNotification = (notification) => {
-        const { type, title, message, link } = notification;
-  
-        // Create clickable toast content
-        const toastContent = (
-          <div 
-            className="cursor-pointer w-full"
-            onClick={() => {
-              if (link) {
-                window.location.href = link;
-                toast.dismiss(); // Close all toasts when navigating
-              }
-            }}
-          >
-            <div className="font-semibold text-gray-900">
-              {title}
-            </div>
-            <div className="text-sm text-gray-600 mt-1">
-              {message}
-            </div>
-            {link && (
-              <div className="text-xs text-blue-600 mt-2 font-medium">
-                Click to view details →
-              </div>
-            )}
-          </div>
-        );
-
-        // Show different toast types based on notification type
-        switch (type) {
-          case 'booking':
-            toast.success(toastContent, { icon: '🎉', duration: 6000 });
-            break;
-          case 'discount':
-            toast.success(toastContent, { icon: '🎁', duration: 6000 });
-            break;
-          case 'payment':
-            toast.success(toastContent, { icon: '💳', duration: 6000 });
-            break;
-          case 'points':
-            toast.success(toastContent, { icon: '⭐', duration: 6000 });
-            break;
-          case 'referral':
-            toast.success(toastContent, { icon: '🎊', duration: 6000 });
-            break;
-          case 'promotion':
-            toast(toastContent, { icon: '📢', duration: 6000 });
-            break;
-          case 'welcome':
-            toast.success(toastContent, { icon: '👋', duration: 6000 });
-            break;
-          case 'cancellation':
-            toast.error(toastContent, { icon: '❌', duration: 6000 });
-            break;
-          case 'booking_update':
-            toast(toastContent, { icon: '🔔', duration: 6000 });
-            break;
-          default:
-            toast(toastContent, { icon: 'ℹ️', duration: 6000 });
-        }
-      }
-    
-
     // Admin events
-    socket.on('admin:connected', (data) => {
-      console.log('👑 Admin room joined:', data);
+    socket.on("admin:connected", (data) => {
+      console.log("👑 Admin room joined:", data);
     });
 
     // Initial online users list
-    socket.on('users:online_list', (usersList) => {
-      console.log('📋 Received online users list:', usersList);
-      const onlineUserIds = usersList.map(user => user.userId);
+    socket.on("users:online_list", (usersList) => {
+      console.log("📋 Received online users list:", usersList);
+      const onlineUserIds = usersList.map((user) => user.userId);
       setOnlineUsers(onlineUserIds);
     });
 
     // Last seen list
-    socket.on('users:last_seen_list', (lastSeenList) => {
-      console.log('⏰ Received last seen list:', lastSeenList);
+    socket.on("users:last_seen_list", (lastSeenList) => {
+      console.log("⏰ Received last seen list:", lastSeenList);
       setLastSeenList(lastSeenList);
     });
 
     // User status changes (online/offline)
-    socket.on('user:status_change', (data) => {
+    socket.on("user:status_change", (data) => {
       console.log(`👤 User ${data.status}:`, data.user.name);
-      
-      if (data.status === 'online') {
+
+      if (data.status === "online") {
         addOnlineUser(data.userId);
       } else {
         removeOnlineUser(data.userId);
@@ -169,44 +109,45 @@ export const SocketProvider = ({ children }) => {
     });
 
     // User activity events (signup/login notifications)
-    socket.on('user:activity', (data) => {
-      console.log('📡 User activity:', data);
-      
+    socket.on("user:activity", (data) => {
+      console.log("📡 User activity:", data);
+
       // Optional: Show browser notification
-      if (Notification.permission === 'granted') {
-        const icon = data.type === 'signup' ? '🆕' : '🔐';
+      if (Notification.permission === "granted") {
+        const icon = data.type === "signup" ? "🆕" : "🔐";
         new Notification(`${icon} ${data.message}`, {
           body: data.user.email,
-          icon: '/logo.png'
+          icon: "/logo.png",
         });
       }
     });
 
     socket.on("user:last_seen", (data) => {
-        setUserLastSeen(data.UserId, data.usersLastSeen)
-        console.log(data.userId)
-        console.log(data.timestamp)
-    })
+      setUserLastSeen(data.UserId, data.usersLastSeen);
+      console.log(data.userId);
+      console.log(data.timestamp);
+    });
 
     // Cleanup on unmount or when dependencies change
     return () => {
       if (socket) {
-        console.log('🔌 Disconnecting Socket.IO...');
+        console.log("🔌 Disconnecting Socket.IO...");
         socket.disconnect();
         socket = null;
         setIsConnected(false);
       }
     };
-  }, [isAdmin, 
-      isUserLoggedIn, 
-      token, 
-      setIsConnected, 
-      setOnlineUsers, 
-      addOnlineUser,
-      removeOnlineUser, 
-      setUserLastSeen, 
-      setLastSeenList
-    ]);
+  }, [
+    isAdmin,
+    isUserLoggedIn,
+    token,
+    setIsConnected,
+    setOnlineUsers,
+    addOnlineUser,
+    removeOnlineUser,
+    setUserLastSeen,
+    setLastSeenList,
+  ]);
 
   return children;
 };

@@ -60,6 +60,8 @@ const initSocket = (server) => {
         const userId = socket.user._id.toString();
 
         console.log(`✅ User connected: ${socket.user.name} (${socket.user.email})`);
+        socket.join(`user:${userId}`);
+        console.log(`👤 User joined user room: ${socket.user.email}`);
 
         // Add user to online users map
         onlineUsers.set(userId, {

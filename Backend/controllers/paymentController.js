@@ -121,7 +121,7 @@ exports.confirmPayment = catchAsync(async (req, res, next) => {
     sendUserNotification(req.user.id, {
         type: 'booking',
         title: 'Booking Confirmed! 🎉',
-        message: `Your booking for ${booking.room.roomNumber} has been confirmed.`,
+        message: `Your booking for room ${booking.room.roomNumber} has been confirmed.`,
         data: {
             bookingId: booking._id,
             roomNumber: booking.room.roomNumber,
@@ -209,9 +209,10 @@ exports.processPaymentWithDetails = catchAsync(async (req, res, next) => {
     });
 
     sendUserNotification(req.user.id, {
-        type: 'booking',
-        title: 'Booking Confirmed! 🎉',
-        message: `Your booking for ${booking.room.roomNumber} has been confirmed.`,
+        type: 'payment',
+        title: 'Payment Confirmed! 🎉',
+        message: `Your payment for room${booking.room.roomNumber} has been confirmed.`,
+
         data: {
             bookingId: booking._id,
             roomNumber: booking.room.roomNumber,
