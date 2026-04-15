@@ -107,7 +107,7 @@ exports.createBooking = catchAsync(async (req, res, next) => {
     const newBooking = await Booking.create(req.body);
     const populatedBooking = await Booking.findById(newBooking._id).populate('user').populate('room');
 
-    sendUserNotification(req.user.id, {
+    sendUserNotification(populatedBooking.user.id, {
         type: 'booking',
         title: 'Booking Confirmed! 🎉',
         message: `Your booking for ${populatedBooking.room.roomNumber} has been created. You can view it in your bookings and proceed to payment`,
@@ -395,6 +395,21 @@ exports.deleteBooking = catchAsync(async (req, res, next) => {
                 crm.availableDiscounts[discountIndex].used = false;
             }
         }
+
+        sendUserNotification(userId, {
+            type: 'booking',
+            title: 'Booking Cancelled! ',
+            message: `Your booking for room ${booking.room.roomNumber} has been cancelled`,
+
+            data: {
+                bookingId: booking._id,
+                roomNumber: booking.room.roomNumber,
+                checkIn: booking.checkIn,
+                checkOut: booking.checkOut,
+                price: booking.price
+            },
+            link: `/bookings?tab=upcoming` // Frontend route
+        })
 
         // 8. Save CRM - middleware will handle the rest
         await crm.save({ session });
