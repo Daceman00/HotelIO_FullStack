@@ -397,7 +397,7 @@ exports.deleteBooking = catchAsync(async (req, res, next) => {
         }
 
         sendUserNotification(userId, {
-            type: 'booking',
+            type: 'cancellation',
             title: 'Booking Cancelled! ',
             message: `Your booking for room ${booking.room.roomNumber} has been cancelled`,
 

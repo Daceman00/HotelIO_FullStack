@@ -4,6 +4,7 @@ const Booking = require('../models/bookingModel');
 const Review = require('../models/reviewModel');
 const CRM = require('../models/crmModel');
 const sendEmail = require('./email');
+const { emitToAdmins } = require('./socket-setup');
 
 // Function to run the cleanup task
 const runCleanupTask = async () => {
@@ -40,6 +41,33 @@ const runCleanupTask = async () => {
             await booking.save({ session });
 
         }
+
+        for (const booking of unpaidBookings) {
+
+            sendUserNotification(booking.user.id, {
+                type: 'cancellation',
+                title: 'Booking Cancelled! ',
+                message: `Your booking for room ${booking.room.roomNumber} has been cancelled, because payment deadline has passed`,
+
+                data: {
+                    bookingId: booking._id,
+                    roomNumber: booking.room.roomNumber,
+                    checkIn: booking.checkIn,
+                    checkOut: booking.checkOut,
+                    price: booking.price
+                },
+                link: `/bookings?tab=missed` // Frontend route
+            });
+        }
+
+        emitToAdmins('booking:cleanup', {
+            type: 'booking',
+            title: 'Booking Cleanup',
+            message: 'Booking cleanup task has been completed, you can view the report on your email',
+            totalMissedBookings: unpaidBookings.length,
+            totalAmount: unpaidBookings.reduce((sum, b) => sum + b.price, 0),
+            missedBookings: unpaidBookings
+        });
 
         await session.commitTransaction();
 

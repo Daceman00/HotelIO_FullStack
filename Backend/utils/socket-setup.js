@@ -389,12 +389,20 @@ const emitUserActivity = (eventType, userData) => {
 const emitToAdmins = (eventName, data) => {
     try {
         const io = getIO();
-        io.to('admins').emit(eventName, data);
+
+        const notificationData = {
+            type: data.type,
+            title: data.title,
+            message: data.message
+        };
+
+        io.to('admins').emit(eventName, notificationData);
+
         console.log(`📡 Emitted ${eventName} to admins`);
     } catch (error) {
         console.error(`❌ Failed to emit ${eventName}:`, error.message);
     }
-};
+}
 
 /**
  * Emit event to all connected users
