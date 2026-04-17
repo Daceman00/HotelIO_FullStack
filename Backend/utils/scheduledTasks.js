@@ -4,7 +4,7 @@ const Booking = require('../models/bookingModel');
 const Review = require('../models/reviewModel');
 const CRM = require('../models/crmModel');
 const sendEmail = require('./email');
-const { emitToAdmins } = require('./socket-setup');
+const { emitToAdmins, sendUserNotification } = require('./socket-setup');
 
 // Function to run the cleanup task
 const runCleanupTask = async () => {

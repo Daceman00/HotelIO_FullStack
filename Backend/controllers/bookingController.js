@@ -408,7 +408,7 @@ exports.deleteBooking = catchAsync(async (req, res, next) => {
                 checkOut: booking.checkOut,
                 price: booking.price
             },
-            link: `/bookings?tab=upcoming` // Frontend route
+            link: `/bookings?tab=missed` // Frontend route
         })
 
         // 8. Save CRM - middleware will handle the rest

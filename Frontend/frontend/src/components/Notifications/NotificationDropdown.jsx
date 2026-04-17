@@ -1,17 +1,13 @@
 // components/Notifications/NotificationDropdown.jsx
-import { useNavigate } from 'react-router-dom';
-import useNotificationStore from '../../stores/NotificationStore'
-import { NotificationItem } from './NotificationItem';
-import { BellIcon } from '@heroicons/react/24/outline';
+import { useNavigate } from "react-router-dom";
+import useNotificationStore from "../../stores/NotificationStore";
+import { NotificationItem } from "./NotificationItem";
+import { BellIcon } from "@heroicons/react/24/outline";
 
 export const NotificationDropdown = ({ onClose }) => {
   const navigate = useNavigate();
-  const { 
-    notifications, 
-    unreadCount,
-    markAllAsRead, 
-    clearAll 
-  } = useNotificationStore();
+  const { notifications, unreadCount, markAllAsRead, clearAll } =
+    useNotificationStore();
 
   const handleNavigate = (link) => {
     if (link) {
@@ -34,7 +30,7 @@ export const NotificationDropdown = ({ onClose }) => {
             </p>
           )}
         </div>
-        
+
         <div className="flex items-center gap-2">
           {unreadCount > 0 && (
             <button
@@ -47,7 +43,7 @@ export const NotificationDropdown = ({ onClose }) => {
           {notifications.length > 0 && (
             <button
               onClick={() => {
-                if (window.confirm('Clear all notifications?')) {
+                if (window.confirm("Clear all notifications?")) {
                   clearAll();
                 }
               }}
@@ -66,14 +62,16 @@ export const NotificationDropdown = ({ onClose }) => {
             <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-3">
               <BellIcon className="w-8 h-8 text-gray-400 dark:text-gray-500" />
             </div>
-            <p className="text-gray-500 dark:text-gray-400 font-medium">No notifications</p>
+            <p className="text-gray-500 dark:text-gray-400 font-medium">
+              No notifications
+            </p>
             <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
               You're all caught up! 🎉
             </p>
           </div>
         ) : (
           <div className="divide-y divide-gray-200 dark:divide-gray-700">
-            {notifications.map((notification) => (
+            {notifications?.map((notification) => (
               <NotificationItem
                 key={notification.id}
                 notification={notification}

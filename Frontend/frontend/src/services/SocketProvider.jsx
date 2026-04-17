@@ -3,12 +3,11 @@ import { useEffect } from "react";
 import { io } from "socket.io-client";
 import useSocketStore from "../stores/useSocketStore";
 import useAuthStore from "../stores/AuthStore";
-import toast from "react-hot-toast";
 import useNotificationStore from "../stores/NotificationStore";
 
 let socket = null;
 
-export const SocketProvider = ({ children }) => {
+export const SocketProvider = ({ children, userId }) => {
   const {
     setIsConnected,
     setOnlineUsers,
@@ -18,7 +17,8 @@ export const SocketProvider = ({ children }) => {
     setLastSeenList,
   } = useSocketStore();
 
-  const { addNotification } = useNotificationStore();
+  const { addNotification, setCurrentUser, clearCurrentUser } =
+    useNotificationStore();
 
   // Get auth state from your existing store
   const isAdmin = useAuthStore((state) => state.isAdmin);
@@ -26,6 +26,21 @@ export const SocketProvider = ({ children }) => {
 
   // Get token from localStorage
   const token = localStorage.getItem("token");
+
+  // Set current user in notification store when component mounts
+  useEffect(() => {
+    if (userId && isUserLoggedIn) {
+      console.log("📝 Setting current user in notification store:", userId);
+      setCurrentUser(userId);
+    }
+
+    return () => {
+      // Clear on unmount (logout)
+      if (!isUserLoggedIn) {
+        clearCurrentUser();
+      }
+    };
+  }, [userId, isUserLoggedIn, setCurrentUser, clearCurrentUser]);
 
   useEffect(() => {
     // Only connect if user is logged in

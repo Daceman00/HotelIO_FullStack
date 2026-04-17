@@ -19,6 +19,7 @@ import { useLogout } from "../Auth/useLogout";
 import { IMAGE_URL_USERS } from "../../helpers/imageURL";
 import { UserIcon } from "@heroicons/react/24/outline";
 import Logo from "./Logo";
+import useNotificationStore from "../../stores/NotificationStore";
 
 const Sidebar = React.memo(function Sidebar() {
   const location = useLocation();
@@ -39,6 +40,12 @@ const Sidebar = React.memo(function Sidebar() {
   const handleLogout = () => {
     logout({ skipToast: false }); // Use the enhanced logout hook
     zustandLogout(); // Clear Zustand state
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+
+    // Clear notification store's current user
+    useNotificationStore.getState().clearCurrentUser();
   };
 
   const handleRedirect = () => {
@@ -121,7 +128,7 @@ const Sidebar = React.memo(function Sidebar() {
               <Link to="/dashboard">
                 <div
                   className={`flex items-center px-4 py-3 rounded-lg transition-colors hover:bg-gray-800 ${isActive(
-                    "/dashboard"
+                    "/dashboard",
                   )}`}
                 >
                   <FontAwesomeIcon
@@ -135,7 +142,7 @@ const Sidebar = React.memo(function Sidebar() {
               <Link to="/rooms">
                 <div
                   className={`flex items-center px-4 py-3 rounded-lg transition-colors hover:bg-gray-800 ${isActive(
-                    "/rooms"
+                    "/rooms",
                   )}`}
                 >
                   <FontAwesomeIcon
@@ -151,7 +158,7 @@ const Sidebar = React.memo(function Sidebar() {
                   <Link to="/updateAccount">
                     <div
                       className={`flex items-center px-4 py-3 rounded-lg transition-colors hover:bg-gray-800 ${isActive(
-                        "/updateAccount"
+                        "/updateAccount",
                       )}`}
                     >
                       <FontAwesomeIcon
@@ -167,7 +174,7 @@ const Sidebar = React.memo(function Sidebar() {
                   <Link to="/bookings">
                     <div
                       className={`flex items-center px-4 py-3 rounded-lg transition-colors hover:bg-gray-800 ${isActive(
-                        "/bookings"
+                        "/bookings",
                       )}`}
                     >
                       <FontAwesomeIcon
@@ -191,7 +198,7 @@ const Sidebar = React.memo(function Sidebar() {
                   <Link to="/users">
                     <div
                       className={`flex items-center px-4 py-3 rounded-lg transition-colors hover:bg-gray-800 ${isActive(
-                        "/users"
+                        "/users",
                       )}`}
                     >
                       <FontAwesomeIcon
@@ -205,7 +212,7 @@ const Sidebar = React.memo(function Sidebar() {
                   <Link to="/stats">
                     <div
                       className={`flex items-center px-4 py-3 rounded-lg transition-colors hover:bg-gray-800 ${isActive(
-                        "/stats"
+                        "/stats",
                       )}`}
                     >
                       <FontAwesomeIcon

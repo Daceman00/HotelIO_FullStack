@@ -1,26 +1,61 @@
-// stores/notificationStore.js
+// stores/notificationStore.js - User-scoped version
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 const useNotificationStore = create(
     persist(
         (set, get) => ({
-            notifications: [],
-            unreadCount: 0,
+            notifications: {},  // Changed: Object with userId as key
+            currentUserId: null,
 
-            // Add new notification
+            // Set current user (call this on login)
+            setCurrentUser: (userId) => {
+                set({ currentUserId: userId });
+            },
+
+            // Clear current user (call this on logout)
+            clearCurrentUser: () => {
+                set({ currentUserId: null });
+            },
+
+            // Get notifications for current user
+            getCurrentUserNotifications: () => {
+                const state = get();
+                if (!state.currentUserId) return [];
+                return state.notifications[state.currentUserId] || [];
+            },
+
+            // Get unread count for current user
+            getUnreadCount: () => {
+                const state = get();
+                if (!state.currentUserId) return 0;
+                const userNotifications = state.notifications[state.currentUserId] || [];
+                return userNotifications.filter(n => !n.read).length;
+            },
+
+            // Add new notification for current user
             addNotification: (notification) => {
                 set((state) => {
+                    if (!state.currentUserId) {
+                        console.warn('No current user set, cannot add notification');
+                        return state;
+                    }
+
+                    const userId = state.currentUserId;
+                    const userNotifications = state.notifications[userId] || [];
+
                     // Check if notification already exists (prevent duplicates)
-                    const exists = state.notifications.some(n => n.id === notification.id);
+                    const exists = userNotifications.some(n => n.id === notification.id);
                     if (exists) return state;
 
-                    const newNotifications = [notification, ...state.notifications].slice(0, 50); // Keep last 50
-                    const unreadCount = newNotifications.filter(n => !n.read).length;
+                    // Add notification and keep last 50 per user
+                    const newUserNotifications = [notification, ...userNotifications].slice(0, 50);
 
                     return {
-                        notifications: newNotifications,
-                        unreadCount
+                        notifications: {
+                            ...state.notifications,
+                            [userId]: newUserNotifications
+                        }
                     };
                 });
             },
@@ -28,62 +63,96 @@ const useNotificationStore = create(
             // Mark notification as read
             markAsRead: (notificationId) => {
                 set((state) => {
-                    const updatedNotifications = state.notifications.map((notif) =>
+                    if (!state.currentUserId) return state;
+
+                    const userId = state.currentUserId;
+                    const userNotifications = state.notifications[userId] || [];
+
+                    const updatedNotifications = userNotifications.map((notif) =>
                         notif.id === notificationId ? { ...notif, read: true } : notif
                     );
-                    const unreadCount = updatedNotifications.filter(n => !n.read).length;
 
                     return {
-                        notifications: updatedNotifications,
-                        unreadCount
+                        notifications: {
+                            ...state.notifications,
+                            [userId]: updatedNotifications
+                        }
                     };
                 });
             },
 
-            // Mark all as read
+            // Mark all as read for current user
             markAllAsRead: () => {
-                set((state) => ({
-                    notifications: state.notifications.map((notif) => ({
+                set((state) => {
+                    if (!state.currentUserId) return state;
+
+                    const userId = state.currentUserId;
+                    const userNotifications = state.notifications[userId] || [];
+
+                    const updatedNotifications = userNotifications.map((notif) => ({
                         ...notif,
                         read: true
-                    })),
-                    unreadCount: 0
-                }));
+                    }));
+
+                    return {
+                        notifications: {
+                            ...state.notifications,
+                            [userId]: updatedNotifications
+                        }
+                    };
+                });
             },
 
             // Delete notification
             deleteNotification: (notificationId) => {
                 set((state) => {
-                    const updatedNotifications = state.notifications.filter(
+                    if (!state.currentUserId) return state;
+
+                    const userId = state.currentUserId;
+                    const userNotifications = state.notifications[userId] || [];
+
+                    const updatedNotifications = userNotifications.filter(
                         (notif) => notif.id !== notificationId
                     );
-                    const unreadCount = updatedNotifications.filter(n => !n.read).length;
 
                     return {
-                        notifications: updatedNotifications,
-                        unreadCount
+                        notifications: {
+                            ...state.notifications,
+                            [userId]: updatedNotifications
+                        }
                     };
                 });
             },
 
-            // Clear all notifications
+            // Clear all notifications for current user
             clearAll: () => {
-                set({
-                    notifications: [],
-                    unreadCount: 0
+                set((state) => {
+                    if (!state.currentUserId) return state;
+
+                    const userId = state.currentUserId;
+
+                    return {
+                        notifications: {
+                            ...state.notifications,
+                            [userId]: []
+                        }
+                    };
                 });
             },
 
-            // Get unread notifications
+            // Get unread notifications for current user
             getUnreadNotifications: () => {
-                return get().notifications.filter((notif) => !notif.read);
+                const state = get();
+                if (!state.currentUserId) return [];
+                const userNotifications = state.notifications[state.currentUserId] || [];
+                return userNotifications.filter((notif) => !notif.read);
             }
         }),
         {
             name: 'notifications-storage', // LocalStorage key
             partialize: (state) => ({
-                notifications: state.notifications.slice(0, 50), // Keep last 50
-                unreadCount: state.unreadCount
+                notifications: state.notifications, // Store all users' notifications
+                // Don't persist currentUserId - it should be set on each login
             })
         }
     )

@@ -14,7 +14,7 @@ import Payments from "./components/Payments/Payments";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import {SocketProvider} from "./services/SocketProvider" ;
+import { SocketProvider } from "./services/SocketProvider";
 import Login from "./components/Auth/Login";
 import ProtectedRoute from "./components/Reusable/ProtectedRoute";
 import ForgotPassword from "./components/Auth/ForgotPassword";
@@ -44,97 +44,111 @@ const Sidebar = memo(SidebarComponent);
 
 function App() {
   const { isUserLoggedIn } = useAuthStore();
+  const token = localStorage.getItem("token");
+  let userId = null;
+
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      userId = decoded.id; // or decoded.userId, depending on your JWT structure
+    } catch (error) {
+      console.error("Failed to decode token");
+    }
+  }
   return (
     <QueryClientProvider client={queryClient} contextSharing={true}>
       <ReactQueryDevtools initialIsOpen={false} />
-      <SocketProvider>
-      <BrowserRouter>
-        <div className="flex min-h-screen">
-          <Sidebar />
-          <div className="flex flex-col flex-1 ml-1 overflow-y-auto">
-            {isUserLoggedIn && <Header />}
-            {/* Render Header if user is logged in */}
-            <Routes>
-              <Route path="/payments" element={<Payments />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/rooms" element={<RoomsPage />} />
-              <Route path="/rooms/:roomId" element={<RoomDetails />} />
-              <Route
-                path="/rooms/:roomId/reviews"
-                element={<ReviewsForSingleRoom />}
-              />
+      <SocketProvider userId={userId}>
+        <BrowserRouter>
+          <div className="flex min-h-screen">
+            <Sidebar />
+            <div className="flex flex-col flex-1 ml-1 overflow-y-auto">
+              {isUserLoggedIn && <Header />}
+              {/* Render Header if user is logged in */}
+              <Routes>
+                <Route path="/payments" element={<Payments />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/rooms" element={<RoomsPage />} />
+                <Route path="/rooms/:roomId" element={<RoomDetails />} />
+                <Route
+                  path="/rooms/:roomId/reviews"
+                  element={<ReviewsForSingleRoom />}
+                />
 
-              <Route
-                path="/bookings"
-                element={
-                  <ProtectedRoute>
-                    <BookingsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/updateAccount"
-                element={
-                  <ProtectedRoute>
-                    <UpdateAccount />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/updatePassword"
-                element={
-                  <ProtectedRoute>
-                    <UpdatePassword />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/users"
-                element={
-                  <ProtectedRoute requiredRole="admin">
-                    <Users />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/login" element={<Login />} />
-              <Route
-                path="/stats"
-                element={
-                  <ProtectedRoute requiredRole="admin">
-                    <StatsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/about" element={<About />} />
-              <Route path="/forgotPassword" element={<ForgotPassword />} />
-              <Route path="/resetPassword/:token" element={<ResetPassword />} />
-              <Route path="/" element={<Navigate to="/dashboard" />} />
-            </Routes>
-            <Footer />
+                <Route
+                  path="/bookings"
+                  element={
+                    <ProtectedRoute>
+                      <BookingsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/updateAccount"
+                  element={
+                    <ProtectedRoute>
+                      <UpdateAccount />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/updatePassword"
+                  element={
+                    <ProtectedRoute>
+                      <UpdatePassword />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/users"
+                  element={
+                    <ProtectedRoute requiredRole="admin">
+                      <Users />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/login" element={<Login />} />
+                <Route
+                  path="/stats"
+                  element={
+                    <ProtectedRoute requiredRole="admin">
+                      <StatsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/about" element={<About />} />
+                <Route path="/forgotPassword" element={<ForgotPassword />} />
+                <Route
+                  path="/resetPassword/:token"
+                  element={<ResetPassword />}
+                />
+                <Route path="/" element={<Navigate to="/dashboard" />} />
+              </Routes>
+              <Footer />
+            </div>
           </div>
-        </div>
-      </BrowserRouter>
-      <NotificationPermission />
-      <Toaster
-        position="top-center"
-        gutter={12}
-        containerStyle={{ margin: "8px" }}
-        toastOptions={{
-          success: {
-            duration: 5000,
-          },
-          error: {
-            duration: 5000,
-          },
-          style: {
-            fontSize: "16px",
-            maxWidth: "500px",
-            padding: "16px 24px",
-            backgroundColor: "#fff",
-            color: "#374151",
-          },
-        }}
-      />
+        </BrowserRouter>
+        <NotificationPermission />
+        <Toaster
+          position="top-center"
+          gutter={12}
+          containerStyle={{ margin: "8px" }}
+          toastOptions={{
+            success: {
+              duration: 5000,
+            },
+            error: {
+              duration: 5000,
+            },
+            style: {
+              fontSize: "16px",
+              maxWidth: "500px",
+              padding: "16px 24px",
+              backgroundColor: "#fff",
+              color: "#374151",
+            },
+          }}
+        />
       </SocketProvider>
     </QueryClientProvider>
   );

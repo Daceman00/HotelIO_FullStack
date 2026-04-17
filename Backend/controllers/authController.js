@@ -7,7 +7,7 @@ const sendEmail = require('./../utils/email');
 const crypto = require('crypto')
 const { promisify } = require('util');
 const { getReferralNotificationEmail } = require('../utils/signupReferralNotificationEmail');
-const { emitUserActivity } = require("../utils/socket-setup")
+const { emitUserActivity, sendUserNotification } = require("../utils/socket-setup")
 
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -59,6 +59,16 @@ exports.signup = catchAsync(async (req, res, next) => {
     // Save the user
     const newUser = await user.save();
 
+    sendUserNotification(newUser.id, {
+      type: 'signup',
+      title: 'Welcome to HotelIO!',
+      message: 'Your account has been created successfully.',
+      data: {
+        userId: newUser._id
+      },
+      link: `/updateAccount`
+    })
+
     // Handle referral if code was provided
     let warning = null;
     let referrerUser = null; // Store referrer user info for email
@@ -81,6 +91,16 @@ exports.signup = catchAsync(async (req, res, next) => {
         referrerCRM.referralsMade += 1;
         await referrerCRM.addPoints(100, 'referral', 'Referral bonus - new signup');
         await referrerCRM.save();
+
+        sendUserNotification(referrerUser.id, {
+          type: 'referral',
+          title: 'You have a new referral!',
+          message: 'A new user has signed up using your referral code.',
+          data: {
+            userId: newUser._id
+          },
+          link: `/updateAccount`
+        })
 
         // ✅ Send email notification to referrer
         if (referrerUser && referrerUser.email) {
