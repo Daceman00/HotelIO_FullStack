@@ -1,0 +1,6 @@
+$kind: http-request
+url: "{{URL}}/payments/process-payment"
+method: POST
+auth:
+  type: noauth
+order: 1000

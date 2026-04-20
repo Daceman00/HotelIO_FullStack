@@ -107,21 +107,22 @@ exports.createBooking = catchAsync(async (req, res, next) => {
     const newBooking = await Booking.create(req.body);
     const populatedBooking = await Booking.findById(newBooking._id).populate('user').populate('room');
 
-    sendUserNotification(populatedBooking.user.id, {
-        type: 'booking',
-        title: 'Booking Confirmed! 🎉',
-        message: `Your booking for ${populatedBooking.room.roomNumber} has been created. You can view it in your bookings and proceed to payment`,
+    if (populatedBooking.user.id) {
+        sendUserNotification(populatedBooking.user.id, {
+            type: 'booking',
+            title: 'Booking Confirmed! 🎉',
+            message: `Your booking for ${populatedBooking.room.roomNumber} has been created. You can view it in your bookings and proceed to payment`,
 
-        data: {
-            bookingId: populatedBooking._id,
-            roomNumber: populatedBooking.room.roomNumber,
-            checkIn: populatedBooking.checkIn,
-            checkOut: populatedBooking.checkOut,
-            price: populatedBooking.price
-        },
-        link: `/bookings?tab=upcoming` // Frontend route
-    })
-
+            data: {
+                bookingId: populatedBooking._id,
+                roomNumber: populatedBooking.room.roomNumber,
+                checkIn: populatedBooking.checkIn,
+                checkOut: populatedBooking.checkOut,
+                price: populatedBooking.price
+            },
+            link: `/bookings?tab=upcoming` // Frontend route
+        })
+    }
     res.status(201).json({
         status: 'success',
         data: {

@@ -1,0 +1,31 @@
+$kind: http-request
+url: "{{URL}}/users/signup"
+method: POST
+headers:
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjNhOTZiZTRhNjBlMTM4NDg2ZDhjOSIsImlhdCI6MTczMDM5MDM4MCwiZXhwIjoxNzM4MTY2MzgwfQ.Iq88Xe5MjPXts2__J7kPHtwa0UXxwSHWZrNuIv6Hxts
+body:
+  type: json
+  content: "{\r
+
+    \    \"name\": \"Test\",\r
+
+    \    \"email\": \"Test@gmail.com\",\r
+
+    \    \"password\": \"nogomet00\",\r
+
+    \    \"passwordConfirm\":\"nogomet00\"\r
+
+    \   \r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+scripts:
+  - type: afterResponse
+    code: "// Fixed syntax for extracting token from response\r
+
+      pm.environment.set(\"jwt\", pm.response.json().token)\r\n"
+    language: text/javascript
+order: 1000

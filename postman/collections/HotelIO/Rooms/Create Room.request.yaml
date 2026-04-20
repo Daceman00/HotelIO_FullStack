@@ -1,0 +1,23 @@
+$kind: http-request
+url: "{{URL}}/rooms/"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"roomNumber\": \"102\",\r
+
+    \    \"roomType\": \"single\",\r
+
+    \    \"price\": 100,\r
+
+    \    \"status\": \"available\",\r
+
+    \    \"description\": \"A luxurious suite with a beautiful city view.\",\r
+
+    \    \"features\": [\"WiFi\", \"Air Conditioning\", \"Flat-screen TV\", \"Minibar\"],\r
+
+    \    \"maxGuests\": 1\r
+
+    }"
+order: 2000

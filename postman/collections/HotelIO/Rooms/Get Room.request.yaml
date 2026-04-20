@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{URL}}/rooms/677af311f808aec841f47bda"
+method: GET
+order: 3000

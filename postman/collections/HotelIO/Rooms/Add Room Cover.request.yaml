@@ -1,0 +1,14 @@
+$kind: http-request
+url: https://hotelio-fullstack.onrender.com/api/v1/rooms/67cac2da6adf82a988958add/cover
+method: POST
+body:
+  type: formdata
+  content:
+    - type: file
+      key: imageCover
+      src: /C:/Users/dario.mandic/Desktop/Rooms/Room 102/Room_102_1.jpg
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+order: 9000

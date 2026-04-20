@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{URL}}/rooms/677af311f808aec841f47bda/images"
+method: POST
+headers:
+  Content-Type: multipart/form-data
+body:
+  type: formdata
+  content:
+    - type: file
+      key: imageCover
+      src: /C:/Users/dario.mandic/Desktop/Image-cover-Room-1.jpg
+    - type: file
+      key: images
+      src: /C:/Users/dario.mandic/Desktop/Image-Room1.jpg
+    - type: file
+      key: images
+      src: /C:/Users/dario.mandic/Desktop/Image-Room2.jpg
+order: 4000

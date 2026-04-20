@@ -1,0 +1,8 @@
+$kind: http-request
+url: "{{URL}}/bookings/6787697925b1837e2fbaae22"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+order: 2000

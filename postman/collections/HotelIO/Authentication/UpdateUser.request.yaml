@@ -1,0 +1,11 @@
+$kind: http-request
+url: "{{URL}}/users/673ef99cd6650c1a05ea7bb7"
+method: PATCH
+body:
+  type: json
+  content: "{\r\n    \"photo\":\"dsads.jpg\"\r\n}"
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+order: 6000

@@ -1,0 +1,21 @@
+$kind: http-request
+url: "{{URL}}/users/login"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"email\":\"Luca@gmail.com\",\r
+
+    \    \"password\":\"nogomet00\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+scripts:
+  - type: afterResponse
+    code: pm.environment.set("jwt", pm.response.json().token)
+    language: text/javascript
+order: 2000

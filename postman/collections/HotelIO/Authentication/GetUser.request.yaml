@@ -1,0 +1,8 @@
+$kind: http-request
+url: "{{URL}}/users/67447c497f769ab9628cd359"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+order: 8000

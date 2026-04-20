@@ -348,6 +348,35 @@ const sendBroadcastNotification = (notification) => {
 };
 
 /**
+ * Send notification to all connected admins
+ * @param {Object} notification - Notification data
+ * @returns {Object|null} Notification payload
+ */
+const sendAdminNotification = (notification) => {
+    try {
+        const io = getIO();
+
+        const notificationData = {
+            id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            type: notification.type || 'system',
+            title: notification.title,
+            message: notification.message,
+            data: notification.data || {},
+            timestamp: notification.timestamp || new Date(),
+            read: false,
+            link: notification.link || null
+        };
+
+        io.to('admins').emit('notification:new', notificationData);
+        console.log('🔔 Sent notification to all admins');
+        return notificationData;
+    } catch (error) {
+        console.error('❌ Failed to send admin notification:', error.message);
+        return null;
+    }
+};
+
+/**
  * Emit user activity to admins only
  * @param {string} eventType - 'signup' or 'login'
  * @param {Object} userData - User data to send
@@ -390,13 +419,26 @@ const emitToAdmins = (eventName, data) => {
     try {
         const io = getIO();
 
-        const notificationData = {
-            type: data.type,
-            title: data.title,
-            message: data.message
+        const eventData = {
+            ...data,
+            timestamp: data.timestamp || new Date()
         };
 
-        io.to('admins').emit(eventName, notificationData);
+        // Keep the original event for admin dashboards listening to custom events.
+        io.to('admins').emit(eventName, eventData);
+
+        // Also emit a standard notification event because the frontend notification
+        // store currently listens on "notification:new".
+        if (data && data.title && data.message) {
+            sendAdminNotification({
+                type: data.type,
+                title: data.title,
+                message: data.message,
+                data: eventData,
+                timestamp: eventData.timestamp,
+                link: data.link || null
+            });
+        }
 
         console.log(`📡 Emitted ${eventName} to admins`);
     } catch (error) {
@@ -455,6 +497,7 @@ module.exports = {
     getOnlineUsersList,
     getLastSeenList,
     getOnlineUsersCount,
+    sendAdminNotification,
     sendBulkNotification,
     sendBroadcastNotification,
     sendUserNotification

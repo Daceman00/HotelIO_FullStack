@@ -1,0 +1,8 @@
+$kind: http-request
+url: "{{URL}}/reviews/user/677fdf5ec403d833adeb31f6"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+order: 6000

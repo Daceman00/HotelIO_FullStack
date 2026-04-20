@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{URL}}/rooms/677af5da20746a5190d65e0b"
+method: DELETE
+order: 5000

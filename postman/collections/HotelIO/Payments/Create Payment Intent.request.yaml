@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{URL}}/payments/create-payment-intent"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"bookingId\":\"6802277773182b5a1b30ae70\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+order: 2000

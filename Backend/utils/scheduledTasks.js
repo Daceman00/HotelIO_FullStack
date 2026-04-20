@@ -4,7 +4,7 @@ const Booking = require('../models/bookingModel');
 const Review = require('../models/reviewModel');
 const CRM = require('../models/crmModel');
 const sendEmail = require('./email');
-const { emitToAdmins, sendUserNotification } = require('./socket-setup');
+const { sendUserNotification, sendAdminNotification } = require('./socket-setup');
 
 // Function to run the cleanup task
 const runCleanupTask = async () => {
@@ -60,14 +60,13 @@ const runCleanupTask = async () => {
             });
         }
 
-        emitToAdmins('booking:cleanup', {
+        sendAdminNotification({
             type: 'booking',
-            title: 'Booking Cleanup',
-            message: 'Booking cleanup task has been completed, you can view the report on your email',
-            totalMissedBookings: unpaidBookings.length,
-            totalAmount: unpaidBookings.reduce((sum, b) => sum + b.price, 0),
-            missedBookings: unpaidBookings
-        });
+            title: 'Cleanup finished',
+            message: 'Cleanup task completed successfully, you can view the report on your email',
+            data: {},
+            link: '/bookings?tab=missed'
+        })
 
         await session.commitTransaction();
 

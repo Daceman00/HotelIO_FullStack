@@ -1,0 +1,8 @@
+$kind: http-request
+url: "{{URL}}/payments/publishable-key"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+order: 6000

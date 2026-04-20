@@ -7,6 +7,17 @@ import useNotificationStore from "../stores/NotificationStore";
 
 let socket = null;
 
+const getUserIdFromToken = (token) => {
+  if (!token) return null;
+
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload?.id || payload?.userId || payload?.sub || null;
+  } catch (error) {
+    return null;
+  }
+};
+
 export const SocketProvider = ({ children, userId }) => {
   const {
     setIsConnected,
@@ -26,12 +37,12 @@ export const SocketProvider = ({ children, userId }) => {
 
   // Get token from localStorage
   const token = localStorage.getItem("token");
+  const effectiveUserId = userId || getUserIdFromToken(token);
 
   // Set current user in notification store when component mounts
   useEffect(() => {
-    if (userId && isUserLoggedIn) {
-      console.log("📝 Setting current user in notification store:", userId);
-      setCurrentUser(userId);
+    if (effectiveUserId) {
+      setCurrentUser(effectiveUserId);
     }
 
     return () => {
@@ -40,16 +51,13 @@ export const SocketProvider = ({ children, userId }) => {
         clearCurrentUser();
       }
     };
-  }, [userId, isUserLoggedIn, setCurrentUser, clearCurrentUser]);
+  }, [effectiveUserId, isUserLoggedIn, setCurrentUser, clearCurrentUser]);
 
   useEffect(() => {
     // Only connect if user is logged in
     if (!isUserLoggedIn || !token) {
-      console.log("Socket not connecting: Not logged in");
       return;
     }
-
-    console.log("🔌 Initializing Socket.IO connection...");
 
     const VITE_API_URL = "http://localhost:3000";
     //const VITE_API_URL = 'https://hotelio-fullstack.onrender.com'
@@ -62,7 +70,6 @@ export const SocketProvider = ({ children, userId }) => {
 
     // Connection events
     socket.on("connect", () => {
-      console.log("✅ Connected to Socket.IO");
       setIsConnected(true);
 
       // Request online users list when connected
@@ -73,7 +80,6 @@ export const SocketProvider = ({ children, userId }) => {
     });
 
     socket.on("disconnect", () => {
-      console.log("❌ Disconnected from Socket.IO");
       setIsConnected(false);
     });
 
@@ -85,31 +91,25 @@ export const SocketProvider = ({ children, userId }) => {
     // 🔔 NEW: Listen for notifications (ALL USERS)
     socket.on("notification:new", (notification) => {
       // Add to notification store (shows in bell dropdown)
-      addNotification(notification);
+      addNotification(notification, effectiveUserId);
     });
 
     // Admin events
-    socket.on("admin:connected", (data) => {
-      console.log("👑 Admin room joined:", data);
-    });
+    socket.on("admin:connected", () => {});
 
     // Initial online users list
     socket.on("users:online_list", (usersList) => {
-      console.log("📋 Received online users list:", usersList);
       const onlineUserIds = usersList.map((user) => user.userId);
       setOnlineUsers(onlineUserIds);
     });
 
     // Last seen list
     socket.on("users:last_seen_list", (lastSeenList) => {
-      console.log("⏰ Received last seen list:", lastSeenList);
       setLastSeenList(lastSeenList);
     });
 
     // User status changes (online/offline)
     socket.on("user:status_change", (data) => {
-      console.log(`👤 User ${data.status}:`, data.user.name);
-
       if (data.status === "online") {
         addOnlineUser(data.userId);
       } else {
@@ -118,15 +118,12 @@ export const SocketProvider = ({ children, userId }) => {
 
       // Store last seen timestamp when user goes offline
       if (data.lastSeen) {
-        console.log(`⏰ User last seen: ${data.user.name} at ${data.lastSeen}`);
         setUserLastSeen(data.userId, data.lastSeen);
       }
     });
 
     // User activity events (signup/login notifications)
     socket.on("user:activity", (data) => {
-      console.log("📡 User activity:", data);
-
       // Optional: Show browser notification
       if (Notification.permission === "granted") {
         const icon = data.type === "signup" ? "🆕" : "🔐";
@@ -139,14 +136,11 @@ export const SocketProvider = ({ children, userId }) => {
 
     socket.on("user:last_seen", (data) => {
       setUserLastSeen(data.UserId, data.usersLastSeen);
-      console.log(data.userId);
-      console.log(data.timestamp);
     });
 
     // Cleanup on unmount or when dependencies change
     return () => {
       if (socket) {
-        console.log("🔌 Disconnecting Socket.IO...");
         socket.disconnect();
         socket = null;
         setIsConnected(false);
@@ -162,6 +156,9 @@ export const SocketProvider = ({ children, userId }) => {
     removeOnlineUser,
     setUserLastSeen,
     setLastSeenList,
+    addNotification,
+    userId,
+    effectiveUserId,
   ]);
 
   return children;

@@ -1,0 +1,10 @@
+$kind: http-request
+url: "{{URL}}/bookings?status=upcoming"
+method: GET
+queryParams:
+  status: upcoming
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+order: 3000

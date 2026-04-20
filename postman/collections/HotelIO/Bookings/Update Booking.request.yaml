@@ -1,0 +1,11 @@
+$kind: http-request
+url: "{{URL}}/bookings/6785700646fdbb5830fa657d"
+method: PATCH
+body:
+  type: json
+  content: "{\r\n    \"price\":300\r\n}"
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+order: 5000

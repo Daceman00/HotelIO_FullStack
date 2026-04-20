@@ -1,0 +1,27 @@
+$kind: http-request
+name: https://api.stripe.com/v1/payment_methods
+url: https://api.stripe.com/v1/payment_methods
+method: POST
+body:
+  type: urlencoded
+  content:
+    - key: type
+      value: card
+    - key: card[token]
+      value: tok_visa
+    - key: card[exp_month]
+      value: "12"
+      disabled: true
+    - key: card[exp_year]
+      value: "2025"
+      disabled: true
+    - key: card[cvc]
+      value: "123"
+      disabled: true
+auth:
+  type: bearer
+  credentials:
+    token: sk_test_51NYpWcDQYXmxwuNkdVTcFsHC25iQGOH6gxiyBaKGwJFapSdvFqOKbvHEXANQPDZzowhRCqgojROR1zv2eJUT8HNP00XMRYY4cv
+settings:
+  disabledSystemHeaders: []
+order: 4000

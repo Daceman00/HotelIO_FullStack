@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{URL}}/users/updateMyAccount"
+method: PATCH
+body:
+  type: json
+  content: "{\r
+
+    \    \"photo\":\"newphoto.jpg\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+order: 4000

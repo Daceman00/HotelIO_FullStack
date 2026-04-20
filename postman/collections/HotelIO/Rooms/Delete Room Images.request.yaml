@@ -1,0 +1,23 @@
+$kind: http-request
+url: "{{URL}}/rooms/685916c72b48a5fa8564d6ab/images"
+method: DELETE
+body:
+  type: json
+  content: "{\r
+
+    \    \"imagesToDelete\" : [\r
+
+    \        \"cover\",\r
+
+    \        \"https://hotelio-bucket.s3.eu-north-1.amazonaws.com/rooms/room-cover-1750674320575-7047219.webp\",\r
+
+    \        \"https://hotelio-bucket.s3.eu-north-1.amazonaws.com/rooms/room-cover-1750669031664-685185470.webp\"\r
+
+    \    ]\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+order: 8000

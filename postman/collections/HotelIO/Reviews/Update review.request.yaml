@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{URL}}/reviews/678029fe7462f6d4da7375b0"
+method: PATCH
+body:
+  type: json
+  content: "{\r
+
+    \    \"review\":\"Excellent\",\r
+
+    \     \"rating\": 5\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+order: 4000

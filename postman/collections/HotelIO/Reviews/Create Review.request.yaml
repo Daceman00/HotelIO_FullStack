@@ -1,0 +1,19 @@
+$kind: http-request
+url: "{{URL}}/rooms/677af311f808aec841f47bda/reviews"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"review\": \"The room was amazing with excellent service!\",\r
+
+    \    \"rating\": 5\r
+
+    \    \r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+order: 1000

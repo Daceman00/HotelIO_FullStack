@@ -1,0 +1,13 @@
+$kind: http-request
+url: "{{URL}}/payments/confirm-payment"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    pi_3RLVPkDQYXmxwuNk2b2aLjnd_secret_yTfs4SfeMmEjOSHXGgPVx62yR\r
+
+    }"
+auth:
+  type: noauth
+order: 3000

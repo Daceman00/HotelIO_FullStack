@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{URL}}/rooms/677af311f808aec841f47bda/bookings/"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"checkIn\": \"2025-11-27T00:00:00.000Z\",\r
+
+    \  \"checkOut\": \"2025-11-30T00:00:00.000Z\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+order: 1000

@@ -1,0 +1,8 @@
+$kind: http-request
+url: "{{URL}}/reviews/677fa2c60563ac5dcb262221"
+method: DELETE
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+order: 5000

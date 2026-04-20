@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{URL}}/rooms/677af311f808aec841f47bda"
+method: PATCH
+body:
+  type: json
+  content: "{\r
+
+    \    \"status\":\"available\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+order: 6000

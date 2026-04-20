@@ -1,0 +1,8 @@
+$kind: http-request
+url: "{{URL}}/bookings/6787b255eeeb32055e560482/pay"
+method: PATCH
+auth:
+  type: bearer
+  credentials:
+    token: "{{jwt}}"
+order: 8000
