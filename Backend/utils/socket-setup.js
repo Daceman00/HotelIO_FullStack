@@ -5,6 +5,10 @@ const User = require('../models/userModel'); // Adjust path based on your struct
 let io;
 const onlineUsers = new Map(); // Map of userId -> { socketId, name, email, role, connectedAt }
 const userLastSeen = new Map(); // Map of userId -> { timestamp, name, email }
+const pendingNotifications = new Map(); // Map of userId -> Notification[]
+const MAX_PENDING_NOTIFICATIONS_PER_USER = 50;
+const pendingAdminNotifications = new Map(); // Map of adminUserId -> Notification[]
+const MAX_PENDING_ADMIN_NOTIFICATIONS = 50;
 
 /**
  * Initialize Socket.IO server
@@ -72,6 +76,16 @@ const initSocket = (server) => {
             connectedAt: new Date()
         });
 
+        // Flush any queued notifications that were created while the user was offline
+        const queuedNotifications = pendingNotifications.get(userId) || [];
+        if (queuedNotifications.length > 0) {
+            queuedNotifications.forEach((notification) => {
+                socket.emit('notification:new', notification);
+            });
+            pendingNotifications.delete(userId);
+            console.log(`📬 Delivered ${queuedNotifications.length} queued notifications to ${socket.user.email}`);
+        }
+
         // Remove from last seen when user comes online
         if (userLastSeen.has(userId)) {
             userLastSeen.delete(userId);
@@ -103,6 +117,16 @@ const initSocket = (server) => {
 
             // Send last seen data for all offline users
             socket.emit('users:last_seen_list', getLastSeenList());
+
+            // Flush queued admin notifications for this specific admin user
+            const queuedAdminNotifications = pendingAdminNotifications.get(userId) || [];
+            if (queuedAdminNotifications.length > 0) {
+                queuedAdminNotifications.forEach((notification) => {
+                    socket.emit('notification:new', notification);
+                });
+                pendingAdminNotifications.delete(userId);
+                console.log(`📬 Delivered ${queuedAdminNotifications.length} queued admin notifications to ${socket.user.email}`);
+            }
         }
 
         // Broadcast to all admins that this user is now online
@@ -284,6 +308,16 @@ const sendUserNotification = (userId, notification) => {
         // Emit to user's personal room
         io.to(`user:${userIdStr}`).emit('notification:new', notificationData);
 
+        // If user is offline, queue it for delivery on next connect.
+        // This covers flows like signup where socket connects only after token is returned.
+        if (!isUserOnline(userIdStr)) {
+            const existingQueue = pendingNotifications.get(userIdStr) || [];
+            pendingNotifications.set(
+                userIdStr,
+                [...existingQueue, notificationData].slice(-MAX_PENDING_NOTIFICATIONS_PER_USER)
+            );
+        }
+
         // Also emit to admins for monitoring
         io.to('admins').emit('notification:sent', {
             userId: userIdStr,
@@ -368,6 +402,29 @@ const sendAdminNotification = (notification) => {
         };
 
         io.to('admins').emit('notification:new', notificationData);
+
+        // Queue for offline admins so each admin receives missed notifications
+        // when they reconnect (even if other admins are currently online).
+        User.find({ role: 'admin', active: true }).select('_id').lean()
+            .then((admins) => {
+                admins.forEach((admin) => {
+                    const adminUserId = admin._id.toString();
+
+                    if (isUserOnline(adminUserId)) {
+                        return;
+                    }
+
+                    const existingQueue = pendingAdminNotifications.get(adminUserId) || [];
+                    pendingAdminNotifications.set(
+                        adminUserId,
+                        [...existingQueue, notificationData].slice(-MAX_PENDING_ADMIN_NOTIFICATIONS)
+                    );
+                });
+            })
+            .catch((error) => {
+                console.error('❌ Failed to queue admin notification:', error.message);
+            });
+
         console.log('🔔 Sent notification to all admins');
         return notificationData;
     } catch (error) {

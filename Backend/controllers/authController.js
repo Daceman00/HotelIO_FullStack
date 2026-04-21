@@ -59,21 +59,11 @@ exports.signup = catchAsync(async (req, res, next) => {
     // Save the user
     const newUser = await user.save();
 
-    sendUserNotification(newUser.id, {
-      type: 'signup',
-      title: 'Welcome to HotelIO!',
-      message: 'Your account has been created successfully.',
-      data: {
-        userId: newUser._id
-      },
-      link: `/updateAccount`
-    })
-
     // Handle referral if code was provided
     let warning = null;
     let referrerUser = null; // Store referrer user info for email
-    if (referralCode) {
 
+    if (referralCode) {
       // Find the referrer's CRM by their referral code
       const referrerCRM = await CRM.findOne({ referralCode: referralCode });
 
@@ -129,6 +119,16 @@ exports.signup = catchAsync(async (req, res, next) => {
     }
 
     emitUserActivity("signup", newUser)
+
+    sendUserNotification(newUser.id, {
+      type: 'signup',
+      title: 'Welcome to HotelIO!',
+      message: 'Your account has been created successfully.',
+      data: {
+        userId: newUser._id
+      },
+      link: `/updateAccount`
+    })
 
     createSendToken(newUser, 201, res, warning)
   } catch (error) {
