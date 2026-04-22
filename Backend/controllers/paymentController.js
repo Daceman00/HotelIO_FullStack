@@ -119,9 +119,10 @@ exports.confirmPayment = catchAsync(async (req, res, next) => {
     await booking.save();
 
     sendUserNotification(req.user.id, {
-        type: 'booking',
-        title: 'Booking Confirmed! 🎉',
-        message: `Your booking for room ${booking.room.roomNumber} has been confirmed.`,
+        type: 'payment',
+        title: 'Payment Confirmed! 🎉',
+        message: `Your payment for room${booking.room.roomNumber} has been confirmed.`,
+
         data: {
             bookingId: booking._id,
             roomNumber: booking.room.roomNumber,
@@ -131,6 +132,7 @@ exports.confirmPayment = catchAsync(async (req, res, next) => {
         },
         link: `/bookings?tab=upcoming` // Frontend route
     })
+
 
     // Award loyalty points after successful payment (idempotent)
     if (paymentIntent.status === 'succeeded') {

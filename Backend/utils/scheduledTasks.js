@@ -31,7 +31,9 @@ const runCleanupTask = async () => {
                 $lte: endOfToday
             },
             createdAt: { $lte: paymentDeadline } // Only process bookings that existed before the payment deadline
-        }).populate('user');
+        })
+            .populate('user')
+            .populate('room');
 
 
         for (const booking of unpaidBookings) {
@@ -43,21 +45,37 @@ const runCleanupTask = async () => {
         }
 
         for (const booking of unpaidBookings) {
+            try {
+                const targetUserId =
+                    (booking &&
+                        booking.user &&
+                        booking.user._id &&
+                        booking.user._id.toString()) ||
+                    (booking && booking.user && booking.user.id);
+                const roomNumber =
+                    (booking && booking.room && booking.room.roomNumber) || 'N/A';
 
-            sendUserNotification(booking.user.id, {
-                type: 'cancellation',
-                title: 'Booking Cancelled! ',
-                message: `Your booking for room ${booking.room.roomNumber} has been cancelled, because payment deadline has passed`,
+                if (!targetUserId) {
+                    console.warn(`⚠️ Skipping cancellation notification for booking ${booking._id}: missing user reference`);
+                    continue;
+                }
 
-                data: {
-                    bookingId: booking._id,
-                    roomNumber: booking.room.roomNumber,
-                    checkIn: booking.checkIn,
-                    checkOut: booking.checkOut,
-                    price: booking.price
-                },
-                link: `/bookings?tab=missed` // Frontend route
-            });
+                sendUserNotification(targetUserId, {
+                    type: 'cancellation',
+                    title: 'Booking Cancelled!',
+                    message: `Your booking for room ${roomNumber} has been cancelled, because payment deadline has passed`,
+                    data: {
+                        bookingId: booking._id,
+                        roomNumber,
+                        checkIn: booking.checkIn,
+                        checkOut: booking.checkOut,
+                        price: booking.price
+                    },
+                    link: `/bookings?tab=missed` // Frontend route
+                });
+            } catch (notificationError) {
+                console.error(`❌ Failed sending cancellation notification for booking ${booking._id}:`, notificationError.message);
+            }
         }
 
         sendAdminNotification({
@@ -255,7 +273,7 @@ const processReferralSuccessesTask = async () => {
                 link: '/updateAccount'
             });
 
-            sendUserNotification(referrerCRM.user.toString(), {
+            sendUserNotification(referrerCRM.user.id, {
                 type: 'referral',
                 title: 'Referral processing finished',
                 message: `Referral processing task completed successfully. You received ${referrerPointsResult.awardedPoints} points for a successful referral. Previous total: ${referrerPointsResult.previousTotal}. New total: ${referrerPointsResult.newTotal}.`,
