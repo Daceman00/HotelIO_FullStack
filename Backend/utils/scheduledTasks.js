@@ -44,6 +44,8 @@ const runCleanupTask = async () => {
 
         }
 
+        await session.commitTransaction();
+
         for (const booking of unpaidBookings) {
             try {
                 const targetUserId =
@@ -86,7 +88,6 @@ const runCleanupTask = async () => {
             link: '/bookings?tab=missed'
         })
 
-        await session.commitTransaction();
 
         // Moved email sending inside try block after transaction commit
         if (process.env.ADMIN_EMAIL) {
@@ -224,7 +225,7 @@ const processReferralSuccessesTask = async () => {
                 continue;
             }
 
-            const referrerCRM = await CRM.findOne({ user: guestCRM.referredBy });
+            const referrerCRM = await CRM.findOne({ user: guestCRM.referredBy }).select('user loyaltyPoints successfulReferrals');
 
             if (!referrerCRM) {
                 console.log(`  ❌ Referrer CRM not found for user ${guestCRM.referredBy}`);
@@ -273,7 +274,7 @@ const processReferralSuccessesTask = async () => {
                 link: '/updateAccount'
             });
 
-            sendUserNotification(referrerCRM.user.id, {
+            sendUserNotification(referrerCRM.user.toString(), {
                 type: 'referral',
                 title: 'Referral processing finished',
                 message: `Referral processing task completed successfully. You received ${referrerPointsResult.awardedPoints} points for a successful referral. Previous total: ${referrerPointsResult.previousTotal}. New total: ${referrerPointsResult.newTotal}.`,
