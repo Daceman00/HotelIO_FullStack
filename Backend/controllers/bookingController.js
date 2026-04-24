@@ -108,7 +108,7 @@ exports.createBooking = catchAsync(async (req, res, next) => {
     const populatedBooking = await Booking.findById(newBooking._id).populate('user').populate('room');
 
     if (populatedBooking.user.id) {
-        sendUserNotification(populatedBooking.user.id, {
+        await sendUserNotification(populatedBooking.user.id, {
             type: 'booking',
             title: 'Booking Confirmed! 🎉',
             message: `Your booking for ${populatedBooking.room.roomNumber} has been created. You can view it in your bookings and proceed to payment`,
@@ -397,7 +397,7 @@ exports.deleteBooking = catchAsync(async (req, res, next) => {
             }
         }
 
-        sendUserNotification(userId, {
+        await sendUserNotification(userId, {
             type: 'cancellation',
             title: 'Booking Cancelled! ',
             message: `Your booking for room ${booking.room.roomNumber} has been cancelled`,

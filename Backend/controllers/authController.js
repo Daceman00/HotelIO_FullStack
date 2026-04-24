@@ -82,16 +82,6 @@ exports.signup = catchAsync(async (req, res, next) => {
         await referrerCRM.addPoints(100, 'referral', 'Referral bonus - new signup');
         await referrerCRM.save();
 
-        sendUserNotification(referrerUser.id, {
-          type: 'referral',
-          title: 'You have a new referral!',
-          message: 'A new user has signed up using your referral code.',
-          data: {
-            userId: newUser._id
-          },
-          link: `/updateAccount`
-        })
-
         // ✅ Send email notification to referrer
         if (referrerUser && referrerUser.email) {
           try {
@@ -120,10 +110,20 @@ exports.signup = catchAsync(async (req, res, next) => {
 
     emitUserActivity("signup", newUser)
 
-    sendUserNotification(newUser.id, {
+    await sendUserNotification(newUser.id, {
       type: 'signup',
       title: 'Welcome to HotelIO!',
       message: 'Your account has been created successfully.',
+      data: {
+        userId: newUser._id
+      },
+      link: `/updateAccount`
+    })
+
+    await sendUserNotification(referrerUser.id, {
+      type: 'referral',
+      title: 'You have a new referral!',
+      message: 'A new user has signed up using your referral code.',
       data: {
         userId: newUser._id
       },

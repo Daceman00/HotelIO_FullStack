@@ -62,7 +62,7 @@ const runCleanupTask = async () => {
                     continue;
                 }
 
-                sendUserNotification(targetUserId, {
+                await sendUserNotification(targetUserId, {
                     type: 'cancellation',
                     title: 'Booking Cancelled!',
                     message: `Your booking for room ${roomNumber} has been cancelled, because payment deadline has passed`,
@@ -261,7 +261,7 @@ const processReferralSuccessesTask = async () => {
             processedCount += 1;
             console.log(`  ✅ Successfully processed referral for booking ${booking._id}`);
 
-            sendUserNotification(booking.user.id, {
+            await sendUserNotification(booking.user.id, {
                 type: 'referral',
                 title: 'Referral processing finished',
                 message: `Referral processing task completed successfully. You received ${guestPointsResult.awardedPoints} points. Previous total: ${guestPointsResult.previousTotal}. New total: ${guestPointsResult.newTotal}.`,
@@ -274,7 +274,7 @@ const processReferralSuccessesTask = async () => {
                 link: '/updateAccount'
             });
 
-            sendUserNotification(referrerCRM.user.toString(), {
+            await sendUserNotification(referrerCRM.user.toString(), {
                 type: 'referral',
                 title: 'Referral processing finished',
                 message: `Referral processing task completed successfully. You received ${referrerPointsResult.awardedPoints} points for a successful referral. Previous total: ${referrerPointsResult.previousTotal}. New total: ${referrerPointsResult.newTotal}.`,

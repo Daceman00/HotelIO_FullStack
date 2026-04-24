@@ -1,14 +1,11 @@
 const socketIO = require('socket.io');
 const jwt = require('jsonwebtoken');
-const User = require('../models/userModel'); // Adjust path based on your structure
+const User = require('../models/userModel');
+const PendingNotification = require('../models/notificationModel');
 
 let io;
 const onlineUsers = new Map(); // Map of userId -> { socketId, name, email, role, connectedAt }
 const userLastSeen = new Map(); // Map of userId -> { timestamp, name, email }
-const pendingNotifications = new Map(); // Map of userId -> Notification[]
-const MAX_PENDING_NOTIFICATIONS_PER_USER = 50;
-const pendingAdminNotifications = new Map(); // Map of adminUserId -> Notification[]
-const MAX_PENDING_ADMIN_NOTIFICATIONS = 50;
 
 /**
  * Initialize Socket.IO server
@@ -28,7 +25,6 @@ const initSocket = (server) => {
     // Socket.IO authentication middleware
     io.use(async (socket, next) => {
         try {
-            // Get token from auth object or headers
             const token = socket.handshake.auth.token ||
                 socket.handshake.headers.authorization.replace('Bearer ', '');
 
@@ -36,22 +32,17 @@ const initSocket = (server) => {
                 return next(new Error('Authentication error: No token provided'));
             }
 
-            // Verify JWT token
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-            // Get user from database
             const user = await User.findById(decoded.id).select('+role');
 
             if (!user) {
                 return next(new Error('Authentication error: User not found'));
             }
 
-            // Check if user is active
             if (user.active === false) {
                 return next(new Error('Authentication error: Account deactivated'));
             }
 
-            // Attach user to socket
             socket.user = user;
             next();
         } catch (error) {
@@ -60,7 +51,7 @@ const initSocket = (server) => {
         }
     });
 
-    io.on('connection', (socket) => {
+    io.on('connection', async (socket) => {
         const userId = socket.user._id.toString();
 
         console.log(`✅ User connected: ${socket.user.name} (${socket.user.email})`);
@@ -76,14 +67,22 @@ const initSocket = (server) => {
             connectedAt: new Date()
         });
 
-        // Flush any queued notifications that were created while the user was offline
-        const queuedNotifications = pendingNotifications.get(userId) || [];
-        if (queuedNotifications.length > 0) {
-            queuedNotifications.forEach((notification) => {
-                socket.emit('notification:new', notification);
-            });
-            pendingNotifications.delete(userId);
-            console.log(`📬 Delivered ${queuedNotifications.length} queued notifications to ${socket.user.email}`);
+        // --- Flush pending notifications from DB ---
+        try {
+            const queued = await PendingNotification.find({
+                userId,
+                forAdmin: false
+            }).sort({ createdAt: 1 }).lean();
+
+            if (queued.length > 0) {
+                queued.forEach(({ notification }) => {
+                    socket.emit('notification:new', notification);
+                });
+                await PendingNotification.deleteMany({ userId, forAdmin: false });
+                console.log(`📬 Delivered ${queued.length} queued notifications to ${socket.user.email}`);
+            }
+        } catch (err) {
+            console.error(`❌ Failed to flush notifications for ${socket.user.email}:`, err.message);
         }
 
         // Remove from last seen when user comes online
@@ -97,7 +96,6 @@ const initSocket = (server) => {
             socket.join('admins');
             console.log(`👑 Admin joined admin room: ${socket.user.email}`);
 
-            // Send current admin count to newly connected admin
             const adminCount = io.sockets.adapter.rooms.get('admins').size || 0;
             socket.emit('admin:connected', {
                 message: 'Connected to admin room',
@@ -105,27 +103,31 @@ const initSocket = (server) => {
                 userName: socket.user.name
             });
 
-            // Notify other admins
             socket.to('admins').emit('admin:joined', {
                 userName: socket.user.name,
                 email: socket.user.email,
                 timestamp: new Date()
             });
 
-            // Send current online users list to the newly connected admin
             socket.emit('users:online_list', getOnlineUsersList());
-
-            // Send last seen data for all offline users
             socket.emit('users:last_seen_list', getLastSeenList());
 
-            // Flush queued admin notifications for this specific admin user
-            const queuedAdminNotifications = pendingAdminNotifications.get(userId) || [];
-            if (queuedAdminNotifications.length > 0) {
-                queuedAdminNotifications.forEach((notification) => {
-                    socket.emit('notification:new', notification);
-                });
-                pendingAdminNotifications.delete(userId);
-                console.log(`📬 Delivered ${queuedAdminNotifications.length} queued admin notifications to ${socket.user.email}`);
+            // --- Flush pending admin notifications from DB ---
+            try {
+                const queuedAdmin = await PendingNotification.find({
+                    userId,
+                    forAdmin: true
+                }).sort({ createdAt: 1 }).lean();
+
+                if (queuedAdmin.length > 0) {
+                    queuedAdmin.forEach(({ notification }) => {
+                        socket.emit('notification:new', notification);
+                    });
+                    await PendingNotification.deleteMany({ userId, forAdmin: true });
+                    console.log(`📬 Delivered ${queuedAdmin.length} queued admin notifications to ${socket.user.email}`);
+                }
+            } catch (err) {
+                console.error(`❌ Failed to flush admin notifications for ${socket.user.email}:`, err.message);
             }
         }
 
@@ -164,27 +166,23 @@ const initSocket = (server) => {
             }
         });
 
-        // Admin requests current online users list
         socket.on('admin:request_online_users', () => {
             if (socket.user.role === 'admin') {
                 socket.emit('users:online_list', getOnlineUsersList());
             }
         });
 
-        // Admin requests last seen list
         socket.on('admin:request_last_seen', () => {
             if (socket.user.role === 'admin') {
                 socket.emit('users:last_seen_list', getLastSeenList());
             }
         });
 
-        // Handle disconnect
         socket.on('disconnect', () => {
             console.log(`❌ User disconnected: ${socket.user.email}`);
 
             const disconnectTime = new Date();
 
-            // Store last seen information
             userLastSeen.set(userId, {
                 timestamp: disconnectTime,
                 name: socket.user.name,
@@ -194,10 +192,8 @@ const initSocket = (server) => {
 
             console.log(`💾 Stored last seen for user: ${socket.user.email} at ${disconnectTime.toISOString()}`);
 
-            // Remove user from online users map
             onlineUsers.delete(userId);
 
-            // Broadcast to all admins that this user is now offline (with last seen)
             io.to('admins').emit('user:status_change', {
                 userId: userId,
                 status: 'offline',
@@ -212,7 +208,6 @@ const initSocket = (server) => {
             });
 
             if (socket.user.role === 'admin') {
-                // Notify other admins
                 socket.to('admins').emit('admin:left', {
                     userName: socket.user.name,
                     email: socket.user.email,
@@ -221,7 +216,6 @@ const initSocket = (server) => {
             }
         });
 
-        // Error handling
         socket.on('error', (error) => {
             console.error(`Socket error for user ${socket.user.email}:`, error);
         });
@@ -231,10 +225,6 @@ const initSocket = (server) => {
     return io;
 };
 
-/**
- * Get list of online users
- * @returns {Array} Array of online user objects
- */
 const getOnlineUsersList = () => {
     return Array.from(onlineUsers.entries()).map(([userId, userData]) => ({
         userId,
@@ -242,10 +232,6 @@ const getOnlineUsersList = () => {
     }));
 };
 
-/**
- * Get list of users with last seen timestamps
- * @returns {Array} Array of users with last seen data
- */
 const getLastSeenList = () => {
     return Array.from(userLastSeen.entries()).map(([userId, data]) => ({
         userId,
@@ -253,30 +239,15 @@ const getLastSeenList = () => {
     }));
 };
 
-/**
- * Check if a user is currently online
- * @param {string} userId - User ID to check
- * @returns {boolean} True if user is online
- */
 const isUserOnline = (userId) => {
     return onlineUsers.has(userId.toString());
 };
 
-/**
- * Get last seen timestamp for a user
- * @param {string} userId - User ID to check
- * @returns {Date|null} Last seen timestamp or null if never seen offline
- */
 const getUserLastSeen = (userId) => {
     const lastSeenData = userLastSeen.get(userId.toString());
     return lastSeenData ? lastSeenData.timestamp : null;
 };
 
-/**
- * Get Socket.IO instance
- * @returns {Object} Socket.IO instance
- * @throws {Error} If Socket.IO is not initialized
- */
 const getIO = () => {
     if (!io) {
         throw new Error('Socket.IO not initialized. Call initSocket first.');
@@ -285,40 +256,43 @@ const getIO = () => {
 };
 
 /**
- * Send notification to specific user
- * @param {string} userId - User ID to notify
- * @param {Object} notification - Notification data
+ * Send notification to a specific user.
+ * If the user is offline the notification is persisted to MongoDB
+ * and delivered the next time they connect.
+ *
+ * @param {string} userId
+ * @param {Object} notification
+ * @returns {Promise<Object|null>}
  */
-const sendUserNotification = (userId, notification) => {
+const sendUserNotification = async (userId, notification) => {
     try {
         const io = getIO();
         const userIdStr = userId.toString();
 
         const notificationData = {
             id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            type: notification.type, // 'booking', 'discount', 'payment', 'cancellation', etc.
+            type: notification.type,
             title: notification.title,
             message: notification.message,
-            data: notification.data || {}, // Additional data (booking details, discount info, etc.)
+            data: notification.data || {},
             timestamp: new Date(),
             read: false,
-            link: notification.link || null // Optional: Link to navigate to
+            link: notification.link || null
         };
 
-        // Emit to user's personal room
-        io.to(`user:${userIdStr}`).emit('notification:new', notificationData);
-
-        // If user is offline, queue it for delivery on next connect.
-        // This covers flows like signup where socket connects only after token is returned.
-        if (!isUserOnline(userIdStr)) {
-            const existingQueue = pendingNotifications.get(userIdStr) || [];
-            pendingNotifications.set(
-                userIdStr,
-                [...existingQueue, notificationData].slice(-MAX_PENDING_NOTIFICATIONS_PER_USER)
-            );
+        if (isUserOnline(userIdStr)) {
+            io.to(`user:${userIdStr}`).emit('notification:new', notificationData);
+        } else {
+            // Persist to DB so it survives server restarts
+            await PendingNotification.create({
+                userId: userIdStr,
+                notification: notificationData,
+                forAdmin: false
+            });
+            console.log(`📬 User ${userIdStr} offline — notification persisted to DB`);
         }
 
-        // Also emit to admins for monitoring
+        // Let admins monitor all outgoing notifications
         io.to('admins').emit('notification:sent', {
             userId: userIdStr,
             notification: notificationData
@@ -333,16 +307,16 @@ const sendUserNotification = (userId, notification) => {
 };
 
 /**
- * Send notification to multiple users
- * @param {Array} userIds - Array of user IDs
- * @param {Object} notification - Notification data
+ * Send notification to multiple users.
+ * @param {Array} userIds
+ * @param {Object} notification
+ * @returns {Promise<Array>}
  */
-const sendBulkNotification = (userIds, notification) => {
+const sendBulkNotification = async (userIds, notification) => {
     try {
-        const results = userIds.map(userId =>
-            sendUserNotification(userId, notification)
+        const results = await Promise.all(
+            userIds.map(userId => sendUserNotification(userId, notification))
         );
-
         console.log(`🔔 Sent bulk notification to ${userIds.length} users`);
         return results;
     } catch (error) {
@@ -352,8 +326,9 @@ const sendBulkNotification = (userIds, notification) => {
 };
 
 /**
- * Send notification to all online users
- * @param {Object} notification - Notification data
+ * Send notification to all currently connected users (no offline queue — broadcast only).
+ * @param {Object} notification
+ * @returns {Object|null}
  */
 const sendBroadcastNotification = (notification) => {
     try {
@@ -370,10 +345,8 @@ const sendBroadcastNotification = (notification) => {
             link: notification.link || null
         };
 
-        // Send to all connected clients
         io.emit('notification:new', notificationData);
-
-        console.log(`📢 Broadcast notification sent to all users`);
+        console.log('📢 Broadcast notification sent to all users');
         return notificationData;
     } catch (error) {
         console.error('❌ Failed to send broadcast notification:', error.message);
@@ -382,9 +355,12 @@ const sendBroadcastNotification = (notification) => {
 };
 
 /**
- * Send notification to all connected admins
- * @param {Object} notification - Notification data
- * @returns {Object|null} Notification payload
+ * Send notification to all admins.
+ * Online admins receive it immediately via the 'admins' room.
+ * Offline admins have it persisted to MongoDB so they get it on next connect.
+ *
+ * @param {Object} notification
+ * @returns {Object|null}
  */
 const sendAdminNotification = (notification) => {
     try {
@@ -401,28 +377,30 @@ const sendAdminNotification = (notification) => {
             link: notification.link || null
         };
 
+        // Deliver to online admins immediately
         io.to('admins').emit('notification:new', notificationData);
 
-        // Queue for offline admins so each admin receives missed notifications
-        // when they reconnect (even if other admins are currently online).
+        // Persist for offline admins
         User.find({ role: 'admin', active: true }).select('_id').lean()
-            .then((admins) => {
-                admins.forEach((admin) => {
-                    const adminUserId = admin._id.toString();
+            .then(async (admins) => {
+                const offlineAdmins = admins.filter(
+                    admin => !isUserOnline(admin._id.toString())
+                );
 
-                    if (isUserOnline(adminUserId)) {
-                        return;
-                    }
+                if (offlineAdmins.length === 0) return;
 
-                    const existingQueue = pendingAdminNotifications.get(adminUserId) || [];
-                    pendingAdminNotifications.set(
-                        adminUserId,
-                        [...existingQueue, notificationData].slice(-MAX_PENDING_ADMIN_NOTIFICATIONS)
-                    );
-                });
+                await PendingNotification.insertMany(
+                    offlineAdmins.map(admin => ({
+                        userId: admin._id.toString(),
+                        notification: notificationData,
+                        forAdmin: true
+                    }))
+                );
+
+                console.log(`📬 Queued admin notification for ${offlineAdmins.length} offline admin(s)`);
             })
-            .catch((error) => {
-                console.error('❌ Failed to queue admin notification:', error.message);
+            .catch(error => {
+                console.error('❌ Failed to persist admin notifications:', error.message);
             });
 
         console.log('🔔 Sent notification to all admins');
@@ -433,11 +411,6 @@ const sendAdminNotification = (notification) => {
     }
 };
 
-/**
- * Emit user activity to admins only
- * @param {string} eventType - 'signup' or 'login'
- * @param {Object} userData - User data to send
- */
 const emitUserActivity = (eventType, userData) => {
     try {
         const io = getIO();
@@ -457,21 +430,13 @@ const emitUserActivity = (eventType, userData) => {
                 : `User logged in: ${userData.name}`
         };
 
-        // Emit only to admin room
         io.to('admins').emit('user:activity', activityData);
-
         console.log(`📡 Emitted ${eventType} activity to admins for user: ${userData.email}`);
     } catch (error) {
         console.error('❌ Failed to emit user activity:', error.message);
-        // Don't throw - socket emission failure shouldn't break the flow
     }
 };
 
-/**
- * Emit custom event to admins
- * @param {string} eventName - Event name
- * @param {Object} data - Event data
- */
 const emitToAdmins = (eventName, data) => {
     try {
         const io = getIO();
@@ -481,11 +446,8 @@ const emitToAdmins = (eventName, data) => {
             timestamp: data.timestamp || new Date()
         };
 
-        // Keep the original event for admin dashboards listening to custom events.
         io.to('admins').emit(eventName, eventData);
 
-        // Also emit a standard notification event because the frontend notification
-        // store currently listens on "notification:new".
         if (data && data.title && data.message) {
             sendAdminNotification({
                 type: data.type,
@@ -501,13 +463,8 @@ const emitToAdmins = (eventName, data) => {
     } catch (error) {
         console.error(`❌ Failed to emit ${eventName}:`, error.message);
     }
-}
+};
 
-/**
- * Emit event to all connected users
- * @param {string} eventName - Event name
- * @param {Object} data - Event data
- */
 const emitToAll = (eventName, data) => {
     try {
         const io = getIO();
@@ -518,12 +475,6 @@ const emitToAll = (eventName, data) => {
     }
 };
 
-/**
- * Emit event to specific user by socket ID
- * @param {string} socketId - Socket ID
- * @param {string} eventName - Event name
- * @param {Object} data - Event data
- */
 const emitToUser = (socketId, eventName, data) => {
     try {
         const io = getIO();
@@ -534,10 +485,6 @@ const emitToUser = (socketId, eventName, data) => {
     }
 };
 
-/**
- * Get online users count
- * @returns {number} Number of online users
- */
 const getOnlineUsersCount = () => {
     return onlineUsers.size;
 };
