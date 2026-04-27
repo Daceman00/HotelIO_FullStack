@@ -51,6 +51,7 @@ exports.getMyCrmEntry = catchAsync(async (req, res, next) => {
     })
 })
 
+
 exports.createCrmEntry = factory.createOne(CRM)
 exports.updateCrmEntry = factory.updateOne(CRM)
 exports.deleteCrmEntry = factory.deleteOne(CRM)

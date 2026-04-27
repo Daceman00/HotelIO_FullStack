@@ -132,12 +132,13 @@ function CRMDetailsModal({ crmId, isOpen, onClose }) {
                         <p className="text-gray-600">
                           {crm.user?.email || "guest@example.com"}
                         </p>
+                        <p>Reffered by: {crm.user}</p>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         <motion.span
                           whileHover={{ scale: 1.05 }}
                           className={`px-4 py-2 rounded-full text-sm font-semibold border ${getTierColor(
-                            crm.loyaltyTier
+                            crm.loyaltyTier,
                           )}`}
                         >
                           {crm.loyaltyTier?.toUpperCase() || "BRONZE"} TIER
@@ -365,7 +366,7 @@ function CRMDetailsModal({ crmId, isOpen, onClose }) {
                               style={{ color: "#dfa974" }}
                             >
                               {crm.reviewStatistics?.averageRating?.toFixed(
-                                1
+                                1,
                               ) || "0.0"}
                             </motion.div>
                             <div className="flex gap-1 mt-1">
@@ -410,7 +411,7 @@ function CRMDetailsModal({ crmId, isOpen, onClose }) {
                               <p className="text-xs text-gray-500 mt-2">
                                 Last:{" "}
                                 {formatDate(
-                                  crm.reviewStatistics.lastReviewDate
+                                  crm.reviewStatistics.lastReviewDate,
                                 )}
                               </p>
                             )}
@@ -517,7 +518,7 @@ function CRMDetailsModal({ crmId, isOpen, onClose }) {
                                       <Coffee className="w-3 h-3 inline mr-1" />
                                       {amenity}
                                     </motion.span>
-                                  )
+                                  ),
                                 )}
                               </div>
                             ) : (

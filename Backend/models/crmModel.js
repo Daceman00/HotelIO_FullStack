@@ -270,6 +270,7 @@ crmSchema.virtual("positiveReviewPercentage").get(function () {
     return (positiveReviews / this.reviewStatistics.totalReviews) * 100;
 })
 
+
 // Indexes for better query performance
 crmSchema.index({ loyaltyPoints: -1 });
 crmSchema.index({ 'stayStatistics.lastStayDate': -1 });
