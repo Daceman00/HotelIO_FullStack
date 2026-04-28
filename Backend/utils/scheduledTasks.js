@@ -243,14 +243,14 @@ const processReferralSuccessesTask = async () => {
 
             // Award points to referrer for successful referral (completed stay)
             referrerCRM.successfulReferrals += 1;
-            const referrerPointsResult = await referrerCRM.addPoints(250, 'referral', `Referral bonus - booking`, booking._id);
-            console.log(`  ✓ Awarded ${referrerPointsResult.awardedPoints} points to referrer. New total: ${referrerPointsResult.newTotal}`);
+            await referrerCRM.addPoints(250, 'referral', `Referral bonus - booking`, booking._id);
+            console.log(`  ✓ Awarded 250 points to referrer. New total: ${referrerCRM.loyaltyPoints}`);
 
             // Mark guest's referral success as awarded
             guestCRM.referralSuccessAwarded = true;
             guestCRM.referralSuccessBooking = booking._id;
-            const guestPointsResult = await guestCRM.addPoints(100, 'referral', 'Thanks for completing your first stay', booking._id);
-            console.log(`  ✓ Awarded ${guestPointsResult.awardedPoints} points to guest. New total: ${guestPointsResult.newTotal}`);
+            await guestCRM.addPoints(100, 'referral', 'Thanks for completing your first stay', booking._id);
+            console.log(`  ✓ Awarded 100 points to guest. New total: ${guestCRM.loyaltyPoints}`);
 
             // Mark booking as processed
             booking.referralSuccessProcessed = true;

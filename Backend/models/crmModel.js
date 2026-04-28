@@ -544,7 +544,6 @@ crmSchema.methods.updateReviewStats = async function (review, action) {
 
 // Enhanced addPoints method to handle review points
 crmSchema.methods.addPoints = async function (points, reason, description = '', booking = null, review = null) {
-    const previousTotal = this.loyaltyPoints;
     this.loyaltyPoints += points;
 
     this.pointsHistory.push({
@@ -556,14 +555,9 @@ crmSchema.methods.addPoints = async function (points, reason, description = '', 
         date: new Date()
     });
 
-    await this.save();
+    return this.save();
 
-    return {
-        awardedPoints: points,
-        previousTotal,
-        newTotal: this.loyaltyPoints
-    };
-};
+}
 
 // Method to get review insights
 crmSchema.methods.getReviewInsights = function () {
