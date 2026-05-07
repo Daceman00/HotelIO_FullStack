@@ -546,6 +546,10 @@ crmSchema.methods.updateReviewStats = async function (review, action) {
 crmSchema.methods.addPoints = async function (points, reason, description = '', booking = null, review = null) {
     this.loyaltyPoints += points;
 
+    if (!Array.isArray(this.pointsHistory)) {
+        this.pointsHistory = [];
+    }
+
     this.pointsHistory.push({
         points,
         reason,

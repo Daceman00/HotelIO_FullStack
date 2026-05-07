@@ -135,7 +135,7 @@ function UserCRMProfile({ isOpen, onClose }) {
                         <motion.span
                           whileHover={{ scale: 1.05 }}
                           className={`px-4 py-2 rounded-full text-sm font-semibold border ${getTierColor(
-                            crm.loyaltyTier
+                            crm.loyaltyTier,
                           )}`}
                         >
                           {crm.loyaltyTier?.toUpperCase() || "BRONZE"} TIER
@@ -317,6 +317,13 @@ function UserCRMProfile({ isOpen, onClose }) {
                           />
                         </div>
                         <div className="space-y-2 text-sm">
+                          <div className="flex items-center justify-between gap-3">
+                            <span className="text-gray-600">Referred By:</span>
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-amber-200 bg-amber-50 text-amber-800 font-semibold">
+                              <Users className="w-3.5 h-3.5" />
+                              {crm.referredBy?.email || "No referrer"}
+                            </span>
+                          </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">
                               Referrals Made:
@@ -363,7 +370,7 @@ function UserCRMProfile({ isOpen, onClose }) {
                               style={{ color: "#dfa974" }}
                             >
                               {crm.reviewStatistics?.averageRating?.toFixed(
-                                2
+                                2,
                               ) || "0.0"}
                             </motion.div>
                             <div className="flex gap-1 mt-1">
@@ -408,7 +415,7 @@ function UserCRMProfile({ isOpen, onClose }) {
                               <p className="text-xs text-gray-500 mt-2">
                                 Last:{" "}
                                 {formatDate(
-                                  crm.reviewStatistics.lastReviewDate
+                                  crm.reviewStatistics.lastReviewDate,
                                 )}
                               </p>
                             )}
@@ -515,7 +522,7 @@ function UserCRMProfile({ isOpen, onClose }) {
                                       <Coffee className="w-3 h-3 inline mr-1" />
                                       {amenity}
                                     </motion.span>
-                                  )
+                                  ),
                                 )}
                               </div>
                             ) : (

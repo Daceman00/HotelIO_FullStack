@@ -242,14 +242,18 @@ const processReferralSuccessesTask = async () => {
             console.log(`  Guest's current points: ${guestCRM.loyaltyPoints}`);
 
             // Award points to referrer for successful referral (completed stay)
+            const referrerPreviousTotal = referrerCRM.loyaltyPoints;
             referrerCRM.successfulReferrals += 1;
             await referrerCRM.addPoints(250, 'referral', `Referral bonus - booking`, booking._id);
+            const referrerNewTotal = referrerCRM.loyaltyPoints;
             console.log(`  ✓ Awarded 250 points to referrer. New total: ${referrerCRM.loyaltyPoints}`);
 
             // Mark guest's referral success as awarded
+            const guestPreviousTotal = guestCRM.loyaltyPoints;
             guestCRM.referralSuccessAwarded = true;
             guestCRM.referralSuccessBooking = booking._id;
             await guestCRM.addPoints(100, 'referral', 'Thanks for completing your first stay', booking._id);
+            const guestNewTotal = guestCRM.loyaltyPoints;
             console.log(`  ✓ Awarded 100 points to guest. New total: ${guestCRM.loyaltyPoints}`);
 
             // Mark booking as processed
@@ -264,11 +268,11 @@ const processReferralSuccessesTask = async () => {
             await sendUserNotification(booking.user.id, {
                 type: 'referral',
                 title: 'Referral processing finished',
-                message: `Referral processing task completed successfully. You received ${guestPointsResult.awardedPoints} points. Previous total: ${guestPointsResult.previousTotal}. New total: ${guestPointsResult.newTotal}.`,
+                message: `Referral processing task completed successfully. You received 100 points. Previous total: ${guestPreviousTotal}. New total: ${guestNewTotal}.`,
                 data: {
-                    awardedPoints: guestPointsResult.awardedPoints,
-                    previousTotalPoints: guestPointsResult.previousTotal,
-                    newTotalPoints: guestPointsResult.newTotal,
+                    awardedPoints: 100,
+                    previousTotalPoints: guestPreviousTotal,
+                    newTotalPoints: guestNewTotal,
                     bookingId: booking._id
                 },
                 link: '/updateAccount'
@@ -277,11 +281,11 @@ const processReferralSuccessesTask = async () => {
             await sendUserNotification(referrerCRM.user.toString(), {
                 type: 'referral',
                 title: 'Referral processing finished',
-                message: `Referral processing task completed successfully. You received ${referrerPointsResult.awardedPoints} points for a successful referral. Previous total: ${referrerPointsResult.previousTotal}. New total: ${referrerPointsResult.newTotal}.`,
+                message: `Referral processing task completed successfully. You received 250 points for a successful referral. Previous total: ${referrerPreviousTotal}. New total: ${referrerNewTotal}.`,
                 data: {
-                    awardedPoints: referrerPointsResult.awardedPoints,
-                    previousTotalPoints: referrerPointsResult.previousTotal,
-                    newTotalPoints: referrerPointsResult.newTotal,
+                    awardedPoints: 250,
+                    previousTotalPoints: referrerPreviousTotal,
+                    newTotalPoints: referrerNewTotal,
                     bookingId: booking._id,
                     successfulReferrals: referrerCRM.successfulReferrals
                 },

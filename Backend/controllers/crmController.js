@@ -14,6 +14,10 @@ exports.getAllCrmEntrys = factory.getAll(CRM, [
     {
         path: 'pointsHistory.booking',
         select: 'checkIn checkOut createdAt'
+    },
+    {
+        path: 'referredBy',
+        select: 'name email'
     }])
 
 exports.getCrmEntry = factory.getOne(CRM, [
@@ -36,6 +40,10 @@ exports.getMyCrmEntry = catchAsync(async (req, res, next) => {
             {
                 path: 'pointsHistory.booking',
                 select: 'checkIn checkOut createdAt'
+            },
+            {
+                path: 'referredBy',
+                select: 'name email'
             }
         ])
 
