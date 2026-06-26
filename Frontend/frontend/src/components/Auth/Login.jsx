@@ -36,16 +36,16 @@ const cardVariants = {
 };
 
 const inputBaseClass =
-  "w-full px-4 md:px-2 lg:px-4 py-2.5 md:py-1.5 lg:py-2.5 text-sm md:text-xs lg:text-sm rounded-xl border transition-all duration-300 ";
+  "w-full px-4 py-3 text-sm rounded-xl border transition-all duration-300 outline-none ";
 const inputStandaloneClass =
-  "border-gray-200/80 focus:border-[#dfa974] focus:ring-2 focus:ring-[#dfa974]/25 focus:ring-offset-1 bg-gray-50/80 hover:bg-gray-50 placeholder:text-gray-400";
+  "border-gray-200/80 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 bg-gray-50/80 hover:bg-white placeholder:text-gray-400 text-gray-800";
 const inputEmbeddedClass =
-  "border-white/30 bg-white/15 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30 focus:ring-offset-0 placeholder:text-gray-400 text-white";
+  "border-white/15 bg-white/8 focus:border-amber-400/60 focus:ring-2 focus:ring-amber-400/20 focus:bg-white/12 placeholder:text-gray-500 text-white";
 
 const labelEmbeddedClass =
-  "text-sm md:text-xs lg:text-sm font-medium text-white/95";
+  "text-xs font-semibold text-gray-300 uppercase tracking-wider";
 const labelStandaloneClass =
-  "text-sm md:text-xs lg:text-sm font-medium text-gray-700";
+  "text-sm font-medium text-gray-700";
 
 function Login({ embedded = false }) {
   const { formData } = useFormStore();
@@ -67,20 +67,28 @@ function Login({ embedded = false }) {
         variants={formVariants}
         className={
           embedded
-            ? "text-lg md:text-base font-bold text-white text-center mb-3 md:mb-2"
-            : "text-xl md:text-lg lg:text-xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent text-center mb-4 md:mb-2 lg:mb-5"
+            ? "text-xl font-bold text-white text-center mb-1"
+            : "text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent text-center mb-6"
         }
       >
         Welcome Back
       </motion.h1>
+      {embedded && (
+        <motion.p
+          variants={formVariants}
+          className="text-center text-sm text-gray-400 mb-5"
+        >
+          Sign in to access your reservations
+        </motion.p>
+      )}
       <form
-        className="space-y-4 md:space-y-2 lg:space-y-4"
+        className="space-y-4"
         onSubmit={handleSumbit}
       >
         <AnimatePresence>
           <motion.div
             variants={formVariants}
-            className="space-y-2 md:space-y-1 lg:space-y-2"
+            className="space-y-1.5"
           >
             <motion.label
               className={embedded ? labelEmbeddedClass : labelStandaloneClass}
@@ -107,7 +115,7 @@ function Login({ embedded = false }) {
 
           <motion.div
             variants={formVariants}
-            className="space-y-2 md:space-y-1 lg:space-y-2"
+            className="space-y-1.5"
           >
             <motion.label
               className={embedded ? labelEmbeddedClass : labelStandaloneClass}
@@ -140,10 +148,10 @@ function Login({ embedded = false }) {
             }}
             whileTap={{ scale: 0.98 }}
             type="submit"
-            className="w-full py-3 md:py-2 lg:py-3 px-6 md:px-4 lg:px-6 text-sm md:text-xs lg:text-sm text-white rounded-xl font-medium
-                     bg-gradient-to-r from-[#dfa974] to-[#c68a5e] shadow-lg shadow-amber-500/20
-                     hover:shadow-xl hover:shadow-amber-500/25 transition-all duration-300 disabled:opacity-50
-                     disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+            className="w-full py-3.5 px-6 text-sm text-white rounded-xl font-semibold
+                     bg-gradient-to-r from-amber-500 to-amber-600 shadow-lg shadow-amber-900/20
+                     hover:shadow-xl hover:shadow-amber-500/30 transition-all duration-300 disabled:opacity-50
+                     disabled:cursor-not-allowed flex items-center justify-center space-x-2 mt-2"
             disabled={isPending}
           >
             {isPending ? (
@@ -166,14 +174,14 @@ function Login({ embedded = false }) {
 
           <motion.div
             variants={formVariants}
-            className="text-center mt-4 md:mt-2 lg:mt-4"
+            className="text-center mt-3"
           >
             <Link to="/forgotPassword">
               <motion.span
                 className={
                   embedded
-                    ? "inline-block text-xs text-amber-200 hover:text-amber-100 font-medium transition-colors duration-200 underline-offset-2 hover:underline"
-                    : "inline-block text-sm text-[#dfa974] hover:text-[#c68a5e] font-medium transition-colors duration-200 underline-offset-2 hover:underline"
+                    ? "inline-block text-xs text-amber-400/80 hover:text-amber-300 font-medium transition-colors duration-200 underline-offset-4 hover:underline"
+                    : "inline-block text-sm text-amber-600 hover:text-amber-700 font-medium transition-colors duration-200 underline-offset-4 hover:underline"
                 }
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
@@ -206,15 +214,15 @@ function Login({ embedded = false }) {
         initial="hidden"
         animate="visible"
         variants={formVariants}
-        className="flex flex-col items-center flex-1 justify-center py-1 md:py-0.5 lg:py-2 min-h-[60vh] bg-gradient-to-br from-amber-50/80 via-orange-50/60 to-amber-100/80"
+        className="flex flex-col items-center flex-1 justify-center py-8 min-h-[70vh] bg-gradient-to-br from-amber-50/60 via-white to-orange-50/40"
       >
         <motion.div
           variants={cardVariants}
-          className="w-full max-w-md relative rounded-2xl overflow-hidden shadow-2xl"
+          className="w-full max-w-md relative rounded-3xl overflow-hidden shadow-2xl shadow-amber-900/10"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-400/10 via-transparent to-orange-500/10 pointer-events-none" />
-          <div className="relative bg-white/90 backdrop-blur-xl border border-white/60 rounded-2xl">
-            <div className="p-4 md:p-2 lg:p-6">{formContent}</div>
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-400/8 via-transparent to-amber-600/8 pointer-events-none" />
+          <div className="relative bg-white/95 backdrop-blur-xl border border-gray-100 rounded-3xl">
+            <div className="p-8">{formContent}</div>
           </div>
         </motion.div>
       </motion.section>

@@ -1,3 +1,66 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Hero dashboard */
+.hero-swiper .swiper-pagination-bullet {
+  @apply w-2.5 h-2.5 bg-white/40 opacity-100 rounded-full transition-all duration-300;
+}
+
+.hero-swiper .swiper-pagination-bullet-active {
+  @apply bg-amber-400 w-8 rounded-full;
+}
+
+.hero-swiper .swiper-wrapper {
+  height: 100vh;
+}
+
+.hero-ken-burns {
+  animation: kenBurns 20s ease-in-out infinite alternate;
+  transform-origin: center center;
+}
+
+@keyframes kenBurns {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.08);
+  }
+}
+
+/* Rooms swiper */
+.rooms-swiper .swiper-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  gap: 6px;
+}
+
+.rooms-swiper .swiper-pagination-bullet {
+  @apply w-2 h-2 bg-gray-300 opacity-100 rounded-full transition-all duration-300;
+}
+
+.rooms-swiper .swiper-pagination-bullet-active {
+  @apply bg-amber-500 w-6 rounded-full;
+}
+
+/* Reviews swiper */
+.reviews-swiper .swiper-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  gap: 6px;
+}
+
+.reviews-swiper .swiper-pagination-bullet {
+  @apply w-2 h-2 bg-gray-300 opacity-100 rounded-full transition-all duration-300;
+}
+
+.reviews-swiper .swiper-pagination-bullet-active {
+  @apply bg-amber-500 w-6 rounded-full;
+}
+
+.reviews-swiper .swiper-slide {
+  height: auto;
+}

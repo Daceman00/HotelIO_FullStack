@@ -38,25 +38,38 @@
   height: 100%;
 }
 
-/* Add to your main CSS file */
+/* Hero swiper */
+.hero-swiper .swiper-pagination-bullet {
+  @apply w-2.5 h-2.5 bg-white/40 opacity-100 rounded-full transition-all duration-300;
+}
+
+.hero-swiper .swiper-pagination-bullet-active {
+  @apply bg-amber-400 w-8 rounded-full;
+}
+
+.hero-swiper .swiper-wrapper {
+  height: 100vh;
+}
+
+.hero-ken-burns {
+  animation: kenBurns 20s ease-in-out infinite alternate;
+  transform-origin: center center;
+}
+
+@keyframes kenBurns {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.08);
+  }
+}
+
+/* Legacy swiper overrides */
 .swiper-pagination-bullet {
   @apply w-3 h-3 bg-white opacity-70;
 }
 
 .swiper-pagination-bullet-active {
-  @apply bg-[#dfa974] opacity-100;
-}
-
-.swiper {
-  position: static !important;
-}
-
-.swiper-wrapper {
-  height: 100vh;
-}
-
-.swiper-pagination {
-  position: absolute;
-  bottom: 30px !important;
-  z-index: 10;
+  @apply bg-amber-500 opacity-100;
 }
